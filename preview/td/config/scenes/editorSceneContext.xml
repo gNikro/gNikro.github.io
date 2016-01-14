@@ -1,0 +1,5 @@
+<beans>
+	<bean id="testLevelDisplay" class="scenes.editScene.TestLevelDisplay" init-method="initialize">
+		<property name="vfs" ref="vfs"/>
+	</bean>
+</beans>

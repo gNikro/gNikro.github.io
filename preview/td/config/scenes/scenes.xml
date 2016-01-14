@@ -1,0 +1,13 @@
+<beans>
+	<import resource="editorSceneContext.xml"/>
+	
+	<bean id="displayManager" class="display.ui.DisplayManager"/>
+	
+	<bean id="scenesController" class="ScenesController" init-method="initialize">
+		<property name="displayManager" ref="displayManager"/>
+	</bean>
+	
+	<bean id="preloaderScene" class="scenes.preloadScreen.PreloaderScene"/>
+	<bean id="gameScene" class="scenes.gameScene.GameScene"/>
+	
+</beans>

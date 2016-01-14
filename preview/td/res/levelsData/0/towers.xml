@@ -1,0 +1,78 @@
+<data>
+	<tower id="0" name="Башня магии" attackRate="777" price="110">
+		<view type="sprite" spritePath="res/textures/units/towers/magic_tower_15.png">
+			<sockets>
+				<socket name="groundAnchorn" type="0" x="0" y="55" z="0" />
+				<socket name="attachAnchorn" type="1" x="0" y="250" z="0" />
+			</sockets>
+			<projectileData effectPath="res/fx/particles/tower_bacis_effect.pp" damage="10" speed="750" range="300" radius="0" projectileRadius="15"/>
+			<body width="50" height="50" depth="50"/>
+		</view>
+	</tower>
+	
+	<tower id="1" name="Башня черной магии" attackRate="500" price="220">
+		<view type="sprite" spritePath="res/textures/units/towers/magic_tower_15.png">
+			<sockets>
+				<socket name="groundAnchorn" type="0" x="0" y="55" z="0" />
+				<socket name="attachAnchorn" type="1" x="0" y="250" z="0" />
+			</sockets>
+			<projectileData effectPath="res/fx/particles/black_magic.pp" damage="19" speed="1000" range="240" radius="0" projectileRadius="20"/>
+			<body width="50" height="50" depth="50"/>
+		</view>
+	</tower>
+	
+	<tower id="6" name="Башня чернейшей магии" attackRate="7000" price="220">
+		<view type="sprite" spritePath="res/textures/units/towers/magic_tower_15.png">
+			<sockets>
+				<socket name="groundAnchorn" type="0" x="0" y="55" z="0" />
+				<socket name="attachAnchorn" type="1" x="0" y="250" z="0" />
+			</sockets>
+			<projectileData effectPath="res/fx/particles/black_magic.pp" damage="225" speed="350" range="180" radius="0" projectileRadius="20"/>
+			<body width="50" height="50" depth="50"/>
+		</view>
+	</tower>
+	
+	<tower id="2" name="Башня убивашня" attackRate="1000" price="115">
+		<view type="sprite" spritePath="res/textures/units/towers/Succubus_home_level_15.png">
+			<sockets>
+				<socket name="groundAnchorn" type="0" x="0" y="55" z="0" />
+				<socket name="attachAnchorn" type="1" x="0" y="250" z="0" />
+			</sockets>
+			<projectileData effectPath="res/fx/particles/tower_massive_effect.pp" damage="10" speed="450" range="220" radius="200" projectileRadius="30"/>
+			<body width="50" height="50" depth="50"/>
+		</view>
+	</tower>
+	
+	<tower id="5" name="Башня добивашня" attackRate="1500" price="190">
+		<view type="sprite" spritePath="res/textures/units/towers/Succubus_home_level_15.png">
+			<sockets>
+				<socket name="groundAnchorn" type="0" x="0" y="55" z="0" />
+				<socket name="attachAnchorn" type="1" x="0" y="250" z="0" />
+			</sockets>
+			<projectileData effectPath="res/fx/particles/tower_massive_effect.pp" damage="9.5" speed="350" range="930" radius="325" projectileRadius="15"/>
+			<body width="50" height="50" depth="50"/>
+		</view>
+	</tower>
+	
+	<tower id="3" name="Холодная кровь" attackRate="1500" price="135">
+		<view type="sprite" spritePath="res/textures/units/towers/Watchtower_level_15.png">
+			<sockets>
+				<socket name="groundAnchorn" type="0" x="0" y="100" z="0" />
+				<socket name="attachAnchorn" type="1" x="0" y="270" z="0" />
+			</sockets>
+			<projectileData effectPath="res/fx/particles/tower_missle_cold.pp" damage="11.5" speed="600" range="210" radius="0" effect="freeze" projectileRadius="15"/>
+			<body width="50" height="50" depth="50"/>
+		</view>
+	</tower>
+	
+	<tower id="4" name="Холодная кровь II" attackRate="500" price="220">
+		<view type="sprite" spritePath="res/textures/units/towers/Watchtower_level_15.png">
+			<sockets>
+				<socket name="groundAnchorn" type="0" x="0" y="100" z="0" />
+				<socket name="attachAnchorn" type="1" x="0" y="270" z="0" />
+			</sockets>
+			<projectileData effectPath="res/fx/particles/heavy_ice.pp" damage="4" speed="500" range="200" radius="135" effect="freeze" projectileRadius="30"/>
+			<body width="50" height="50" depth="50"/>
+		</view>
+	</tower>
+</data>

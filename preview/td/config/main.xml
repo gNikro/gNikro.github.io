@@ -1,0 +1,9 @@
+<beans>
+	<import resource="vfssettings.xml"/>
+	<import resource="gameContext.xml"/>
+	<import resource="scenes/scenes.xml"/>
+	
+	<eventScope name="global"/>
+	
+	<bean id="worldTime" class="WorldTimeController"/>
+</beans>

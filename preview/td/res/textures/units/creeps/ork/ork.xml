@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with TexturePacker http://www.codeandweb.com/texturepacker-->
+<!-- $TexturePacker:SmartUpdate:e0e2d9777118b061c02beaa77994baed:5ce40dee064da1dd216bfe08f9edfdde:76dd10e44b8f76f6af2e4a3608d846c3$ -->
+<TextureAtlas imagePath="ork.png">
+    <SubTexture name="b_0" x="125" y="312" width="37" height="49" frameX="-12" frameY="-9" frameWidth="71" frameHeight="63"/>
+    <SubTexture name="b_1" x="2" y="463" width="37" height="47" frameX="-16" frameY="-10" frameWidth="71" frameHeight="63"/>
+    <SubTexture name="b_2" x="2" y="208" width="43" height="47" frameX="-17" frameY="-8" frameWidth="71" frameHeight="63"/>
+    <SubTexture name="b_3" x="196" y="108" width="45" height="49" frameX="-17" frameY="-7" frameWidth="71" frameHeight="63"/>
+    <SubTexture name="b_4" x="143" y="157" width="43" height="49" frameX="-17" frameY="-9" frameWidth="71" frameHeight="63"/>
+    <SubTexture name="b_5" x="164" y="361" width="35" height="49" frameX="-19" frameY="-9" frameWidth="71" frameHeight="63"/>
+    <SubTexture name="b_6" x="2" y="308" width="39" height="47" frameX="-12" frameY="-10" frameWidth="71" frameHeight="63"/>
+    <SubTexture name="b_7" x="49" y="157" width="45" height="47" frameX="-5" frameY="-8" frameWidth="71" frameHeight="63"/>
+    <SubTexture name="b_8" x="2" y="55" width="47" height="49" frameX="-3" frameY="-7" frameWidth="71" frameHeight="63"/>
+    <SubTexture name="b_9" x="198" y="55" width="45" height="51" frameX="-5" frameY="-7" frameWidth="71" frameHeight="63"/>
+    <SubTexture name="bl_0" x="2" y="106" width="45" height="49" frameX="-5" frameY="-6" frameWidth="71" frameHeight="63"/>
+    <SubTexture name="bl_1" x="94" y="255" width="41" height="49" frameX="-9" frameY="-5" frameWidth="71" frameHeight="63"/>
+    <SubTexture name="bl_2" x="121" y="363" width="35" height="49" frameX="-15" frameY="-5" frameWidth="71" frameHeight="63"/>
+    <SubTexture name="bl_3" x="41" y="459" width="31" height="51" frameX="-20" frameY="-6" frameWidth="71" frameHeight="63"/>
+    <SubTexture name="bl_4" x="219" y="261" width="35" height="51" frameX="-17" frameY="-6" frameWidth="71" frameHeight="63"/>
+    <SubTexture name="bl_5" x="149" y="104" width="45" height="51" frameX="-9" frameY="-7" frameWidth="71" frameHeight="63"/>
+    <SubTexture name="bl_6" x="2" y="2" width="49" height="51" frameX="-4" frameY="-6" frameWidth="71" frameHeight="63"/>
+    <SubTexture name="bl_7" x="53" y="2" width="49" height="51" frameX="-4" frameY="-5" frameWidth="71" frameHeight="63"/>
+    <SubTexture name="bl_8" x="104" y="2" width="47" height="51" frameX="-6" frameY="-4" frameWidth="71" frameHeight="63"/>
+    <SubTexture name="bl_9" x="51" y="55" width="47" height="49" frameX="-5" frameY="-5" frameWidth="71" frameHeight="63"/>
+    <SubTexture name="l_0" x="2" y="257" width="39" height="49" frameX="-11" frameY="-7" frameWidth="71" frameHeight="63"/>
+    <SubTexture name="l_1" x="43" y="257" width="39" height="49" frameX="-12" frameY="-7" frameWidth="71" frameHeight="63"/>
+    <SubTexture name="l_2" x="82" y="357" width="37" height="49" frameX="-11" frameY="-7" frameWidth="71" frameHeight="63"/>
+    <SubTexture name="l_3" x="41" y="361" width="37" height="49" frameX="-13" frameY="-7" frameWidth="71" frameHeight="63"/>
+    <SubTexture name="l_4" x="137" y="261" width="39" height="49" frameX="-12" frameY="-6" frameWidth="71" frameHeight="63"/>
+    <SubTexture name="l_5" x="182" y="210" width="41" height="49" frameX="-10" frameY="-6" frameWidth="71" frameHeight="63"/>
+    <SubTexture name="l_6" x="84" y="306" width="39" height="49" frameX="-12" frameY="-7" frameWidth="71" frameHeight="63"/>
+    <SubTexture name="l_7" x="80" y="408" width="35" height="49" frameX="-14" frameY="-7" frameWidth="71" frameHeight="63"/>
+    <SubTexture name="l_8" x="74" y="459" width="35" height="49" frameX="-15" frameY="-7" frameWidth="71" frameHeight="63"/>
+    <SubTexture name="l_9" x="178" y="261" width="39" height="49" frameX="-12" frameY="-7" frameWidth="71" frameHeight="63"/>
+    <SubTexture name="t_0" x="43" y="308" width="37" height="51" frameX="-24" frameY="-8" frameWidth="71" frameHeight="63"/>
+    <SubTexture name="t_1" x="2" y="357" width="37" height="51" frameX="-19" frameY="-8" frameWidth="71" frameHeight="63"/>
+    <SubTexture name="t_2" x="188" y="159" width="43" height="49" frameX="-12" frameY="-7" frameWidth="71" frameHeight="63"/>
+    <SubTexture name="t_3" x="49" y="106" width="45" height="49" frameX="-10" frameY="-7" frameWidth="71" frameHeight="63"/>
+    <SubTexture name="t_4" x="49" y="206" width="43" height="49" frameX="-12" frameY="-8" frameWidth="71" frameHeight="63"/>
+    <SubTexture name="t_5" x="203" y="314" width="35" height="51" frameX="-19" frameY="-8" frameWidth="71" frameHeight="63"/>
+    <SubTexture name="t_6" x="2" y="410" width="37" height="51" frameX="-22" frameY="-8" frameWidth="71" frameHeight="63"/>
+    <SubTexture name="t_7" x="96" y="106" width="45" height="49" frameX="-22" frameY="-6" frameWidth="71" frameHeight="63"/>
+    <SubTexture name="t_8" x="100" y="55" width="47" height="49" frameX="-22" frameY="-7" frameWidth="71" frameHeight="63"/>
+    <SubTexture name="t_9" x="2" y="157" width="45" height="49" frameX="-22" frameY="-8" frameWidth="71" frameHeight="63"/>
+    <SubTexture name="tl_0" x="139" y="208" width="41" height="51" frameX="-15" frameY="-8" frameWidth="71" frameHeight="63"/>
+    <SubTexture name="tl_1" x="153" y="2" width="47" height="51" frameX="-10" frameY="-8" frameWidth="71" frameHeight="63"/>
+    <SubTexture name="tl_2" x="202" y="2" width="47" height="51" frameX="-9" frameY="-6" frameWidth="71" frameHeight="63"/>
+    <SubTexture name="tl_3" x="149" y="55" width="47" height="47" frameX="-9" frameY="-7" frameWidth="71" frameHeight="63"/>
+    <SubTexture name="tl_4" x="96" y="157" width="45" height="47" frameX="-9" frameY="-7" frameWidth="71" frameHeight="63"/>
+    <SubTexture name="tl_5" x="94" y="206" width="43" height="47" frameX="-10" frameY="-8" frameWidth="71" frameHeight="63"/>
+    <SubTexture name="tl_6" x="164" y="312" width="37" height="47" frameX="-15" frameY="-8" frameWidth="71" frameHeight="63"/>
+    <SubTexture name="tl_7" x="201" y="367" width="33" height="47" frameX="-21" frameY="-8" frameWidth="71" frameHeight="63"/>
+    <SubTexture name="tl_8" x="158" y="412" width="31" height="49" frameX="-25" frameY="-7" frameWidth="71" frameHeight="63"/>
+    <SubTexture name="tl_9" x="111" y="459" width="35" height="49" frameX="-21" frameY="-9" frameWidth="71" frameHeight="63"/>
+</TextureAtlas>

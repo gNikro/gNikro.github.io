@@ -1,0 +1,9 @@
+<beans>
+	<bean id="spriteActorBuilder" class="actors.builders.SpriteActorBuilder">
+		<property name="vfs" ref="VFS"/>
+	</bean>
+	
+
+	
+	
+</beans>

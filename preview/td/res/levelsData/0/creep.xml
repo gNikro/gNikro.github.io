@@ -1,0 +1,13 @@
+<data>
+	<creep name="Медвед" id="0">
+		<view type="model3d" spritePath="res/models/units/creeps/bear.awd" rotationDelta="-90"/>
+	</creep>
+	
+	<creep name="Босс" id="1">
+		<view type="model3d" spritePath="res/models/units/creeps/monster.awd" rotationDelta="90"/>
+	</creep>
+	
+	<creep name="МЕДВЕДЬ!!!!!" id="2">
+		<view type="model3d" spritePath="res/models/units/creeps/monster.awd" rotationDelta="90"/>
+	</creep>
+</data>

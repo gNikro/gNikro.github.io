@@ -1,0 +1,19 @@
+
+<data>
+	<waypoint x="250" y="100"/>
+	<waypoint x="150" y="50"/>
+	<waypoint x="-80" y="85"/>
+	<waypoint x="-110" y="115"/>
+	<waypoint x="-120" y="255"/>
+	<waypoint x="-155" y="305"/>
+	<waypoint x="-305" y="335"/>
+	<waypoint x="-380" y="295"/>
+	<waypoint x="-390" y="285"/>
+	<waypoint x="-380" y="65"/>
+	<waypoint x="-580" y="85"/>
+	<waypoint x="-680" y="20"/>
+	<waypoint x="-880" y="50"/>
+	<waypoint x="-900" y="-150"/>
+	<waypoint x="-960" y="-200"/>
+	<waypoint x="-1070" y="-200"/>
+</data>

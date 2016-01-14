@@ -1,0 +1,35 @@
+
+<data>
+	<wave id="0" creepId="0" price="7" speed="50" health="25" count="10" spawnRate="2000" />
+	<wave id="1" creepId="0" price="12" speed="55" health="55" count="11" spawnRate="1700"/>
+	
+	
+	<wave id="2" creepId="0" price="14" speed="106" health="42" count="16" spawnRate="1400"/>
+	
+	
+	<wave id="3" creepId="0" price="15" speed="55" health="75" count="12" spawnRate="1800"/>
+	<wave id="4" creepId="0" price="15" speed="60" health="95" count="12" spawnRate="2000"/>
+	
+	
+	<wave id="5" creepId="1" price="32" speed="90" health="370" count="3" spawnRate="7000"/>
+	
+	
+	<wave id="6" creepId="0" price="10" speed="50" health="130" count="14" spawnRate="2000"/>
+	<wave id="7" creepId="0" price="10" speed="50" health="165" count="15" spawnRate="2000"/>
+	
+	<wave id="8" creepId="0" price="11" speed="150" health="260" count="2" spawnRate="5000"/>
+	
+	<wave id="9" creepId="0" price="12" speed="35" health="320" count="15" spawnRate="2000"/>
+	
+	<wave id="10" creepId="0" price="13" speed="85" health="310" count="17" spawnRate="2000"/>
+	
+	<wave id="11" creepId="0" price="14" speed="170" health="333" count="3" spawnRate="8000"/>
+	
+	<wave id="12" creepId="0" price="15" speed="50" health="444" count="17" spawnRate="2000"/>
+
+	<wave id="13" creepId="1" price="100" speed="100" health="999" count="1" spawnRate="3000"/>
+	<wave id="14" creepId="1" price="100" speed="100" health="888" count="2" spawnRate="3000"/>
+	<wave id="15" creepId="1" price="100" speed="85" health="666" count="5" spawnRate="3000"/>
+	<wave id="16" creepId="1" price="100" speed="95" health="777" count="5" spawnRate="3000"/>
+	<wave id="17" creepId="2" price="99999" speed="25" health="2500" count="1" spawnRate="3000"/>
+</data>
