@@ -5,6 +5,8 @@
 	<title>ShoottingStar</title>
 	<meta name="description" content="" />
 	
+	
+	
 	<script src="js/swfobject.js"></script>
 	<script>
 		var flashvars = {
@@ -18,13 +20,27 @@
 			wmode: "direct" // can cause issues with FP settings & webcam
 		};
 		var attributes = {
-			id:"ShoottingStar"
+			id:"altContent"
 		};
+			
+		var size = window.innerHeight;
+		
 		swfobject.embedSWF(
-			"ShoottingStar.swf", 
-			"altContent", "100%", "100%", "10.0.0", 
+			"ShoottingStar.swf?"+Math.random(), 
+			"altContent", size, size, "20.0.0", 
 			"expressInstall.swf", 
 			flashvars, params, attributes);
+			
+		setTimeout(setPosition, 100)
+		
+		function setPosition()
+		{
+			var size = window.innerHeight;
+			var myElement = document.getElementById("allContainer");
+			myElement.style.position = "absolute";
+			myElement.style.left = (window.innerWidth - size)/2 + 'px';
+		}
+		
 	</script>
 	<style>
 		html, body { height:100%; overflow:hidden; }
@@ -32,9 +48,11 @@
 	</style>
 </head>
 <body>
-	<div id="altContent">
-		<h1>ShoottingStar</h1>
-		<p><a href="http://www.adobe.com/go/getflashplayer">Get Adobe Flash player</a></p>
+	<div id="allContainer">
+		<div id="altContent" align="center">
+			<h1>ShoottingStar</h1>
+			<p><a href="http://www.adobe.com/go/getflashplayer">Get Adobe Flash player</a></p>
+		</div>
 	</div>
 </body>
 </html>
