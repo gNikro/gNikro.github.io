@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>How to Control YouTube's Video Player with JavaScript</title>
+    <link rel="stylesheet" href="demo.css" type="text/css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+
+    <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.6/styles/default.min.css">
+    <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.6/styles/tomorrow.min.css">
+
+</head>
+<body>
+
+<header>
+    <h1>How to Control YouTube's Video Player with JavaScript</h1>
+    <a href="http://tutorialzine.com/2015/08/how-to-control-youtubes-video-player-with-javascript/">Download</a>
+</header>
+
+<!-- 1. The <iframe> (and video player) will replace this <div> tag. -->
+
+<div id="video-placeholder" disabled="true"></div>
+
+<script>
+
+	document.getElementById("video-placeholder").disabled = true;
+</script>
+
+<div id="controls">
+
+    <ul>
+
+        <li>
+
+            <h2>Player Initialization</h2>
+
+            <pre><code class="js">var player;
+
+function onYouTubeIframeAPIReady() {
+    player = new YT.Player('video-placeholder', {
+        width: 600,
+        height: 400,
+        videoId: 'Xa0Q0J5tOP0',
+        playerVars: {
+            color: 'white',
+            playlist: 'taJ60kskkns,FG0fTKAqZ5g'
+        },
+        events: {
+            onReady: initialize
+        }
+    });
+}
+
+function initialize(){
+
+    // Update the controls on load
+    updateTimerDisplay();
+    updateProgressBar();
+
+    // Clear any old interval.
+    clearInterval(time_update_interval);
+
+    // Start interval to update elapsed time display and
+    // the elapsed part of the progress bar every second.
+    time_update_interval = setInterval(function () {
+        updateTimerDisplay();
+        updateProgressBar();
+    }, 1000)
+
+}</code></pre>
+        </li>
+
+        <li>
+
+            <h2>Duration</h2>
+
+            <p><span id="current-time">0:00</span> / <span id="duration">0:00</span></p>
+
+            <pre><code class="js">// This function is called by initialize()
+function updateTimerDisplay(){
+    // Update current time text display.
+    $('#current-time').text(formatTime( player.getCurrentTime() ));
+    $('#duration').text(formatTime( player.getDuration() ));
+}
+
+function formatTime(time){
+    time = Math.round(time);
+
+    var minutes = Math.floor(time / 60),
+    seconds = time - minutes * 60;
+
+    seconds = seconds < 10 ? '0' + seconds : seconds;
+
+    return minutes + ":" + seconds;
+}</code></pre>
+
+        </li>
+
+        <li>
+
+            <h2>Progress Bar</h2>
+
+            <input type="range" id="progress-bar" value="0">
+
+            <pre><code class="js">$('#progress-bar').on('mouseup touchend', function (e) {
+
+    // Calculate the new time for the video.
+    // new time in seconds = total duration in seconds * ( value of range input / 100 )
+    var newTime = player.getDuration() * (e.target.value / 100);
+
+    // Skip video to new time.
+    player.seekTo(newTime);
+
+});
+
+// This function is called by initialize()
+function updateProgressBar(){
+    // Update the value of our progress bar accordingly.
+    $('#progress-bar').val((player.getCurrentTime() / player.getDuration()) * 100);
+}</code></pre>
+        </li>
+
+        <li>
+
+            <h2>Play</h2>
+            <i id="play" class="material-icons">play_arrow</i>
+
+            <pre><code class="js">$('#play').on('click', function () {
+
+    player.playVideo();
+
+});</code></pre>
+
+        </li>
+
+        <li>
+
+            <h2>Pause</h2>
+            <i id="pause" class="material-icons">pause</i>
+
+            <pre><code class="js">$('#pause').on('click', function () {
+
+    player.pauseVideo();
+
+});</code></pre>
+        </li>
+
+        <li>
+
+            <h2>Mute / Unmute</h2>
+            <i id="mute-toggle" class="material-icons">volume_up</i>
+
+            <pre><code class="js">$('#mute-toggle').on('click', function() {
+    var mute_toggle = $(this);
+
+    if(player.isMuted()){
+        player.unMute();
+        mute_toggle.text('volume_up');
+    }
+    else{
+        player.mute();
+        mute_toggle.text('volume_off');
+    }
+});</code></pre>
+        </li>
+
+        <li>
+
+            <h2>Set volume</h2>
+            <input id="volume-input" type="number" max="100" min="0">
+
+            <pre><code class="js">$('#volume-input').on('change', function () {
+    player.setVolume($(this).val());
+});
+
+// To get the current volume of the player use this method:
+// player.getVolume()</code></pre>
+        </li>
+
+        <li>
+
+            <h2>Speed</h2>
+            <select id="speed">
+                <option>0.25</option>
+                <option>0.5</option>
+                <option selected="selected">1</option>
+                <option>1.5</option>
+            <option>2</option>
+            </select>
+
+            <pre><code class="js">$('#speed').on('change', function () {
+    player.setPlaybackRate($(this).val());
+});
+
+// To get the current playback rate for a video use this method:
+// player.getPlaybackRate()
+
+// To get all available playback rates for the current video use:
+// player.getAvailablePlaybackRates()</code></pre>
+        </li>
+
+        <li>
+
+            <h2>Quality</h2>
+            <select id="quality">
+                <option>small</option>
+                <option>medium</option>
+                <option selected="selected">large</option>
+                <option>hd720</option>
+                <option>hd1080</option>
+            <option>highres</option>
+            </select>
+
+            <pre><code class="js">$('#quality').on('change', function () {
+    player.setPlaybackQuality($(this).val());
+});
+
+// To get the actual video quality of the running video use this method:
+// player.getPlaybackQuality()
+
+// To get a list of the available quality formats for a video use:
+// player.getAvailableQualityLevels()</code></pre>
+        </li>
+
+        <li>
+
+            <h2>Playlist Next</h2>
+            <i id="next" class="material-icons">fast_forward</i>
+
+            <pre><code class="js">$('#next').on('click', function () {
+    player.nextVideo()
+});</code></pre>
+        </li>
+
+        <li>
+
+            <h2>Playlist Previous</h2>
+            <i id="prev" class="material-icons">fast_rewind</i>
+
+            <pre><code class="js">$('#prev').on('click', function () {
+    player.previousVideo()
+});</code></pre>
+        </li>
+
+        <li>
+
+            <h2>Dynamically Queue Video</h2>
+            <img class="thumbnail" src="images/cat_video_1.jpg" data-video-id="h14wr4pXZFk">
+            <img class="thumbnail" src="images/cat_video_2.jpg" data-video-id="KkFnm-7jzOA">
+            <img class="thumbnail" src="images/cat_video_3.jpg" data-video-id="Ph77yOQFihc">
+
+            <pre><code class="js">$('.thumbnail').on('click', function () {
+
+    var url = $(this).attr('data-video-id');
+
+    player.cueVideoById(url);
+
+});</code></pre>
+
+        </li>
+
+    </ul>
+
+</div>
+
+
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.6/highlight.min.js"></script>
+<script src="https://www.youtube.com/iframe_api"></script>
+<script src="script.js"></script>
+
+<!-- Demo ads. Please ignore and remove. -->
+<script src="http://cdn.tutorialzine.com/misc/enhance/v3.js" async></script>
+
+</body>
+</html>

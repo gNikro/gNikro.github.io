@@ -60,6 +60,41 @@
 </head>
 <body>
 	
+	<div style="pointer-events: none;" id="ytplayer"></div>
+
+	<script>
+		var tag = document.createElement('script');
+		tag.src = "https://www.youtube.com/player_api";
+		var firstScriptTag = document.getElementsByTagName('script')[0];
+		firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+		var player;
+		function onYouTubePlayerAPIReady() 
+		{
+			player = new YT.Player
+			(
+				'ytplayer', 
+				
+				{
+					
+					autoplay:'1',
+					height: '390',
+					width: '640',
+					videoId: 'M7lc1UVf-VE',
+					controls: '0',
+					events: {
+						onReady: initialize
+					}
+				}
+			);
+		}
+
+		function initialize()
+		{
+			player.playVideo();
+		}
+	</script>
+	
 	<div id="container">
 		<div id="usersBlock">
 			<div id="usersHeader">Всего участников: {0}</div>
