@@ -16,7 +16,7 @@ var Main = function() {
 	var mainView = new view_MainView(this.mainViewModel);
 	var namesListLoader = new external_DataLoader();
 	namesListLoader.addEventListener("onLoad",$bind(this,this.onNamesListLoaded));
-	namesListLoader.load("/usersList.txt");
+	namesListLoader.load("usersList.txt");
 	new chatManagment_ChatController(this.mainViewModel);
 };
 Main.__name__ = true;
@@ -62,7 +62,8 @@ chatManagment_ChatController.prototype = {
 	}
 	,onDataLoaded: function(e) {
 		var chatData = e.data;
-		var chatMessages = chatData.split("\r\n");
+		var chatMessages;
+		if(chatData.indexOf("\r\n") != -1) chatMessages = chatData.split("\r\n"); else chatMessages = chatData.split("\n");
 		var _g = 0;
 		while(_g < chatMessages.length) {
 			var chatMessage = chatMessages[_g];
