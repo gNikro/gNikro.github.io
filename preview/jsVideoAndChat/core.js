@@ -398,7 +398,7 @@ view_MainView.prototype = {
 	,onInputKeyPress: function(event) {
 		event.preventDefault();
 		if(event.keyCode == 13) {
-			this.viewModel.addMessage(this.chatTextInput.value);
+			this.viewModel.addMessage("Вы: " + this.chatTextInput.value);
 			this.chatTextInput.value = "";
 		}
 	}
@@ -435,7 +435,7 @@ view_data_MainViewModel.prototype = $extend(events_Observer.prototype,{
 	}
 	,addMessage: function(message) {
 		var date = new Date();
-		this.messages.push("Вы: " + message + " " + date.getHours() + ":" + this.formatMinutes(date.getMinutes()));
+		this.messages.push(message + " " + date.getHours() + ":" + this.formatMinutes(date.getMinutes()));
 		this.dispatchEvent(new view_events_ChatEvent("messageAdd"));
 	}
 	,formatMinutes: function(minutes) {
