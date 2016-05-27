@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8"/>
+	<title>jsVideoAndChat-</title>
+	<meta name="description" content="" />
+	
+	<style type="text/css">
+	
+		#container
+		{
+			position: relative;
+			
+			height: 500px; 
+			width: 400px;
+			border:0px solid #ccc;
+			solid #ccc;
+			float:right;
+		}
+	
+		#users 
+		{
+			height:85%;
+			overflow:auto;
+			border:1px solid #ccc;
+			padding:0px 10px;
+		}
+		
+		#chat 
+		{	
+			height:85%;
+			overflow:auto;
+			border:1px solid #ccc;
+			padding:0px 10px;
+		}
+		
+		#chatInput 
+		{	
+			border:1px solid #ccc;
+			width:100%;
+		}
+		
+		#chatBlock
+		{
+			position: absolute;
+			top:50%;
+			height: 50%;
+			width: 100%;
+		}
+		
+		#usersBlock
+		{
+			position: absolute;
+			top:0%;
+			height: 50%;
+			width: 100%;
+		}
+	</style>
+	
+</head>
+<body>
+	
+	<div id="container">
+		
+		<div id="chatBlock">
+			Чат:
+			<div id="chat"></div>
+			<input id="chatInput"/>
+		</div>
+		
+		<div id="usersBlock">
+			<div id="usersHeader">Всего участников: {0}</div>
+			<div id="users"/>
+		</div>
+		
+		
+	</div>
+	
+	
+	<!-- <div id="haxe:trace" style="height:400px;width:100%;border:1px solid #ccc;font:16px/26px Georgia, Garamond, Serif;overflow:auto;"/>
+	 -->
+	
+	<script src="core.js"></script>
+</body>
+</html>
