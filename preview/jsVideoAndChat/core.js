@@ -883,7 +883,6 @@ view_MainView.prototype = {
 		new haxe_Timer(34285).run = $bind(this,this.onUsersCountUpdate);
 		this.onUsersCountUpdate();
 		this.showDivTimer = new haxe_Timer(15000);
-		this.showDivTimer.run = $bind(this,this.onShowDiv);
 	}
 	,onShowDiv: function() {
 		this.showDiv.hidden = false;

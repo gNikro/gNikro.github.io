@@ -38,7 +38,15 @@ Main.main = function() {
 };
 Main.onClick = function() {
 	var base = "QWERTYUIOPASDFGHJKLZXCVBNM@#$456";
-	var dateString = (js_Boot.__cast(window.document.getElementById("datepicker") , HTMLInputElement)).value.split("/").join("-");
+	var baseDateString;
+	baseDateString = (js_Boot.__cast(window.document.getElementById("datepicker") , HTMLInputElement)).value;
+	if(baseDateString == null || baseDateString.length == 0 || baseDateString.indexOf("/") == -1) {
+		window.document.getElementById("out").innerHTML = "wrong date format";
+		return;
+	}
+	var dateParts = baseDateString.split("/");
+	dateParts = [dateParts[2],dateParts[0],dateParts[1]];
+	var dateString = dateParts.join("-");
 	var timeString;
 	timeString = (js_Boot.__cast(window.document.getElementById("timepicker") , HTMLInputElement)).value;
 	if(dateString == null || dateString.length == 0 || dateString.indexOf("-") == -1) {
@@ -50,6 +58,7 @@ Main.onClick = function() {
 		return;
 	}
 	timeString += ":00";
+	console.log(HxOverrides.strDate(dateString).getDate());
 	var string = "thisIsKey=true&startDate=" + HxOverrides.strDate(dateString).getTime() + "&isTest=0&startTime=" + HxOverrides.strDate(timeString).getTime();
 	window.document.getElementById("out").innerHTML = haxe_crypto_BaseCode.encode(string,base);
 };
