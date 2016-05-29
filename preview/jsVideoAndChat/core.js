@@ -1,4 +1,4 @@
-(function (console, $global) { "use strict";
+(function (console, $hx_exports, $global) { "use strict";
 var $estr = function() { return js_Boot.__string_rec(this,''); };
 function $extend(from, fields) {
 	function Inherit() {} Inherit.prototype = from; var proto = new Inherit();
@@ -6,10 +6,13 @@ function $extend(from, fields) {
 	if( fields.toString !== Object.prototype.toString ) proto.toString = fields.toString;
 	return proto;
 }
-var EntryPoint = function() { };
+var EntryPoint = $hx_exports.EntryPoint = function() { };
 EntryPoint.__name__ = true;
 EntryPoint.main = function() {
-	haxe_Log.trace(EntryPoint.main,{ fileName : "EntryPoint.hx", lineNumber : 10, className : "EntryPoint", methodName : "main", customParams : [EntryPoint.main]});
+	haxe_Log.trace(EntryPoint.main,{ fileName : "EntryPoint.hx", lineNumber : 11, className : "EntryPoint", methodName : "main", customParams : [EntryPoint.main]});
+	EntryPoint.onStart();
+};
+EntryPoint.onStart = function() {
 	new Main();
 };
 var HxOverrides = function() { };
@@ -22,6 +25,11 @@ HxOverrides.dateStr = function(date) {
 	var s = date.getSeconds();
 	return date.getFullYear() + "-" + (m < 10?"0" + m:"" + m) + "-" + (d < 10?"0" + d:"" + d) + " " + (h < 10?"0" + h:"" + h) + ":" + (mi < 10?"0" + mi:"" + mi) + ":" + (s < 10?"0" + s:"" + s);
 };
+HxOverrides.cca = function(s,index) {
+	var x = s.charCodeAt(index);
+	if(x != x) return undefined;
+	return x;
+};
 HxOverrides.substr = function(s,pos,len) {
 	if(pos != null && pos != 0 && len != null && len < 0) return "";
 	if(len == null) len = s.length;
@@ -31,56 +39,82 @@ HxOverrides.substr = function(s,pos,len) {
 	} else if(len < 0) len = s.length + len - pos;
 	return s.substr(pos,len);
 };
-var Main = function() {
-	var base = "QWERTYUIOPASDFGHJKLZXCVBNM@#$456";
+var Main = $hx_exports.Main = function() {
 	var location = window.location.href;
 	var pos = location.indexOf("?") + 1;
 	location = HxOverrides.substr(location,pos,location.length);
 	var vars = this.parseVariables(location);
 	var passKey;
 	passKey = __map_reserved.passKey != null?vars.getReserved("passKey"):vars.h["passKey"];
+	haxe_Log.trace(passKey,{ fileName : "Main.hx", lineNumber : 27, className : "Main", methodName : "new"});
 	if(passKey == null || passKey.length == 0) return;
-	passKey = haxe_crypto_BaseCode.decode(passKey,base);
-	vars = this.parseVariables(passKey);
-	if((__map_reserved.thisIsKey != null?vars.getReserved("thisIsKey"):vars.h["thisIsKey"]) != "true") return;
-	if((__map_reserved.isTest != null?vars.getReserved("isTest"):vars.h["isTest"]) == "1") Settings.getInstance().START_TIME = new Date().getTime() - 30000; else {
-		haxe_Log.trace("not test state",{ fileName : "Main.hx", lineNumber : 51, className : "Main", methodName : "new"});
-		var date = Std.parseFloat(__map_reserved.startDate != null?vars.getReserved("startDate"):vars.h["startDate"]);
-		var time = Std.parseFloat(__map_reserved.startTime != null?vars.getReserved("startTime"):vars.h["startTime"]);
-		haxe_Log.trace("day",{ fileName : "Main.hx", lineNumber : 55, className : "Main", methodName : "new", customParams : [((function($this) {
+	var bytes = haxe_crypto_Base64.decode(passKey);
+	var isKey = bytes.b[0] == 1;
+	var isTest = bytes.b[1] == 1;
+	var startDate = bytes.getDouble(2);
+	var startTime = bytes.getDouble(10);
+	if(!isKey) return;
+	this.mainViewModel = new view_data_MainViewModel();
+	this.mainView = new view_MainView(this.mainViewModel);
+	if(isTest) Settings.getInstance().START_TIME = new Date().getTime() - 30000; else {
+		haxe_Log.trace("not test state",{ fileName : "Main.hx", lineNumber : 49, className : "Main", methodName : "new"});
+		var date = startDate;
+		var time = startTime;
+		var month1 = ((function($this) {
 			var $r;
 			var d = new Date();
 			d.setTime(date);
 			$r = d;
 			return $r;
-		}(this))).getDate(),new Date().getDate()]});
-		if(((function($this) {
+		}(this))).getMonth();
+		var month2 = new Date().getMonth();
+		haxe_Log.trace("month",{ fileName : "Main.hx", lineNumber : 55, className : "Main", methodName : "new", customParams : [month1,month2]});
+		haxe_Log.trace((function($this) {
+			var $r;
+			var d2 = new Date();
+			d2.setTime(date);
+			$r = d2;
+			return $r;
+		}(this)),{ fileName : "Main.hx", lineNumber : 56, className : "Main", methodName : "new"});
+		var date1 = month1 * 30 + ((function($this) {
 			var $r;
 			var d1 = new Date();
 			d1.setTime(date);
 			$r = d1;
 			return $r;
-		}(this))).getDate() < new Date().getDate()) this.showEndState(); else Settings.getInstance().START_TIME = date + time;
-		haxe_Log.trace("dateTime",{ fileName : "Main.hx", lineNumber : 65, className : "Main", methodName : "new", customParams : [date,time,(function($this) {
+		}(this))).getDate();
+		var date2 = month2 * 30 + new Date().getDate();
+		haxe_Log.trace("day",{ fileName : "Main.hx", lineNumber : 60, className : "Main", methodName : "new", customParams : [date1,date2]});
+		if(date1 < date2) {
+			haxe_Log.trace("### SHOW END",{ fileName : "Main.hx", lineNumber : 63, className : "Main", methodName : "new"});
+			this.showEndState();
+		} else Settings.getInstance().START_TIME = date + time;
+		haxe_Log.trace(vars.toString(),{ fileName : "Main.hx", lineNumber : 70, className : "Main", methodName : "new"});
+		haxe_Log.trace("dateTime",{ fileName : "Main.hx", lineNumber : 71, className : "Main", methodName : "new", customParams : [date,time,(function($this) {
 			var $r;
 			var t = Settings.getInstance().START_TIME;
-			var d2 = new Date();
-			d2.setTime(t);
-			$r = d2;
+			var d3 = new Date();
+			d3.setTime(t);
+			$r = d3;
 			return $r;
 		}(this))]});
 	}
-	this.mainViewModel = new view_data_MainViewModel();
-	this.mainView = new view_MainView(this.mainViewModel);
-	haxe_Log.trace("start code",{ fileName : "Main.hx", lineNumber : 70, className : "Main", methodName : "new", customParams : [Settings.getInstance().START_TIME - new Date().getTime()]});
-	if(Settings.getInstance().START_TIME - new Date().getTime() <= 0) this.startApp(); else this.showWaitingState();
+	addStartCallback($bind(this,this.startApp));
+	haxe_Log.trace("start code",{ fileName : "Main.hx", lineNumber : 76, className : "Main", methodName : "new", customParams : [Settings.getInstance().START_TIME - new Date().getTime()]});
+	if(Settings.getInstance().START_TIME - new Date().getTime() <= 0) this.initVideo(); else this.showWaitingState();
 };
 Main.__name__ = true;
 Main.prototype = {
-	showEndState: function() {
-		haxe_Log.trace("show end",{ fileName : "Main.hx", lineNumber : 83, className : "Main", methodName : "showEndState"});
+	initVideo: function(e) {
+		var currentTime = new Date().getTime();
+		var videoStartTime = (currentTime - Settings.getInstance().START_TIME) / 1000;
+		if(videoStartTime < 0) videoStartTime = 0;
+		initVideo(videoStartTime);
+	}
+	,showEndState: function() {
 		window.document.getElementById("eventEnd").hidden = false;
 		this.mainView.hideAll();
+		onVideoEnded();
 	}
 	,parseVariables: function(baseString) {
 		var map = new haxe_ds_StringMap();
@@ -89,24 +123,22 @@ Main.prototype = {
 		while(_g < urlVars.length) {
 			var urlVar = urlVars[_g];
 			++_g;
-			var varParts = urlVar.split("=");
-			var paramName = varParts[0];
-			var paramValue = varParts[1];
+			var paramName;
+			var len = urlVar.indexOf("=");
+			paramName = HxOverrides.substr(urlVar,0,len);
+			var paramValue;
+			var pos = urlVar.indexOf("=") + 1;
+			paramValue = HxOverrides.substr(urlVar,pos,urlVar.length);
 			if(__map_reserved[paramName] != null) map.setReserved(paramName,paramValue); else map.h[paramName] = paramValue;
 		}
 		return map;
 	}
 	,showWaitingState: function() {
 		this.mainView.waitingState();
-		this.mainView.waitingScreen.addEventListener("waitingEnd",$bind(this,this.startApp));
+		this.mainView.waitingScreen.addEventListener("waitingEnd",$bind(this,this.initVideo));
 	}
-	,startApp: function(e) {
+	,startApp: function() {
 		this.mainView.appState();
-		var currentTime = new Date().getTime();
-		var videoStartTime = (currentTime - Settings.getInstance().START_TIME) / 1000;
-		if(videoStartTime < 0) videoStartTime = 0;
-		haxe_Log.trace("startTime",{ fileName : "Main.hx", lineNumber : 121, className : "Main", methodName : "startApp", customParams : [videoStartTime,Settings.getInstance().START_TIME]});
-		initVideo(videoStartTime);
 		var namesListLoader = new external_DataLoader();
 		namesListLoader.addEventListener("onLoad",$bind(this,this.onNamesListLoaded));
 		namesListLoader.load("usersList.txt");
@@ -114,8 +146,12 @@ Main.prototype = {
 	}
 	,onNamesListLoaded: function(e) {
 		var namesList = e.data.split("\r\n");
+		namesList.sort($bind(this,this.sortOnTime));
 		namesList.unshift("Вы");
 		this.mainViewModel.addUsers(namesList);
+	}
+	,sortOnTime: function(x,y) {
+		if(Math.random() > 0.5) return 1; else return -1;
 	}
 	,__class__: Main
 };
@@ -136,8 +172,15 @@ Std.__name__ = true;
 Std.string = function(s) {
 	return js_Boot.__string_rec(s,"");
 };
-Std.parseFloat = function(x) {
-	return parseFloat(x);
+var StringBuf = function() {
+	this.b = "";
+};
+StringBuf.__name__ = true;
+StringBuf.prototype = {
+	add: function(x) {
+		this.b += Std.string(x);
+	}
+	,__class__: StringBuf
 };
 var StringTools = function() { };
 StringTools.__name__ = true;
@@ -179,7 +222,8 @@ chatManagment_ChatController.prototype = {
 			var time = chatMessageParts[0];
 			var name = chatMessageParts[1];
 			var message = chatMessageParts[2];
-			this.chatEvents.push(new chatManagment_ChatEventMessage(new Date().getTime() + parseFloat(time) * 1000,name,message));
+			var messageTime = Settings.getInstance().START_TIME + parseFloat(time) * 1000;
+			if(messageTime > new Date().getTime()) this.chatEvents.push(new chatManagment_ChatEventMessage(messageTime,name,message));
 		}
 	}
 	,sortOnTime: function(x,y) {
@@ -334,35 +378,18 @@ haxe_io_Bytes.prototype = {
 	,set: function(pos,v) {
 		this.b[pos] = v & 255;
 	}
-	,getString: function(pos,len) {
-		if(pos < 0 || len < 0 || pos + len > this.length) throw new js__$Boot_HaxeError(haxe_io_Error.OutsideBounds);
-		var s = "";
-		var b = this.b;
-		var fcc = String.fromCharCode;
-		var i = pos;
-		var max = pos + len;
-		while(i < max) {
-			var c = b[i++];
-			if(c < 128) {
-				if(c == 0) break;
-				s += fcc(c);
-			} else if(c < 224) s += fcc((c & 63) << 6 | b[i++] & 127); else if(c < 240) {
-				var c2 = b[i++];
-				s += fcc((c & 31) << 12 | (c2 & 127) << 6 | b[i++] & 127);
-			} else {
-				var c21 = b[i++];
-				var c3 = b[i++];
-				var u = (c & 15) << 18 | (c21 & 127) << 12 | (c3 & 127) << 6 | b[i++] & 127;
-				s += fcc((u >> 10) + 55232);
-				s += fcc(u & 1023 | 56320);
-			}
-		}
-		return s;
-	}
-	,toString: function() {
-		return this.getString(0,this.length);
+	,getDouble: function(pos) {
+		if(this.data == null) this.data = new DataView(this.b.buffer,this.b.byteOffset,this.b.byteLength);
+		return this.data.getFloat64(pos,true);
 	}
 	,__class__: haxe_io_Bytes
+};
+var haxe_crypto_Base64 = function() { };
+haxe_crypto_Base64.__name__ = true;
+haxe_crypto_Base64.decode = function(str,complement) {
+	if(complement == null) complement = true;
+	if(complement) while(HxOverrides.cca(str,str.length - 1) == 61) str = HxOverrides.substr(str,0,-1);
+	return new haxe_crypto_BaseCode(haxe_crypto_Base64.BYTES).decodeBytes(haxe_io_Bytes.ofString(str));
 };
 var haxe_crypto_BaseCode = function(base) {
 	var len = base.length;
@@ -373,10 +400,6 @@ var haxe_crypto_BaseCode = function(base) {
 	this.nbits = nbits;
 };
 haxe_crypto_BaseCode.__name__ = true;
-haxe_crypto_BaseCode.decode = function(s,base) {
-	var b = new haxe_crypto_BaseCode(haxe_io_Bytes.ofString(base));
-	return b.decodeString(s);
-};
 haxe_crypto_BaseCode.prototype = {
 	initTable: function() {
 		var tbl = [];
@@ -417,9 +440,6 @@ haxe_crypto_BaseCode.prototype = {
 		}
 		return out;
 	}
-	,decodeString: function(s) {
-		return this.decodeBytes(haxe_io_Bytes.ofString(s)).toString();
-	}
 	,__class__: haxe_crypto_BaseCode
 };
 var haxe_ds_StringMap = function() {
@@ -441,6 +461,35 @@ haxe_ds_StringMap.prototype = {
 	}
 	,getReserved: function(key) {
 		if(this.rh == null) return null; else return this.rh["$" + key];
+	}
+	,arrayKeys: function() {
+		var out = [];
+		for( var key in this.h ) {
+		if(this.h.hasOwnProperty(key)) out.push(key);
+		}
+		if(this.rh != null) {
+			for( var key in this.rh ) {
+			if(key.charCodeAt(0) == 36) out.push(key.substr(1));
+			}
+		}
+		return out;
+	}
+	,toString: function() {
+		var s = new StringBuf();
+		s.b += "{";
+		var keys = this.arrayKeys();
+		var _g1 = 0;
+		var _g = keys.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			var k = keys[i];
+			if(k == null) s.b += "null"; else s.b += "" + k;
+			s.b += " => ";
+			s.add(Std.string(__map_reserved[k] != null?this.getReserved(k):this.h[k]));
+			if(i < keys.length) s.b += ", ";
+		}
+		s.b += "}";
+		return s.b;
 	}
 	,__class__: haxe_ds_StringMap
 };
@@ -878,6 +927,7 @@ view_MainView.prototype = {
 		this.buildUi();
 		this.userlistBlockHeaderPattern = this.usersListHeader.innerText;
 		this.chatTextInput.addEventListener("keyup",$bind(this,this.onInputKeyPress));
+		this.sendButton.onclick = $bind(this,this.sendMessage);
 		this.viewModel.addEventListener("userListChange",$bind(this,this.updateUsersList));
 		this.viewModel.addEventListener("messageAdd",$bind(this,this.updateMessagesLists));
 		new haxe_Timer(34285).run = $bind(this,this.onUsersCountUpdate);
@@ -900,13 +950,16 @@ view_MainView.prototype = {
 		this.usersListHeader = window.document.getElementById("usersHeader");
 		this.chatMessages = window.document.getElementById("chat");
 		this.chatTextInput = js_Boot.__cast(window.document.getElementById("chatInput") , HTMLInputElement);
+		this.sendButton = window.document.getElementById("sendButton");
 	}
 	,onInputKeyPress: function(event) {
 		event.preventDefault();
-		if(event.keyCode == 13) {
-			this.viewModel.addMessage("Вы: " + this.chatTextInput.value);
-			this.chatTextInput.value = "";
-		}
+		if(event.keyCode == 13) this.sendMessage();
+	}
+	,sendMessage: function() {
+		if(this.chatTextInput.value.length == 0) return;
+		this.viewModel.addMessage("Вы: " + this.chatTextInput.value);
+		this.chatTextInput.value = "";
 	}
 	,updateMessagesLists: function(e) {
 		this.chatMessages.innerText = this.viewModel.messages.join("\n");
@@ -939,9 +992,11 @@ view_WaitingScreen.prototype = $extend(events_Observer.prototype,{
 			var seconds = (startTime - currentTime) / 1000;
 			var minutes = Math.floor(seconds / 60);
 			var hours = Math.floor(minutes / 60);
+			var days = Math.floor(hours / 24);
 			seconds = Math.floor(seconds % 60);
 			minutes = Math.floor(minutes % 60);
-			this.waitingTimer.innerText = this.formatToTime(hours) + ":" + this.formatToTime(minutes) + ":" + this.formatToTime(seconds);
+			if(days > 0) hours = hours % 24;
+			this.waitingTimer.innerText = (days > 0?this.formatToTime(days) + ":":"") + this.formatToTime(hours) + ":" + this.formatToTime(minutes) + ":" + this.formatToTime(seconds);
 		}
 	}
 	,formatToTime: function(value) {
@@ -986,7 +1041,7 @@ view_data_MainViewModel.prototype = $extend(events_Observer.prototype,{
 	}
 	,addMessage: function(message) {
 		var date = new Date();
-		this.messages.push(message + " " + date.getHours() + ":" + this.formatMinutes(date.getMinutes()));
+		this.messages.push(message);
 		this.dispatchEvent(new view_events_ChatEvent("messageAdd"));
 	}
 	,formatMinutes: function(minutes) {
@@ -1043,6 +1098,8 @@ var DataView = $global.DataView || js_html_compat_DataView;
 var Uint8Array = $global.Uint8Array || js_html_compat_Uint8Array._new;
 events_DataEvent.ON_LOAD = "onLoad";
 external_DataLoader.ON_LOAD = "onLoad";
+haxe_crypto_Base64.CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+haxe_crypto_Base64.BYTES = haxe_io_Bytes.ofString(haxe_crypto_Base64.CHARS);
 haxe_io_FPHelper.i64tmp = (function($this) {
 	var $r;
 	var x = new haxe__$Int64__$_$_$Int64(0,0);
@@ -1055,4 +1112,4 @@ view_events_ChatEvent.MESSAGE_ADD = "messageAdd";
 view_events_UserListEvent.USER_LIST_CHANGE = "userListChange";
 view_events_WaitingScreenEvent.WAITING_END = "waitingEnd";
 EntryPoint.main();
-})(typeof console != "undefined" ? console : {log:function(){}}, typeof window != "undefined" ? window : typeof global != "undefined" ? global : typeof self != "undefined" ? self : this);
+})(typeof console != "undefined" ? console : {log:function(){}}, typeof window != "undefined" ? window : exports, typeof window != "undefined" ? window : typeof global != "undefined" ? global : typeof self != "undefined" ? self : this);

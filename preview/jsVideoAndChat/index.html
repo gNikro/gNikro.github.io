@@ -5,14 +5,32 @@
 	<title>jsVideoAndChat-</title>
 	<meta name="description" content="" />
 	
+	
 	<link rel="stylesheet" href="mainStyle.min.css" type="text/css">
 		
 </head>
 <body>
 	
-	<div style="pointer-events: none;" id="ytplayer"></div>
+
+	<div style="pointer-events: none;" id="presentationPlayer"></div>
+	<div style="pointer-events: none;" id="speackerPlayer"></div>
+
+
 	
 	<script>
+	
+			function AdjustIframeHeightOnLoad()
+			{ 
+				//document.getElementById("showDiv").style.height = document.getElementById("showDiv").contentWindow.document.body.scrollHeight + "px"; 
+			}
+			
+			function AdjustIframeHeight(i) 
+			{
+				document.getElementById("showDiv").style.height = parseInt(i) + "px"; 
+			}
+
+
+	
 		/*window.onbeforeunload = function (event) 
 		{
 			var message = 'Вы уверены, что хотите покинуть страницу трансляции? После этого Вы не сможете зайти в неё повторно!';
@@ -34,7 +52,7 @@
 		
 		function initVideo(_startTime)
 		{
-			console.log('init video');
+			
 			var tag = document.createElement('script');
 			tag.src = "https://www.youtube.com/player_api";
 			var firstScriptTag = document.getElementsByTagName('script')[0];
@@ -43,16 +61,35 @@
 			startTime = _startTime;
 		}
 	
-		var player;
+		var presentationPlayer;
+		var speackerPlayer;
+		var startAppCallback;
+		
 		function onYouTubePlayerAPIReady() 
 		{
-			player = new YT.Player
+			speackerPlayer = new YT.Player
 			(
-				'ytplayer', 
+				'speackerPlayer', 
 				{
 					height: '390',
 					width: '640',
 					
+					playerVars: {
+						color: 'white',
+						controls: '2',
+						autohide:'0',
+						disablekb:'1',
+						showinfo:'0'
+					}
+				}
+			);
+			
+			presentationPlayer = new YT.Player
+			(
+				'presentationPlayer', 
+				{
+					height: '390',
+					width: '640',
 					
 					playerVars: {
 						color: 'white',
@@ -60,9 +97,7 @@
 						autohide:'0',
 						disablekb:'1',
 						showinfo:'0',
-						
 					},
-					
 					
 					events: {
 						onStateChange: onPlayerStateChange,
@@ -76,9 +111,11 @@
 		{
 			if(event.data == YT.PlayerState.PLAYING)
 			{
-				var duration = player.getDuration() - player.getCurrentTime();
+				var duration = presentationPlayer.getDuration() - presentationPlayer.getCurrentTime();
 				setTimeout(onVideoEnded, duration * 1000 - 1000);
-				setTimeout(onShowDiv, 10000);
+				setTimeout(onShowDiv, 1000);
+				
+				startAppCallback();
 			}
 		}
 		
@@ -89,21 +126,42 @@
 		
 		function onVideoEnded()
 		{
-			player.destroy();
+			presentationPlayer.destroy();
+			speackerPlayer.destroy();
+			
+			//window.location = "http://google.com";
+		}
+		
+		function addStartCallback(value)
+		{
+			startAppCallback = value;
 		}
 		
 		function initialize()
 		{
-			player.loadVideoById({
+			presentationPlayer.loadVideoById({
 									'videoId': 'XzE032-pGp8',
 									'startSeconds': startTime,
 									//'endSeconds': 60,
 									'suggestedQuality': 'large'});
 									
-			player.setVolume(0);
+			presentationPlayer.setVolume(0);
+			
+			speackerPlayer.loadVideoById({
+									'videoId': '256UbEOEKCs',
+									'startSeconds': startTime,
+									//'endSeconds': 60,
+									'suggestedQuality': 'large'});
+									
+			speackerPlayer.setVolume(0);
 		}
 		
 		
+		//function resizeIframe(obj) 
+		//{
+		//	obj.style.height = obj.contentWindow.document.body.scrollHeight + 'px';
+		//}
+	
 	</script>
 	
 	<div id="waitingScreen" hidden>
@@ -124,13 +182,12 @@
 			Чат:
 			<div id="chat"></div>
 			<input id="chatInput"></input>
+			<button id="sendButton">Отправить</button>
 		</div>
 	</div>
-			
+
 	<div>
-		 <iframe id="showDiv" src="http://shop.lenovo.com/eg/en/laptops/lenovo/u-series/u430-touch/#tab-tech_specs" width="640" height="300" align="left" hidden>
-			
-		 </iframe
+		<iframe id="showDiv" src="http://murigin.ru/150za6/button_order.html" frameborder="0" scrolling="no" style="margin:0; width:100%; height:150px; border:none; overflow:hidden;" onload="AdjustIframeHeightOnLoad()" hidden></iframe>
 	</div>
 	
 	<script src="core.js"></script>

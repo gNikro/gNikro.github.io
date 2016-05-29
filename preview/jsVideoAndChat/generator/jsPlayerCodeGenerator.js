@@ -31,17 +31,32 @@ HxOverrides.strDate = function(s) {
 		throw new js__$Boot_HaxeError("Invalid date format : " + s);
 	}
 };
+HxOverrides.cca = function(s,index) {
+	var x = s.charCodeAt(index);
+	if(x != x) return undefined;
+	return x;
+};
+HxOverrides.substr = function(s,pos,len) {
+	if(pos != null && pos != 0 && len != null && len < 0) return "";
+	if(len == null) len = s.length;
+	if(pos < 0) {
+		pos = s.length + pos;
+		if(pos < 0) pos = 0;
+	} else if(len < 0) len = s.length + len - pos;
+	return s.substr(pos,len);
+};
 var Main = function() { };
 Main.__name__ = true;
 Main.main = function() {
 	window.document.getElementById("generate").onclick = Main.onClick;
 };
 Main.onClick = function() {
-	var base = "QWERTYUIOPASDFGHJKLZXCVBNM@#$456";
+	var output;
+	output = js_Boot.__cast(window.document.getElementById("out") , HTMLInputElement);
 	var baseDateString;
 	baseDateString = (js_Boot.__cast(window.document.getElementById("datepicker") , HTMLInputElement)).value;
 	if(baseDateString == null || baseDateString.length == 0 || baseDateString.indexOf("/") == -1) {
-		window.document.getElementById("out").innerHTML = "wrong date format";
+		output.value = "wrong date format";
 		return;
 	}
 	var dateParts = baseDateString.split("/");
@@ -50,17 +65,41 @@ Main.onClick = function() {
 	var timeString;
 	timeString = (js_Boot.__cast(window.document.getElementById("timepicker") , HTMLInputElement)).value;
 	if(dateString == null || dateString.length == 0 || dateString.indexOf("-") == -1) {
-		window.document.getElementById("out").innerHTML = "wrong date format";
+		output.value = "wrong date format";
 		return;
 	}
 	if(timeString == null || timeString.length == 0 || timeString.indexOf(":") == -1) {
-		window.document.getElementById("out").innerHTML = "wrong time format";
+		output.value = "wrong time format";
 		return;
 	}
 	timeString += ":00";
-	console.log(HxOverrides.strDate(dateString).getDate());
-	var string = "thisIsKey=true&startDate=" + HxOverrides.strDate(dateString).getTime() + "&isTest=0&startTime=" + HxOverrides.strDate(timeString).getTime();
-	window.document.getElementById("out").innerHTML = haxe_crypto_BaseCode.encode(string,base);
+	haxe_Log.trace(HxOverrides.strDate(dateString),{ fileName : "Main.hx", lineNumber : 54, className : "Main", methodName : "onClick"});
+	var isKey = true;
+	var isTest = false;
+	var bytes = haxe_io_Bytes.alloc(18);
+	bytes.b[0] = (isKey?1:0) & 255;
+	bytes.b[1] = (isTest?1:0) & 255;
+	bytes.setDouble(2,HxOverrides.strDate(dateString).getTime());
+	bytes.setDouble(10,HxOverrides.strDate(timeString).getTime());
+	var encoded = haxe_crypto_Base64.encode(bytes);
+	haxe_Log.trace(encoded,{ fileName : "Main.hx", lineNumber : 67, className : "Main", methodName : "onClick"});
+	bytes = haxe_crypto_Base64.decode(encoded);
+	haxe_Log.trace("isKey",{ fileName : "Main.hx", lineNumber : 71, className : "Main", methodName : "onClick", customParams : [bytes.b[0] == 1]});
+	haxe_Log.trace("isTest",{ fileName : "Main.hx", lineNumber : 72, className : "Main", methodName : "onClick", customParams : [bytes.b[1] == 1]});
+	haxe_Log.trace("dateString",{ fileName : "Main.hx", lineNumber : 73, className : "Main", methodName : "onClick", customParams : [js_Boot.__cast(bytes.getDouble(2) , Float)]});
+	haxe_Log.trace("timeString",{ fileName : "Main.hx", lineNumber : 74, className : "Main", methodName : "onClick", customParams : [bytes.getDouble(1)]});
+	haxe_Log.trace((function($this) {
+		var $r;
+		var t = bytes.getDouble(2);
+		var d = new Date();
+		d.setTime(t);
+		$r = d;
+		return $r;
+	}(this)),{ fileName : "Main.hx", lineNumber : 75, className : "Main", methodName : "onClick"});
+	haxe_Log.trace(HxOverrides.strDate(dateString).getTime(),{ fileName : "Main.hx", lineNumber : 77, className : "Main", methodName : "onClick"});
+	haxe_Log.trace(bytes.getDouble(2),{ fileName : "Main.hx", lineNumber : 78, className : "Main", methodName : "onClick"});
+	haxe_Log.trace(bytes.getDouble(10),{ fileName : "Main.hx", lineNumber : 79, className : "Main", methodName : "onClick"});
+	output.value = encoded;
 };
 Math.__name__ = true;
 var Std = function() { };
@@ -81,46 +120,10 @@ haxe__$Int64__$_$_$Int64.__name__ = true;
 haxe__$Int64__$_$_$Int64.prototype = {
 	__class__: haxe__$Int64__$_$_$Int64
 };
-var haxe_crypto_BaseCode = function(base) {
-	var len = base.length;
-	var nbits = 1;
-	while(len > 1 << nbits) nbits++;
-	if(nbits > 8 || len != 1 << nbits) throw new js__$Boot_HaxeError("BaseCode : base length must be a power of two.");
-	this.base = base;
-	this.nbits = nbits;
-};
-haxe_crypto_BaseCode.__name__ = true;
-haxe_crypto_BaseCode.encode = function(s,base) {
-	var b = new haxe_crypto_BaseCode(haxe_io_Bytes.ofString(base));
-	return b.encodeString(s);
-};
-haxe_crypto_BaseCode.prototype = {
-	encodeBytes: function(b) {
-		var nbits = this.nbits;
-		var base = this.base;
-		var size = b.length * 8 / nbits | 0;
-		var out = haxe_io_Bytes.alloc(size + (b.length * 8 % nbits == 0?0:1));
-		var buf = 0;
-		var curbits = 0;
-		var mask = (1 << nbits) - 1;
-		var pin = 0;
-		var pout = 0;
-		while(pout < size) {
-			while(curbits < nbits) {
-				curbits += 8;
-				buf <<= 8;
-				buf |= b.get(pin++);
-			}
-			curbits -= nbits;
-			out.set(pout++,base.b[buf >> curbits & mask]);
-		}
-		if(curbits > 0) out.set(pout++,base.b[buf << nbits - curbits & mask]);
-		return out;
-	}
-	,encodeString: function(s) {
-		return this.encodeBytes(haxe_io_Bytes.ofString(s)).toString();
-	}
-	,__class__: haxe_crypto_BaseCode
+var haxe_Log = function() { };
+haxe_Log.__name__ = true;
+haxe_Log.trace = function(v,infos) {
+	js_Boot.__trace(v,infos);
 };
 var haxe_io_Bytes = function(data) {
 	this.length = data.byteLength;
@@ -162,6 +165,14 @@ haxe_io_Bytes.prototype = {
 	,set: function(pos,v) {
 		this.b[pos] = v & 255;
 	}
+	,getDouble: function(pos) {
+		if(this.data == null) this.data = new DataView(this.b.buffer,this.b.byteOffset,this.b.byteLength);
+		return this.data.getFloat64(pos,true);
+	}
+	,setDouble: function(pos,v) {
+		if(this.data == null) this.data = new DataView(this.b.buffer,this.b.byteOffset,this.b.byteLength);
+		this.data.setFloat64(pos,v,true);
+	}
 	,getString: function(pos,len) {
 		if(pos < 0 || len < 0 || pos + len > this.length) throw new js__$Boot_HaxeError(haxe_io_Error.OutsideBounds);
 		var s = "";
@@ -191,6 +202,103 @@ haxe_io_Bytes.prototype = {
 		return this.getString(0,this.length);
 	}
 	,__class__: haxe_io_Bytes
+};
+var haxe_crypto_Base64 = function() { };
+haxe_crypto_Base64.__name__ = true;
+haxe_crypto_Base64.encode = function(bytes,complement) {
+	if(complement == null) complement = true;
+	var str = new haxe_crypto_BaseCode(haxe_crypto_Base64.BYTES).encodeBytes(bytes).toString();
+	if(complement) {
+		var _g = bytes.length % 3;
+		switch(_g) {
+		case 1:
+			str += "==";
+			break;
+		case 2:
+			str += "=";
+			break;
+		default:
+		}
+	}
+	return str;
+};
+haxe_crypto_Base64.decode = function(str,complement) {
+	if(complement == null) complement = true;
+	if(complement) while(HxOverrides.cca(str,str.length - 1) == 61) str = HxOverrides.substr(str,0,-1);
+	return new haxe_crypto_BaseCode(haxe_crypto_Base64.BYTES).decodeBytes(haxe_io_Bytes.ofString(str));
+};
+var haxe_crypto_BaseCode = function(base) {
+	var len = base.length;
+	var nbits = 1;
+	while(len > 1 << nbits) nbits++;
+	if(nbits > 8 || len != 1 << nbits) throw new js__$Boot_HaxeError("BaseCode : base length must be a power of two.");
+	this.base = base;
+	this.nbits = nbits;
+};
+haxe_crypto_BaseCode.__name__ = true;
+haxe_crypto_BaseCode.prototype = {
+	encodeBytes: function(b) {
+		var nbits = this.nbits;
+		var base = this.base;
+		var size = b.length * 8 / nbits | 0;
+		var out = haxe_io_Bytes.alloc(size + (b.length * 8 % nbits == 0?0:1));
+		var buf = 0;
+		var curbits = 0;
+		var mask = (1 << nbits) - 1;
+		var pin = 0;
+		var pout = 0;
+		while(pout < size) {
+			while(curbits < nbits) {
+				curbits += 8;
+				buf <<= 8;
+				buf |= b.get(pin++);
+			}
+			curbits -= nbits;
+			out.set(pout++,base.b[buf >> curbits & mask]);
+		}
+		if(curbits > 0) out.set(pout++,base.b[buf << nbits - curbits & mask]);
+		return out;
+	}
+	,initTable: function() {
+		var tbl = [];
+		var _g = 0;
+		while(_g < 256) {
+			var i = _g++;
+			tbl[i] = -1;
+		}
+		var _g1 = 0;
+		var _g2 = this.base.length;
+		while(_g1 < _g2) {
+			var i1 = _g1++;
+			tbl[this.base.b[i1]] = i1;
+		}
+		this.tbl = tbl;
+	}
+	,decodeBytes: function(b) {
+		var nbits = this.nbits;
+		var base = this.base;
+		if(this.tbl == null) this.initTable();
+		var tbl = this.tbl;
+		var size = b.length * nbits >> 3;
+		var out = haxe_io_Bytes.alloc(size);
+		var buf = 0;
+		var curbits = 0;
+		var pin = 0;
+		var pout = 0;
+		while(pout < size) {
+			while(curbits < 8) {
+				curbits += nbits;
+				buf <<= nbits;
+				var i = tbl[b.get(pin++)];
+				if(i == -1) throw new js__$Boot_HaxeError("BaseCode : invalid encoded char");
+				buf |= i;
+			}
+			curbits -= 8;
+			out.set(pout++,buf >> curbits & 255);
+		}
+		return out;
+	}
+	,__class__: haxe_crypto_BaseCode
 };
 var haxe_io_Error = { __ename__ : true, __constructs__ : ["Blocked","Overflow","OutsideBounds","Custom"] };
 haxe_io_Error.Blocked = ["Blocked",0];
@@ -260,6 +368,25 @@ js__$Boot_HaxeError.prototype = $extend(Error.prototype,{
 });
 var js_Boot = function() { };
 js_Boot.__name__ = true;
+js_Boot.__unhtml = function(s) {
+	return s.split("&").join("&amp;").split("<").join("&lt;").split(">").join("&gt;");
+};
+js_Boot.__trace = function(v,i) {
+	var msg;
+	if(i != null) msg = i.fileName + ":" + i.lineNumber + ": "; else msg = "";
+	msg += js_Boot.__string_rec(v,"");
+	if(i != null && i.customParams != null) {
+		var _g = 0;
+		var _g1 = i.customParams;
+		while(_g < _g1.length) {
+			var v1 = _g1[_g];
+			++_g;
+			msg += "," + js_Boot.__string_rec(v1,"");
+		}
+	}
+	var d;
+	if(typeof(document) != "undefined" && (d = document.getElementById("haxe:trace")) != null) d.innerHTML += js_Boot.__unhtml(msg) + "<br/>"; else if(typeof console != "undefined" && console.log != null) console.log(msg);
+};
 js_Boot.getClass = function(o) {
 	if((o instanceof Array) && o.__enum__ == null) return Array; else {
 		var cl = o.__class__;
@@ -594,6 +721,8 @@ var ArrayBuffer = $global.ArrayBuffer || js_html_compat_ArrayBuffer;
 if(ArrayBuffer.prototype.slice == null) ArrayBuffer.prototype.slice = js_html_compat_ArrayBuffer.sliceImpl;
 var DataView = $global.DataView || js_html_compat_DataView;
 var Uint8Array = $global.Uint8Array || js_html_compat_Uint8Array._new;
+haxe_crypto_Base64.CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+haxe_crypto_Base64.BYTES = haxe_io_Bytes.ofString(haxe_crypto_Base64.CHARS);
 haxe_io_FPHelper.i64tmp = (function($this) {
 	var $r;
 	var x = new haxe__$Int64__$_$_$Int64(0,0);
