@@ -1,0 +1,6 @@
+#container{height:500px;width:400px;border:0px solid #ccc;float:right;}
+#users{height:85%;overflow:auto;border:1px solid #ccc;padding:0px 10px;}
+#chat{height:85%;overflow:auto;border:1px solid #ccc;padding:0px 10px;}
+#chatInput{border:1px solid #ccc;width:100%;}
+#chatBlock{height:50%;width:100%;}
+#usersBlock{height:50%;width:100%;}
