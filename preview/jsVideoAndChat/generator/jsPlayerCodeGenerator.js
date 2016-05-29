@@ -48,15 +48,17 @@ HxOverrides.substr = function(s,pos,len) {
 var Main = function() { };
 Main.__name__ = true;
 Main.main = function() {
+	Main.storage = js_Browser.getLocalStorage();
+	Main.output = js_Boot.__cast(window.document.getElementById("out") , HTMLInputElement);
+	Main.baseURL = js_Boot.__cast(window.document.getElementById("baseURL") , HTMLInputElement);
+	if(Main.storage.getItem("baseURL") != null) Main.baseURL.value = Main.storage.getItem("baseURL");
 	window.document.getElementById("generate").onclick = Main.onClick;
 };
 Main.onClick = function() {
-	var output;
-	output = js_Boot.__cast(window.document.getElementById("out") , HTMLInputElement);
 	var baseDateString;
 	baseDateString = (js_Boot.__cast(window.document.getElementById("datepicker") , HTMLInputElement)).value;
 	if(baseDateString == null || baseDateString.length == 0 || baseDateString.indexOf("/") == -1) {
-		output.value = "wrong date format";
+		Main.output.value = "wrong date format";
 		return;
 	}
 	var dateParts = baseDateString.split("/");
@@ -65,15 +67,16 @@ Main.onClick = function() {
 	var timeString;
 	timeString = (js_Boot.__cast(window.document.getElementById("timepicker") , HTMLInputElement)).value;
 	if(dateString == null || dateString.length == 0 || dateString.indexOf("-") == -1) {
-		output.value = "wrong date format";
+		Main.output.value = "wrong date format";
 		return;
 	}
 	if(timeString == null || timeString.length == 0 || timeString.indexOf(":") == -1) {
-		output.value = "wrong time format";
+		Main.output.value = "wrong time format";
 		return;
 	}
+	Main.storage.setItem("baseURL",Main.baseURL.value);
 	timeString += ":00";
-	haxe_Log.trace(HxOverrides.strDate(dateString),{ fileName : "Main.hx", lineNumber : 54, className : "Main", methodName : "onClick"});
+	haxe_Log.trace(HxOverrides.strDate(dateString),{ fileName : "Main.hx", lineNumber : 70, className : "Main", methodName : "onClick"});
 	var isKey = true;
 	var isTest = false;
 	var bytes = haxe_io_Bytes.alloc(18);
@@ -82,12 +85,12 @@ Main.onClick = function() {
 	bytes.setDouble(2,HxOverrides.strDate(dateString).getTime());
 	bytes.setDouble(10,HxOverrides.strDate(timeString).getTime());
 	var encoded = haxe_crypto_Base64.encode(bytes);
-	haxe_Log.trace(encoded,{ fileName : "Main.hx", lineNumber : 67, className : "Main", methodName : "onClick"});
+	haxe_Log.trace(encoded,{ fileName : "Main.hx", lineNumber : 83, className : "Main", methodName : "onClick"});
 	bytes = haxe_crypto_Base64.decode(encoded);
-	haxe_Log.trace("isKey",{ fileName : "Main.hx", lineNumber : 71, className : "Main", methodName : "onClick", customParams : [bytes.b[0] == 1]});
-	haxe_Log.trace("isTest",{ fileName : "Main.hx", lineNumber : 72, className : "Main", methodName : "onClick", customParams : [bytes.b[1] == 1]});
-	haxe_Log.trace("dateString",{ fileName : "Main.hx", lineNumber : 73, className : "Main", methodName : "onClick", customParams : [js_Boot.__cast(bytes.getDouble(2) , Float)]});
-	haxe_Log.trace("timeString",{ fileName : "Main.hx", lineNumber : 74, className : "Main", methodName : "onClick", customParams : [bytes.getDouble(1)]});
+	haxe_Log.trace("isKey",{ fileName : "Main.hx", lineNumber : 87, className : "Main", methodName : "onClick", customParams : [bytes.b[0] == 1]});
+	haxe_Log.trace("isTest",{ fileName : "Main.hx", lineNumber : 88, className : "Main", methodName : "onClick", customParams : [bytes.b[1] == 1]});
+	haxe_Log.trace("dateString",{ fileName : "Main.hx", lineNumber : 89, className : "Main", methodName : "onClick", customParams : [js_Boot.__cast(bytes.getDouble(2) , Float)]});
+	haxe_Log.trace("timeString",{ fileName : "Main.hx", lineNumber : 90, className : "Main", methodName : "onClick", customParams : [bytes.getDouble(1)]});
 	haxe_Log.trace((function($this) {
 		var $r;
 		var t = bytes.getDouble(2);
@@ -95,11 +98,11 @@ Main.onClick = function() {
 		d.setTime(t);
 		$r = d;
 		return $r;
-	}(this)),{ fileName : "Main.hx", lineNumber : 75, className : "Main", methodName : "onClick"});
-	haxe_Log.trace(HxOverrides.strDate(dateString).getTime(),{ fileName : "Main.hx", lineNumber : 77, className : "Main", methodName : "onClick"});
-	haxe_Log.trace(bytes.getDouble(2),{ fileName : "Main.hx", lineNumber : 78, className : "Main", methodName : "onClick"});
-	haxe_Log.trace(bytes.getDouble(10),{ fileName : "Main.hx", lineNumber : 79, className : "Main", methodName : "onClick"});
-	output.value = encoded;
+	}(this)),{ fileName : "Main.hx", lineNumber : 91, className : "Main", methodName : "onClick"});
+	haxe_Log.trace(HxOverrides.strDate(dateString).getTime(),{ fileName : "Main.hx", lineNumber : 93, className : "Main", methodName : "onClick"});
+	haxe_Log.trace(bytes.getDouble(2),{ fileName : "Main.hx", lineNumber : 94, className : "Main", methodName : "onClick"});
+	haxe_Log.trace(bytes.getDouble(10),{ fileName : "Main.hx", lineNumber : 95, className : "Main", methodName : "onClick"});
+	Main.output.value = Main.baseURL.value + encoded;
 };
 Math.__name__ = true;
 var Std = function() { };
@@ -521,6 +524,18 @@ js_Boot.__isNativeObj = function(o) {
 };
 js_Boot.__resolveNativeClass = function(name) {
 	return $global[name];
+};
+var js_Browser = function() { };
+js_Browser.__name__ = true;
+js_Browser.getLocalStorage = function() {
+	try {
+		var s = window.localStorage;
+		s.getItem("");
+		return s;
+	} catch( e ) {
+		if (e instanceof js__$Boot_HaxeError) e = e.val;
+		return null;
+	}
 };
 var js_html_compat_ArrayBuffer = function(a) {
 	if((a instanceof Array) && a.__enum__ == null) {

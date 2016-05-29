@@ -14,7 +14,8 @@
 </head>
 <body>
 	<p>Date: <input type="text" id="datepicker"></p>
-	<p>Time: <input type="text" id="timepicker"></p>
+	<p>Time: <input type="text" id="timepicker" value="20:00"></p>
+	<p>BaseURL: <input type="text" id="baseURL"></p>
 	<p>Output: <input id="out" width="300" /></p>
 	<button id="generate">Generate</button>
 	
@@ -23,7 +24,7 @@
 	</button>
 
 
-	<script src="jsPlayerCodeGenerator.js"></script>
+	
 	
 	<script>
 		$(function() {
@@ -31,7 +32,9 @@
 		});
 		
 		new Clipboard('.btn');
+		
+		
 	</script>
-	
+	<script src="jsPlayerCodeGenerator.js"></script>
 </body>
 </html>
