@@ -49,15 +49,18 @@ var Main = $hx_exports.Main = function() {
 	haxe_Log.trace(passKey,{ fileName : "Main.hx", lineNumber : 27, className : "Main", methodName : "new"});
 	if(passKey == null || passKey.length == 0) return;
 	var bytes = haxe_crypto_Base64.decode(passKey);
+	if(bytes.length != 18) return;
 	var isKey = bytes.b[0] == 1;
 	var isTest = bytes.b[1] == 1;
 	var startDate = bytes.getDouble(2);
 	var startTime = bytes.getDouble(10);
+	if(new Date().getTime() - startDate < -31622400000) return;
+	if(startDate > new Date().getTime() + 31622400000) return;
 	if(!isKey) return;
 	this.mainViewModel = new view_data_MainViewModel();
 	this.mainView = new view_MainView(this.mainViewModel);
 	if(isTest) Settings.getInstance().START_TIME = new Date().getTime() - 30000; else {
-		haxe_Log.trace("not test state",{ fileName : "Main.hx", lineNumber : 49, className : "Main", methodName : "new"});
+		haxe_Log.trace("not test state",{ fileName : "Main.hx", lineNumber : 59, className : "Main", methodName : "new"});
 		var date = startDate;
 		var time = startTime;
 		var month1 = ((function($this) {
@@ -68,14 +71,14 @@ var Main = $hx_exports.Main = function() {
 			return $r;
 		}(this))).getMonth();
 		var month2 = new Date().getMonth();
-		haxe_Log.trace("month",{ fileName : "Main.hx", lineNumber : 55, className : "Main", methodName : "new", customParams : [month1,month2]});
+		haxe_Log.trace("month",{ fileName : "Main.hx", lineNumber : 65, className : "Main", methodName : "new", customParams : [month1,month2]});
 		haxe_Log.trace((function($this) {
 			var $r;
 			var d2 = new Date();
 			d2.setTime(date);
 			$r = d2;
 			return $r;
-		}(this)),{ fileName : "Main.hx", lineNumber : 56, className : "Main", methodName : "new"});
+		}(this)),{ fileName : "Main.hx", lineNumber : 66, className : "Main", methodName : "new"});
 		var date1 = month1 * 30 + ((function($this) {
 			var $r;
 			var d1 = new Date();
@@ -84,13 +87,13 @@ var Main = $hx_exports.Main = function() {
 			return $r;
 		}(this))).getDate();
 		var date2 = month2 * 30 + new Date().getDate();
-		haxe_Log.trace("day",{ fileName : "Main.hx", lineNumber : 60, className : "Main", methodName : "new", customParams : [date1,date2]});
+		haxe_Log.trace("day",{ fileName : "Main.hx", lineNumber : 70, className : "Main", methodName : "new", customParams : [date1,date2]});
 		if(date1 < date2) {
-			haxe_Log.trace("### SHOW END",{ fileName : "Main.hx", lineNumber : 63, className : "Main", methodName : "new"});
+			haxe_Log.trace("### SHOW END",{ fileName : "Main.hx", lineNumber : 73, className : "Main", methodName : "new"});
 			this.showEndState();
 		} else Settings.getInstance().START_TIME = date + time;
-		haxe_Log.trace(vars.toString(),{ fileName : "Main.hx", lineNumber : 70, className : "Main", methodName : "new"});
-		haxe_Log.trace("dateTime",{ fileName : "Main.hx", lineNumber : 71, className : "Main", methodName : "new", customParams : [date,time,(function($this) {
+		haxe_Log.trace(vars.toString(),{ fileName : "Main.hx", lineNumber : 80, className : "Main", methodName : "new"});
+		haxe_Log.trace("dateTime",{ fileName : "Main.hx", lineNumber : 81, className : "Main", methodName : "new", customParams : [date,time,(function($this) {
 			var $r;
 			var t = Settings.getInstance().START_TIME;
 			var d3 = new Date();
@@ -100,7 +103,7 @@ var Main = $hx_exports.Main = function() {
 		}(this))]});
 	}
 	addStartCallback($bind(this,this.startApp));
-	haxe_Log.trace("start code",{ fileName : "Main.hx", lineNumber : 76, className : "Main", methodName : "new", customParams : [Settings.getInstance().START_TIME - new Date().getTime()]});
+	haxe_Log.trace("start code",{ fileName : "Main.hx", lineNumber : 86, className : "Main", methodName : "new", customParams : [Settings.getInstance().START_TIME - new Date().getTime()]});
 	if(Settings.getInstance().START_TIME - new Date().getTime() <= 0) this.initVideo(); else this.showWaitingState();
 };
 Main.__name__ = true;
