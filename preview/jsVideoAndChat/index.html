@@ -32,6 +32,7 @@
 			
 		if(isMobile)
 		{
+			document.getElementById("palyButton").hidden = false;
 			document.getElementById("presentationPlayer").style = "pointer-events: none; opacity: 0.4;"
 			document.getElementById("speackerPlayer").style = "pointer-events: none; opacity: 0.4;"
 			document.getElementById("palyButton").onclick = onPlayClick;
@@ -41,6 +42,9 @@
 		{
 			initialize();
 			
+			presentationPlayer.playVideo();
+			speackerPlayer.playVideo();
+			 
 			document.getElementById("presentationPlayer").style = "pointer-events: none;"
 			document.getElementById("speackerPlayer").style = "pointer-events: none;"
 			document.getElementById("palyButton").hidden = true;
@@ -174,7 +178,7 @@
 									//'endSeconds': 60,
 									'suggestedQuality': 'large'});
 									
-			presentationPlayer.setVolume(0);
+			presentationPlayer.setVolume(100);
 			
 			speackerPlayer.loadVideoById({
 									'videoId': '256UbEOEKCs',
@@ -182,7 +186,7 @@
 									//'endSeconds': 60,
 									'suggestedQuality': 'large'});
 									
-			speackerPlayer.setVolume(0);
+			speackerPlayer.setVolume(100);
 		}
 		
 		
