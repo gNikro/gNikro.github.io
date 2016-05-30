@@ -17,13 +17,28 @@ EntryPoint.onStart = function() {
 };
 var HxOverrides = function() { };
 HxOverrides.__name__ = true;
-HxOverrides.dateStr = function(date) {
-	var m = date.getMonth() + 1;
-	var d = date.getDate();
-	var h = date.getHours();
-	var mi = date.getMinutes();
-	var s = date.getSeconds();
-	return date.getFullYear() + "-" + (m < 10?"0" + m:"" + m) + "-" + (d < 10?"0" + d:"" + d) + " " + (h < 10?"0" + h:"" + h) + ":" + (mi < 10?"0" + mi:"" + mi) + ":" + (s < 10?"0" + s:"" + s);
+HxOverrides.strDate = function(s) {
+	var _g = s.length;
+	switch(_g) {
+	case 8:
+		var k = s.split(":");
+		var d = new Date();
+		d.setTime(0);
+		d.setUTCHours(k[0]);
+		d.setUTCMinutes(k[1]);
+		d.setUTCSeconds(k[2]);
+		return d;
+	case 10:
+		var k1 = s.split("-");
+		return new Date(k1[0],k1[1] - 1,k1[2],0,0,0);
+	case 19:
+		var k2 = s.split(" ");
+		var y = k2[0].split("-");
+		var t = k2[1].split(":");
+		return new Date(y[0],y[1] - 1,y[2],t[0],t[1],t[2]);
+	default:
+		throw new js__$Boot_HaxeError("Invalid date format : " + s);
+	}
 };
 HxOverrides.cca = function(s,index) {
 	var x = s.charCodeAt(index);
@@ -46,21 +61,30 @@ var Main = $hx_exports.Main = function() {
 	var vars = this.parseVariables(location);
 	var passKey;
 	passKey = __map_reserved.passKey != null?vars.getReserved("passKey"):vars.h["passKey"];
-	haxe_Log.trace(passKey,{ fileName : "Main.hx", lineNumber : 27, className : "Main", methodName : "new"});
 	if(passKey == null || passKey.length == 0) return;
 	var bytes = haxe_crypto_Base64.decode(passKey);
-	if(bytes.length != 18) return;
+	if(bytes.length != 19 && bytes.length != 11) return;
 	var isKey = bytes.b[0] == 1;
 	var isTest = bytes.b[1] == 1;
-	var startDate = bytes.getDouble(2);
-	var startTime = bytes.getDouble(10);
+	var isEveryday = bytes.b[2] == 1;
+	var startDate;
+	var startTime;
+	if(bytes.length == 11) {
+		var currentDate = new Date();
+		var s = currentDate.getFullYear() + "-" + this.formatToTime(currentDate.getMonth() + 1) + "-" + this.formatToTime(currentDate.getDate());
+		currentDate = HxOverrides.strDate(s);
+		startDate = currentDate.getTime();
+		startTime = bytes.getDouble(3);
+	} else {
+		startDate = bytes.getDouble(3);
+		startTime = bytes.getDouble(11);
+	}
 	if(new Date().getTime() - startDate < -31622400000) return;
 	if(startDate > new Date().getTime() + 31622400000) return;
 	if(!isKey) return;
 	this.mainViewModel = new view_data_MainViewModel();
 	this.mainView = new view_MainView(this.mainViewModel);
 	if(isTest) Settings.getInstance().START_TIME = new Date().getTime() - 30000; else {
-		haxe_Log.trace("not test state",{ fileName : "Main.hx", lineNumber : 59, className : "Main", methodName : "new"});
 		var date = startDate;
 		var time = startTime;
 		var month1 = ((function($this) {
@@ -71,14 +95,6 @@ var Main = $hx_exports.Main = function() {
 			return $r;
 		}(this))).getMonth();
 		var month2 = new Date().getMonth();
-		haxe_Log.trace("month",{ fileName : "Main.hx", lineNumber : 65, className : "Main", methodName : "new", customParams : [month1,month2]});
-		haxe_Log.trace((function($this) {
-			var $r;
-			var d2 = new Date();
-			d2.setTime(date);
-			$r = d2;
-			return $r;
-		}(this)),{ fileName : "Main.hx", lineNumber : 66, className : "Main", methodName : "new"});
 		var date1 = month1 * 30 + ((function($this) {
 			var $r;
 			var d1 = new Date();
@@ -87,23 +103,9 @@ var Main = $hx_exports.Main = function() {
 			return $r;
 		}(this))).getDate();
 		var date2 = month2 * 30 + new Date().getDate();
-		haxe_Log.trace("day",{ fileName : "Main.hx", lineNumber : 70, className : "Main", methodName : "new", customParams : [date1,date2]});
-		if(date1 < date2) {
-			haxe_Log.trace("### SHOW END",{ fileName : "Main.hx", lineNumber : 73, className : "Main", methodName : "new"});
-			this.showEndState();
-		} else Settings.getInstance().START_TIME = date + time;
-		haxe_Log.trace(vars.toString(),{ fileName : "Main.hx", lineNumber : 80, className : "Main", methodName : "new"});
-		haxe_Log.trace("dateTime",{ fileName : "Main.hx", lineNumber : 81, className : "Main", methodName : "new", customParams : [date,time,(function($this) {
-			var $r;
-			var t = Settings.getInstance().START_TIME;
-			var d3 = new Date();
-			d3.setTime(t);
-			$r = d3;
-			return $r;
-		}(this))]});
+		if(date1 < date2) this.showEndState(); else Settings.getInstance().START_TIME = date + time;
 	}
 	addStartCallback($bind(this,this.startApp));
-	haxe_Log.trace("start code",{ fileName : "Main.hx", lineNumber : 86, className : "Main", methodName : "new", customParams : [Settings.getInstance().START_TIME - new Date().getTime()]});
 	if(Settings.getInstance().START_TIME - new Date().getTime() <= 0) this.initVideo(); else this.showWaitingState();
 };
 Main.__name__ = true;
@@ -135,6 +137,12 @@ Main.prototype = {
 			if(__map_reserved[paramName] != null) map.setReserved(paramName,paramValue); else map.h[paramName] = paramValue;
 		}
 		return map;
+	}
+	,formatToTime: function(value) {
+		var valueAsString;
+		if(value == null) valueAsString = "null"; else valueAsString = "" + value;
+		if(valueAsString.length == 1) valueAsString = "0" + valueAsString;
+		return valueAsString;
 	}
 	,showWaitingState: function() {
 		this.mainView.waitingState();
@@ -174,16 +182,6 @@ var Std = function() { };
 Std.__name__ = true;
 Std.string = function(s) {
 	return js_Boot.__string_rec(s,"");
-};
-var StringBuf = function() {
-	this.b = "";
-};
-StringBuf.__name__ = true;
-StringBuf.prototype = {
-	add: function(x) {
-		this.b += Std.string(x);
-	}
-	,__class__: StringBuf
 };
 var StringTools = function() { };
 StringTools.__name__ = true;
@@ -464,35 +462,6 @@ haxe_ds_StringMap.prototype = {
 	}
 	,getReserved: function(key) {
 		if(this.rh == null) return null; else return this.rh["$" + key];
-	}
-	,arrayKeys: function() {
-		var out = [];
-		for( var key in this.h ) {
-		if(this.h.hasOwnProperty(key)) out.push(key);
-		}
-		if(this.rh != null) {
-			for( var key in this.rh ) {
-			if(key.charCodeAt(0) == 36) out.push(key.substr(1));
-			}
-		}
-		return out;
-	}
-	,toString: function() {
-		var s = new StringBuf();
-		s.b += "{";
-		var keys = this.arrayKeys();
-		var _g1 = 0;
-		var _g = keys.length;
-		while(_g1 < _g) {
-			var i = _g1++;
-			var k = keys[i];
-			if(k == null) s.b += "null"; else s.b += "" + k;
-			s.b += " => ";
-			s.add(Std.string(__map_reserved[k] != null?this.getReserved(k):this.h[k]));
-			if(i < keys.length) s.b += ", ";
-		}
-		s.b += "}";
-		return s.b;
 	}
 	,__class__: haxe_ds_StringMap
 };

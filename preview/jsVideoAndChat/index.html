@@ -5,33 +5,58 @@
 	<title>jsVideoAndChat-</title>
 	<meta name="description" content="" />
 	
+	<script src="/dist/mobile-detect.min.js"></script>
 	
 	<link rel="stylesheet" href="mainStyle.min.css" type="text/css">
 		
 </head>
 <body>
 	
-
-	<div style="pointer-events: none;" id="presentationPlayer"></div>
-	<div style="pointer-events: none;" id="speackerPlayer"></div>
-
+	<div>
+		<div style="pointer-events: none;" id="presentationPlayer"></div>
+		<div style="pointer-events: none;" id="speackerPlayer"></div>
+		
+		<div id="palyButton" style="position:absolute; top:50%; left:220px;">
+			<img src="/img/playbutton.png"/>
+		</div>
+	</div>
 
 	
 	<script>
-	
-			function AdjustIframeHeightOnLoad()
-			{ 
-				//document.getElementById("showDiv").style.height = document.getElementById("showDiv").contentWindow.document.body.scrollHeight + "px"; 
-			}
+		
+		var md = new MobileDetect(window.navigator.userAgent);
+		
+		var isMobile = false;
+		if(md.mobile())
+			isMobile = true;
 			
-			function AdjustIframeHeight(i) 
-			{
-				document.getElementById("showDiv").style.height = parseInt(i) + "px"; 
-			}
-
-
-	
-		/*window.onbeforeunload = function (event) 
+		if(!isMobile)
+		{
+			document.getElementById("presentationPlayer").style = "pointer-events: none; opacity: 0.4;"
+			document.getElementById("speackerPlayer").style = "pointer-events: none; opacity: 0.4;"
+			document.getElementById("palyButton").onclick = onPlayClick;
+		}
+		
+		function onPlayClick()
+		{
+			initialize();
+			
+			document.getElementById("presentationPlayer").style = "pointer-events: none;"
+			document.getElementById("speackerPlayer").style = "pointer-events: none;"
+			document.getElementById("palyButton").hidden = true;
+		}
+			
+		function AdjustIframeHeightOnLoad()
+		{ 
+			//document.getElementById("showDiv").style.height = document.getElementById("showDiv").contentWindow.document.body.scrollHeight + "px"; 
+		}
+		
+		function AdjustIframeHeight(i) 
+		{
+			document.getElementById("showDiv").style.height = parseInt(i) + "px"; 
+		}
+		
+		window.onbeforeunload = function (event) 
 		{
 			var message = 'Вы уверены, что хотите покинуть страницу трансляции? После этого Вы не сможете зайти в неё повторно!';
 			
@@ -46,7 +71,7 @@
 			}
 			
 			return message;
-		}*/
+		}
 		
 		var startTime;
 		
@@ -132,7 +157,8 @@
 			if(speackerPlayer)
 				speackerPlayer.destroy();
 			
-			window.location = "http://google.com";
+			window.onbeforeunload = null;
+			//window.location = "http://google.com";
 		}
 		
 		function addStartCallback(value)
@@ -143,7 +169,7 @@
 		function initialize()
 		{
 			presentationPlayer.loadVideoById({
-									'videoId': 'MNR5ZofVRLw',
+									'videoId': 'XzE032-pGp8',
 									'startSeconds': startTime,
 									//'endSeconds': 60,
 									'suggestedQuality': 'large'});

@@ -51,58 +51,55 @@ Main.main = function() {
 	Main.storage = js_Browser.getLocalStorage();
 	Main.output = js_Boot.__cast(window.document.getElementById("out") , HTMLInputElement);
 	Main.baseURL = js_Boot.__cast(window.document.getElementById("baseURL") , HTMLInputElement);
+	Main.datePicker = js_Boot.__cast(window.document.getElementById("datepicker") , HTMLInputElement);
+	Main.timePicker = js_Boot.__cast(window.document.getElementById("timepicker") , HTMLInputElement);
+	Main.isEveryday = js_Boot.__cast(window.document.getElementById("isEveryday") , HTMLInputElement);
 	if(Main.storage.getItem("baseURL") != null) Main.baseURL.value = Main.storage.getItem("baseURL");
 	window.document.getElementById("generate").onclick = Main.onClick;
 };
 Main.onClick = function() {
-	var baseDateString;
-	baseDateString = (js_Boot.__cast(window.document.getElementById("datepicker") , HTMLInputElement)).value;
-	if(baseDateString == null || baseDateString.length == 0 || baseDateString.indexOf("/") == -1) {
-		Main.output.value = "wrong date format";
-		return;
-	}
-	var dateParts = baseDateString.split("/");
-	dateParts = [dateParts[2],dateParts[0],dateParts[1]];
-	var dateString = dateParts.join("-");
+	var baseDateString = Main.datePicker.value;
 	var timeString;
-	timeString = (js_Boot.__cast(window.document.getElementById("timepicker") , HTMLInputElement)).value;
-	if(dateString == null || dateString.length == 0 || dateString.indexOf("-") == -1) {
-		Main.output.value = "wrong date format";
-		return;
+	var isEverydayChecked = Main.isEveryday.checked;
+	if(!isEverydayChecked) {
+		baseDateString = baseDateString.split("/").join("-");
+		if(baseDateString == null || baseDateString.length == 0 || baseDateString.indexOf("-") == -1) {
+			Main.output.value = "wrong date format";
+			return;
+		}
+		var dateParts = baseDateString.split("-");
+		dateParts = [dateParts[2],dateParts[0],dateParts[1]];
+		baseDateString = dateParts.join("-");
 	}
+	timeString = Main.timePicker.value;
 	if(timeString == null || timeString.length == 0 || timeString.indexOf(":") == -1) {
 		Main.output.value = "wrong time format";
 		return;
 	}
 	Main.storage.setItem("baseURL",Main.baseURL.value);
 	timeString += ":00";
-	haxe_Log.trace(HxOverrides.strDate(dateString),{ fileName : "Main.hx", lineNumber : 70, className : "Main", methodName : "onClick"});
 	var isKey = true;
 	var isTest = false;
-	var bytes = haxe_io_Bytes.alloc(18);
+	var bytes = haxe_io_Bytes.alloc(isEverydayChecked?11:19);
 	bytes.b[0] = (isKey?1:0) & 255;
 	bytes.b[1] = (isTest?1:0) & 255;
-	bytes.setDouble(2,HxOverrides.strDate(dateString).getTime());
-	bytes.setDouble(10,HxOverrides.strDate(timeString).getTime());
+	bytes.b[2] = (isEverydayChecked?1:0) & 255;
+	if(!isEverydayChecked) {
+		bytes.setDouble(3,HxOverrides.strDate(baseDateString).getTime());
+		bytes.setDouble(11,HxOverrides.strDate(timeString).getTime());
+	} else bytes.setDouble(3,HxOverrides.strDate(timeString).getTime());
 	var encoded = haxe_crypto_Base64.encode(bytes);
-	haxe_Log.trace(encoded,{ fileName : "Main.hx", lineNumber : 83, className : "Main", methodName : "onClick"});
 	bytes = haxe_crypto_Base64.decode(encoded);
-	haxe_Log.trace("isKey",{ fileName : "Main.hx", lineNumber : 87, className : "Main", methodName : "onClick", customParams : [bytes.b[0] == 1]});
-	haxe_Log.trace("isTest",{ fileName : "Main.hx", lineNumber : 88, className : "Main", methodName : "onClick", customParams : [bytes.b[1] == 1]});
-	haxe_Log.trace("dateString",{ fileName : "Main.hx", lineNumber : 89, className : "Main", methodName : "onClick", customParams : [js_Boot.__cast(bytes.getDouble(2) , Float)]});
-	haxe_Log.trace("timeString",{ fileName : "Main.hx", lineNumber : 90, className : "Main", methodName : "onClick", customParams : [bytes.getDouble(1)]});
-	haxe_Log.trace((function($this) {
-		var $r;
-		var t = bytes.getDouble(2);
-		var d = new Date();
-		d.setTime(t);
-		$r = d;
-		return $r;
-	}(this)),{ fileName : "Main.hx", lineNumber : 91, className : "Main", methodName : "onClick"});
-	haxe_Log.trace(HxOverrides.strDate(dateString).getTime(),{ fileName : "Main.hx", lineNumber : 93, className : "Main", methodName : "onClick"});
-	haxe_Log.trace(bytes.getDouble(2),{ fileName : "Main.hx", lineNumber : 94, className : "Main", methodName : "onClick"});
-	haxe_Log.trace(bytes.getDouble(10),{ fileName : "Main.hx", lineNumber : 95, className : "Main", methodName : "onClick"});
-	Main.output.value = Main.baseURL.value + encoded;
+	if(!isEverydayChecked) {
+	} else {
+	}
+	Main.output.value = Main.baseURL.value + "?passKey=" + encoded;
+};
+Main.formatToTime = function(value) {
+	var valueAsString;
+	if(value == null) valueAsString = "null"; else valueAsString = "" + value;
+	if(valueAsString.length == 1) valueAsString = "0" + valueAsString;
+	return valueAsString;
 };
 Math.__name__ = true;
 var Std = function() { };
@@ -122,11 +119,6 @@ var haxe__$Int64__$_$_$Int64 = function(high,low) {
 haxe__$Int64__$_$_$Int64.__name__ = true;
 haxe__$Int64__$_$_$Int64.prototype = {
 	__class__: haxe__$Int64__$_$_$Int64
-};
-var haxe_Log = function() { };
-haxe_Log.__name__ = true;
-haxe_Log.trace = function(v,infos) {
-	js_Boot.__trace(v,infos);
 };
 var haxe_io_Bytes = function(data) {
 	this.length = data.byteLength;
@@ -167,10 +159,6 @@ haxe_io_Bytes.prototype = {
 	}
 	,set: function(pos,v) {
 		this.b[pos] = v & 255;
-	}
-	,getDouble: function(pos) {
-		if(this.data == null) this.data = new DataView(this.b.buffer,this.b.byteOffset,this.b.byteLength);
-		return this.data.getFloat64(pos,true);
 	}
 	,setDouble: function(pos,v) {
 		if(this.data == null) this.data = new DataView(this.b.buffer,this.b.byteOffset,this.b.byteLength);
@@ -371,25 +359,6 @@ js__$Boot_HaxeError.prototype = $extend(Error.prototype,{
 });
 var js_Boot = function() { };
 js_Boot.__name__ = true;
-js_Boot.__unhtml = function(s) {
-	return s.split("&").join("&amp;").split("<").join("&lt;").split(">").join("&gt;");
-};
-js_Boot.__trace = function(v,i) {
-	var msg;
-	if(i != null) msg = i.fileName + ":" + i.lineNumber + ": "; else msg = "";
-	msg += js_Boot.__string_rec(v,"");
-	if(i != null && i.customParams != null) {
-		var _g = 0;
-		var _g1 = i.customParams;
-		while(_g < _g1.length) {
-			var v1 = _g1[_g];
-			++_g;
-			msg += "," + js_Boot.__string_rec(v1,"");
-		}
-	}
-	var d;
-	if(typeof(document) != "undefined" && (d = document.getElementById("haxe:trace")) != null) d.innerHTML += js_Boot.__unhtml(msg) + "<br/>"; else if(typeof console != "undefined" && console.log != null) console.log(msg);
-};
 js_Boot.getClass = function(o) {
 	if((o instanceof Array) && o.__enum__ == null) return Array; else {
 		var cl = o.__class__;
