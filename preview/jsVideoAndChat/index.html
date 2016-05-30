@@ -30,14 +30,6 @@
 		if(md.mobile())
 			isMobile = true;
 			
-		if(isMobile)
-		{
-			document.getElementById("palyButton").hidden = false;
-			document.getElementById("presentationPlayer").style = "pointer-events: none; opacity: 0.4;"
-			document.getElementById("speackerPlayer").style = "pointer-events: none; opacity: 0.4;"
-			document.getElementById("palyButton").onclick = onPlayClick;
-		}
-		
 		function onPlayClick()
 		{
 			initialize();
@@ -81,6 +73,13 @@
 		
 		function initVideo(_startTime)
 		{
+			if(isMobile)
+			{
+				document.getElementById("palyButton").hidden = false;
+				document.getElementById("presentationPlayer").style = "pointer-events: none; opacity: 0.4;"
+				document.getElementById("speackerPlayer").style = "pointer-events: none; opacity: 0.4;"
+				document.getElementById("palyButton").onclick = onPlayClick;
+			}
 			
 			var tag = document.createElement('script');
 			tag.src = "https://www.youtube.com/player_api";
