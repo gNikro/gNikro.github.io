@@ -16,7 +16,7 @@
 		<div style="pointer-events: none;" id="presentationPlayer"></div>
 		<div style="pointer-events: none;" id="speackerPlayer"></div>
 		
-		<div id="palyButton" style="position:absolute; top:50%; left:220px;">
+		<div id="palyButton" style="position:absolute; top:50%; left:220px;" hidden>
 			<img src="img/playbutton.png"/>
 		</div>
 	</div>
@@ -30,7 +30,7 @@
 		if(md.mobile())
 			isMobile = true;
 			
-		if(!isMobile)
+		if(isMobile)
 		{
 			document.getElementById("presentationPlayer").style = "pointer-events: none; opacity: 0.4;"
 			document.getElementById("speackerPlayer").style = "pointer-events: none; opacity: 0.4;"
