@@ -1,28 +1,75 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-	<meta charset="utf-8"/>
-	<title>jsVideoAndChat-</title>
-	<meta name="description" content="" />
-	
-	<script src="dist/mobile-detect.min.js"></script>
-	
-	<link rel="stylesheet" href="mainStyle.min.css" type="text/css">
-		
-</head>
-<body>
-	
-	<div>
-		<div style="pointer-events: none;" id="presentationPlayer"></div>
-		<div style="pointer-events: none;" id="speackerPlayer"></div>
-		
-		<div id="palyButton" style="position:absolute; top:50%; left:220px;" hidden>
-			<img src="img/playbutton.png"/>
-		</div>
-	</div>
+<html>
 
+	<head>
 	
-	<script>
+		<link rel="stylesheet" href="style.css">
+		<meta name="viewport" content="width=device-width">
+		<meta charset="UTF-8">
+		<script src="dist/mobile-detect.min.js"></script>
+	
+	</head>
+	
+	<body>
+	
+		<header>
+		
+			<div class="logo">Логотип</div>
+			<div class="topBarRight"></div>
+		
+		</header>
+		
+		<div class="slide">
+		
+			<div class="slideTitle">ПРЕЗЕНТАЦИЯ</div>
+			<div class="slideVideoWarper">
+					<div class="voiceVideo" id="presentationPlayer"></div>
+			</div>
+		
+		</div>
+		
+		<div class="leftBar">
+		
+			<div class="voice">
+				<div class="voiceTitle">КАМЕРА И ГОЛОС</div>
+				<div class="voiceVideoWarper">
+					<div class="voiceVideo" id="speackerPlayer"></div>
+				</div>
+			</div>
+			
+
+			
+				<div class="chat">
+				
+					<div class="chatTitle">ЧАТ</div>
+					<div id="chat"></div>
+					<input id="chatInput"></input>
+					<button id="sendButton">Отправить</button>
+			
+				</div>
+			
+				<div class="members">
+			
+					<div id="usersHeader">ВСЕГО УЧАСТНИКОВ: {0}</div>
+					<div id="users"></div>
+			
+				</div>
+			
+		
+		</div>
+		
+		
+		
+		<div>
+		<!-- <iframe id="showDiv" src="http://murigin.ru/150za6/button_order.html" frameborder="0" scrolling="no" style="margin:0; width:100%; height:150px; border:none; overflow:hidden;" onload="AdjustIframeHeightOnLoad()" hidden></iframe>  -->
+		</div>
+		
+		
+		
+		
+		
+		
+		<script>
 		
 		var md = new MobileDetect(window.navigator.userAgent);
 		
@@ -30,13 +77,17 @@
 		if(md.mobile())
 			isMobile = true;
 			
+		if(isMobile)
+		{
+			document.getElementById("presentationPlayer").style = "pointer-events: none; opacity: 0.4;"
+			document.getElementById("speackerPlayer").style = "pointer-events: none; opacity: 0.4;"
+			document.getElementById("palyButton").onclick = onPlayClick;
+		}
+		
 		function onPlayClick()
 		{
 			initialize();
 			
-			presentationPlayer.playVideo();
-			speackerPlayer.playVideo();
-			 
 			document.getElementById("presentationPlayer").style = "pointer-events: none;"
 			document.getElementById("speackerPlayer").style = "pointer-events: none;"
 			document.getElementById("palyButton").hidden = true;
@@ -73,13 +124,6 @@
 		
 		function initVideo(_startTime)
 		{
-			if(isMobile)
-			{
-				document.getElementById("palyButton").hidden = false;
-				document.getElementById("presentationPlayer").style = "pointer-events: none; opacity: 0.4;"
-				document.getElementById("speackerPlayer").style = "pointer-events: none; opacity: 0.4;"
-				document.getElementById("palyButton").onclick = onPlayClick;
-			}
 			
 			var tag = document.createElement('script');
 			tag.src = "https://www.youtube.com/player_api";
@@ -104,8 +148,8 @@
 					
 					playerVars: {
 						color: 'white',
-						controls: '0',
-						autohide:'1',
+						controls: '2',
+						autohide:'0',
 						disablekb:'1',
 						showinfo:'0'
 					}
@@ -121,8 +165,8 @@
 					
 					playerVars: {
 						color: 'white',
-						controls: '0',
-						autohide:'1',
+						controls: '2',
+						autohide:'0',
 						disablekb:'1',
 						showinfo:'0',
 					},
@@ -149,7 +193,7 @@
 		
 		function onShowDiv()
 		{
-			document.getElementById("showDiv").hidden = false;
+			//document.getElementById("showDiv").hidden = false;
 		}
 		
 		function onVideoEnded()
@@ -161,7 +205,7 @@
 				speackerPlayer.destroy();
 			
 			window.onbeforeunload = null;
-			window.location = "http://google.com";
+			//window.location = "http://google.com";
 		}
 		
 		function addStartCallback(value)
@@ -177,7 +221,7 @@
 									//'endSeconds': 60,
 									'suggestedQuality': 'large'});
 									
-			presentationPlayer.setVolume(100);
+			presentationPlayer.setVolume(0);
 			
 			speackerPlayer.loadVideoById({
 									'videoId': '256UbEOEKCs',
@@ -185,7 +229,7 @@
 									//'endSeconds': 60,
 									'suggestedQuality': 'large'});
 									
-			speackerPlayer.setVolume(100);
+			speackerPlayer.setVolume(0);
 		}
 		
 		
@@ -195,34 +239,17 @@
 		//}
 	
 	</script>
-	
-	<div id="waitingScreen" hidden>
+	<div id="waitingScreen">
 		<div id="waitingTimer">.....</div>
 	</div>
+		<div id="container" hidden></div>
 	
-	<div id="eventEnd" hidden>
-		Мероприятие закончилось
-	</div>
-	
-	<div id="container" hidden>
-		<div id="usersBlock">
-			<div id="usersHeader">Всего участников: {0}</div>
-			<div id="users"></div>
+		<div id="eventEnd" hidden>
+			Мероприятие закончилось
 		</div>
-		
-		<div id="chatBlock">
-			Чат:
-			<div id="chat"></div>
-			<input id="chatInput"></input>
-			<button id="sendButton">Отправить</button>
-		</div>
-	</div>
-
-	<div>
-		<iframe id="showDiv" src="http://murigin.ru/150za6/button_order.html" frameborder="0" scrolling="no" style="margin:0; width:100%; height:150px; border:none; overflow:hidden;" onload="AdjustIframeHeightOnLoad()" hidden></iframe>
-	</div>
-	
 	<script src="core.js"></script>
-	<!-- <script src="https://www.youtube.com/player_api"></script> -->
-</body>
+	
+	</body>
+
+
 </html>

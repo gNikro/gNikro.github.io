@@ -54,7 +54,7 @@ HxOverrides.substr = function(s,pos,len) {
 	} else if(len < 0) len = s.length + len - pos;
 	return s.substr(pos,len);
 };
-var Main = $hx_exports.Main = function() {
+var Main = function() {
 	var location = window.location.href;
 	var pos = location.indexOf("?") + 1;
 	location = HxOverrides.substr(location,pos,location.length);
@@ -82,24 +82,39 @@ var Main = $hx_exports.Main = function() {
 	if(new Date().getTime() - startDate < -31622400000) return;
 	if(startDate > new Date().getTime() + 31622400000) return;
 	if(!isKey) return;
+	haxe_Log.trace((function($this) {
+		var $r;
+		var d = new Date();
+		d.setTime(startDate);
+		$r = d;
+		return $r;
+	}(this)),{ fileName : "Main.hx", lineNumber : 64, className : "Main", methodName : "new"});
+	haxe_Log.trace((function($this) {
+		var $r;
+		var d1 = new Date();
+		d1.setTime(startDate + startTime);
+		$r = d1;
+		return $r;
+	}(this)),{ fileName : "Main.hx", lineNumber : 65, className : "Main", methodName : "new"});
 	this.mainViewModel = new view_data_MainViewModel();
 	this.mainView = new view_MainView(this.mainViewModel);
+	haxe_Log.trace("isTest",{ fileName : "Main.hx", lineNumber : 70, className : "Main", methodName : "new", customParams : [isTest]});
 	if(isTest) Settings.getInstance().START_TIME = new Date().getTime() - 30000; else {
 		var date = startDate;
 		var time = startTime;
 		var month1 = ((function($this) {
 			var $r;
-			var d = new Date();
-			d.setTime(date);
-			$r = d;
+			var d2 = new Date();
+			d2.setTime(date);
+			$r = d2;
 			return $r;
 		}(this))).getMonth();
 		var month2 = new Date().getMonth();
 		var date1 = month1 * 30 + ((function($this) {
 			var $r;
-			var d1 = new Date();
-			d1.setTime(date);
-			$r = d1;
+			var d3 = new Date();
+			d3.setTime(date);
+			$r = d3;
 			return $r;
 		}(this))).getDate();
 		var date2 = month2 * 30 + new Date().getDate();
@@ -111,12 +126,14 @@ var Main = $hx_exports.Main = function() {
 Main.__name__ = true;
 Main.prototype = {
 	initVideo: function(e) {
+		haxe_Log.trace("init video",{ fileName : "Main.hx", lineNumber : 110, className : "Main", methodName : "initVideo", customParams : [e]});
 		var currentTime = new Date().getTime();
 		var videoStartTime = (currentTime - Settings.getInstance().START_TIME) / 1000;
 		if(videoStartTime < 0) videoStartTime = 0;
 		initVideo(videoStartTime);
 	}
 	,showEndState: function() {
+		haxe_Log.trace("show end",{ fileName : "Main.hx", lineNumber : 122, className : "Main", methodName : "showEndState"});
 		window.document.getElementById("eventEnd").hidden = false;
 		this.mainView.hideAll();
 		onVideoEnded();
@@ -145,10 +162,12 @@ Main.prototype = {
 		return valueAsString;
 	}
 	,showWaitingState: function() {
+		haxe_Log.trace("show waiting",{ fileName : "Main.hx", lineNumber : 156, className : "Main", methodName : "showWaitingState"});
 		this.mainView.waitingState();
 		this.mainView.waitingScreen.addEventListener("waitingEnd",$bind(this,this.initVideo));
 	}
 	,startApp: function() {
+		haxe_Log.trace("start app",{ fileName : "Main.hx", lineNumber : 163, className : "Main", methodName : "startApp"});
 		this.mainView.appState();
 		var namesListLoader = new external_DataLoader();
 		namesListLoader.addEventListener("onLoad",$bind(this,this.onNamesListLoaded));
