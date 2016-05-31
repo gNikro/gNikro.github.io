@@ -1,4 +1,4 @@
-(function (console, $hx_exports, $global) { "use strict";
+(function (console, $global) { "use strict";
 var $estr = function() { return js_Boot.__string_rec(this,''); };
 function $extend(from, fields) {
 	function Inherit() {} Inherit.prototype = from; var proto = new Inherit();
@@ -6,10 +6,10 @@ function $extend(from, fields) {
 	if( fields.toString !== Object.prototype.toString ) proto.toString = fields.toString;
 	return proto;
 }
-var EntryPoint = $hx_exports.EntryPoint = function() { };
+var EntryPoint = function() { };
 EntryPoint.__name__ = true;
 EntryPoint.main = function() {
-	haxe_Log.trace(EntryPoint.main,{ fileName : "EntryPoint.hx", lineNumber : 11, className : "EntryPoint", methodName : "main", customParams : [EntryPoint.main]});
+	haxe_Log.trace(EntryPoint.main,{ fileName : "EntryPoint.hx", lineNumber : 10, className : "EntryPoint", methodName : "main", customParams : [EntryPoint.main]});
 	EntryPoint.onStart();
 };
 EntryPoint.onStart = function() {
@@ -225,7 +225,7 @@ chatManagment_ChatController.prototype = {
 		if(this.chatEvents.length > 0) {
 			var currentMessage = this.chatEvents[0];
 			if(currentMessage.time < new Date().getTime()) {
-				this.viewModel.addMessage(currentMessage.name + ": " + currentMessage.message);
+				this.viewModel.addMessage(currentMessage.name,currentMessage.message);
 				this.chatEvents.shift();
 			}
 		}
@@ -934,6 +934,7 @@ view_MainView.prototype = {
 		this.usersListHeader.innerText = this.userlistBlockHeaderPattern.split("{0}").join(Std.string(this.usersCount));
 	}
 	,buildUi: function() {
+		haxe_Log.trace("build ui",{ fileName : "MainView.hx", lineNumber : 94, className : "view.MainView", methodName : "buildUi"});
 		this.waitingScreen = new view_WaitingScreen();
 		this.showDiv = window.document.getElementById("showDiv");
 		this.mainContainer = window.document.getElementById("container");
@@ -949,14 +950,30 @@ view_MainView.prototype = {
 	}
 	,sendMessage: function() {
 		if(this.chatTextInput.value.length == 0) return;
-		this.viewModel.addMessage("Вы: " + this.chatTextInput.value);
+		this.viewModel.addMessage("Вы",this.chatTextInput.value);
 		this.chatTextInput.value = "";
 	}
 	,updateMessagesLists: function(e) {
-		this.chatMessages.innerText = this.viewModel.messages.join("\n");
+		var text = "";
+		var _g = 0;
+		var _g1 = this.viewModel.messages;
+		while(_g < _g1.length) {
+			var messageData = _g1[_g];
+			++_g;
+			text += "<div class=\"chatName\">" + Std.string(messageData.name) + "</div><div class=\"chatMessage\">" + Std.string(messageData.message) + "</div>";
+		}
+		this.chatMessages.innerHTML = text;
 	}
 	,updateUsersList: function(e) {
-		this.usersList.innerText = this.viewModel.usersList.join("\n");
+		var text = "";
+		var _g = 0;
+		var _g1 = this.viewModel.usersList;
+		while(_g < _g1.length) {
+			var userName = _g1[_g];
+			++_g;
+			text += "<div class=\"member\"><img src=\"img/red-member.png\">" + userName + "</div>";
+		}
+		this.usersList.innerHTML = text;
 		this.usersCount += this.viewModel.usersList.length;
 	}
 	,__class__: view_MainView
@@ -1030,9 +1047,8 @@ view_data_MainViewModel.prototype = $extend(events_Observer.prototype,{
 		this.usersList.push(user);
 		this.dispatchEvent(new view_events_UserListEvent("userListChange"));
 	}
-	,addMessage: function(message) {
-		var date = new Date();
-		this.messages.push(message);
+	,addMessage: function(name,message) {
+		this.messages.push({ name : name, message : message});
 		this.dispatchEvent(new view_events_ChatEvent("messageAdd"));
 	}
 	,formatMinutes: function(minutes) {
@@ -1103,4 +1119,4 @@ view_events_ChatEvent.MESSAGE_ADD = "messageAdd";
 view_events_UserListEvent.USER_LIST_CHANGE = "userListChange";
 view_events_WaitingScreenEvent.WAITING_END = "waitingEnd";
 EntryPoint.main();
-})(typeof console != "undefined" ? console : {log:function(){}}, typeof window != "undefined" ? window : exports, typeof window != "undefined" ? window : typeof global != "undefined" ? global : typeof self != "undefined" ? self : this);
+})(typeof console != "undefined" ? console : {log:function(){}}, typeof window != "undefined" ? window : typeof global != "undefined" ? global : typeof self != "undefined" ? self : this);
