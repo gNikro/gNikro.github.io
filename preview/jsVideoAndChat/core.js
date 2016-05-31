@@ -175,7 +175,9 @@ Main.prototype = {
 		new chatManagment_ChatController(this.mainViewModel);
 	}
 	,onNamesListLoaded: function(e) {
-		var namesList = e.data.split("\r\n");
+		var data = e.data;
+		var namesList;
+		if(data.indexOf("\r\n") != 1) namesList = data.split("\r\n"); else namesList = data.split("\n");
 		namesList.sort($bind(this,this.sortOnTime));
 		namesList.unshift("Вы");
 		this.mainViewModel.addUsers(namesList);
