@@ -1,0 +1,49 @@
+@import url(https://fonts.googleapis.com/css?family=Ubuntu:500,400&subset=latin,cyrillic);*{box-sizing:border-box;font-family:Verdana;font-weight:400;}
+html{height:100%;overflow:hidden;}
+body{height:100%;margin:0;background-color:#484d51;}
+header{width:100%;height:40px;border-bottom:1px solid #404448;background-color:#50555a;}
+.logo{float:left;width:20%;height:100%;background-image:url(img/2.png);background-repeat:no-repeat;background-position:0% 50%;margin-left:5%;}
+.topBarRight{width:15%;height:100%;background-color:#ccc;float:right;}
+.leftBar{float:left;width:29%;height:90vh;margin:1vh;}
+.voice{max-height:37vh;min-height:34vh;overflow:hidden;width:100%;border-radius:5px;border:1px solid #393d40;background-image:url(img/bg.png);background-position:50%;background-size:cover;}
+.voiceTitle{width:100%;height:26px;background-color:#e7e8e7;color:#444;border-radius:5px 5px 0 0;font-size:10px;line-height:26px;padding-left:15px;border-bottom:1px solid #d4d4d4;}
+.voiceVideoWarper{border-radius:0 0 5px 5px;position:relative;padding-bottom:56.25%;height:0;}
+.slideVideoWarper{border-radius:0 0 5px 5px;position:relative;padding-bottom:56.25%;padding-top:25px;height:0;top:50%;}
+.voiceVideoWarper iframe{position:absolute;left:0;width:100%;height:100%;}
+.slideVideoWarper iframe{position:absolute;top:-50%;left:0;width:100%;height:100%;}
+.members{margin-top:1vh;width:100%;height:27vh;background-color:#fff;border-radius:5px;overflow:hidden;border:1px solid #393d40;}
+.membersHeader{width:100%;height:26px;background-color:#e7e8e7;color:#444;border-radius:5px 5px 0 0;border-bottom:1px solid #d4d4d4;font-size:10px;line-height:26px;padding-left:15px;}
+.dokladTitle{height:19px;background-color:#f1f1f1;color:#444;font-size:10px;line-height:19px;padding-left:20px;border:1px solid #e4e4e4;}
+.member{height:19px;color:#444;font-size:12px;line-height:19px;padding-left:20px;margin-top:2px;margin-bottom:2px;}
+.member img{vertical-align:middle;margin-right:5px;}
+.docMember{height:19px;color:#444;font-size:12px;line-height:19px;padding-left:20px;margin-top:2px;margin-bottom:2px;}
+.docMember img{vertical-align:middle;margin-right:5px;}
+#usersHeader{height:19px;background-color:#f1f1f1;color:#444;font-size:10px;line-height:19px;padding-left:20px;border:1px solid #e4e4e4;}
+#users{color:#444;font-size:10px;line-height:15px;padding-left:20px;overflow-y:auto;height:80%;font-size:14px;color:#333;}
+.chat{width:100%;height:27vh;margin-top:1vh;background-color:#fff;border-radius:5px;border:1px solid #393d40;}
+.chatTitle{width:100%;height:28px;background-color:#e7e8e7;color:#444;border-radius:5px 5px 0 0;border-bottom:1px solid #d4d4d4;font-size:10px;padding-top:0.5em;padding-left:15px;}
+#chat{width:100%;height:75%;height:calc(100% - 28px - 36px);overflow:auto;padding-left:15px;padding-top:4px;padding-right:8px;padding-bottom:4px;font-size:14px;}
+.chatBottom{height:36px;width:100%;border-top:1px solid #d4d4d4;border-radius:0 0 5px 5px;background-color:#e7e8e7;}
+#chatInput{float:left;width:calc(100% - 118px);height:20px;border:1px solid #ddd;margin-top:6px;margin-left:6px;margin-right:6px;}
+#sendButton{margin-top:6px;float:left;width:100px;height:20px;color:#fff;font-weight:bold;font-size:12px;text-shadow:0 1px 1px rgba(0,0,0,0.5);border-radius:3px;border:1px solid #6fbe3f;background-color:#75c943;}
+.slide{width:68%;height:90vh;float:right;background-color:#000;border-radius:5px;margin-right:1%;margin-top:1vh;box-shadow:0 0 5px 0 rgba(0,0,0,0.6);overflow:hidden;}
+.slideTitle{width:100%;height:26px;background-color:#e7e8e7;color:#444;border-bottom:1px solid #ddd;border-radius:5px 5px 0 0;font-size:10px;line-height:26px;padding-left:15px;}
+.container{height:600px;}
+#showDiv{display:none;}
+#waitingScreen{text-align:center;position:relative;height:100%;width:100%;top:0px;left:0px;}
+#waitingText{margin-top:30%;color:#fff;font-size:30px;}
+#waitingTimer{margin-top:5%;color:#fff;font-size:50px;}
+@media (max-width:768px){html{overflow:scroll;}
+.logo{width:80%;}
+.topBarRight{width:20%;}
+.leftBar{width:100%;margin-left:0;height:auto;}
+.slide{width:100%;margin-right:0px;margin-bottom:15px;}
+.members{height:auto;}
+#users{display:none;}
+.chat{height:280px;}
+.chatTitle{height:28px;}
+#chat{height:222px;}
+#chatInput{height:28px;}
+#sendButton{height:28px;}
+.slide{max-height:280px;}}
+

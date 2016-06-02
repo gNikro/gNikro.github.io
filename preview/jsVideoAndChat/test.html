@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title></title>
+</head>
+<body>
+	
+	<div id="testDiv" style="border:1px solid #ccc;">
+		
+	</div>
+	<script>
+		rsize(68, 90)
+		function rsize(wSizeRait, hSizeRait)
+		{
+			var w = window;
+			var d = document;
+			var e = d.documentElement;
+			var g = d.getElementsByTagName('body')[0];
+			
+			var screenWidth = 1100;//w.innerWidth || e.clientWidth || g.clientWidth;
+			var screenHeight = 500;//w.innerHeight|| e.clientHeight|| g.clientHeight;
+			
+			screenWidth *= wSizeRait / 100;
+			screenHeight *= hSizeRait / 100;
+			
+			console.log('container size', screenWidth, screenHeight);
+			
+			var documentElementWidth = 640;
+			var documentElementHeight = 380;
+			
+			console.log("default size", documentElementWidth, documentElementHeight);
+			
+			var ratio = 0;
+			
+			var isWidthScaling = screenWidth < screenHeight;
+			
+			if(isWidthScaling)
+				ratio = screenWidth / documentElementWidth;
+			else
+				ratio = screenHeight / documentElementHeight;
+			
+			console.log("isWidthScaling", isWidthScaling);
+			console.log("scale ratio", ratio);
+			
+			documentElementWidth *= ratio;
+			documentElementHeight *= ratio;
+			
+			if(!isWidthScaling)
+			{
+				if(documentElementWidth > screenWidth)
+				{
+					ratio = screenWidth / documentElementWidth;
+					documentElementWidth *= ratio;
+					documentElementHeight *= ratio
+				}
+			}
+			
+			console.log('ruslt size', documentElementWidth, documentElementHeight);
+			
+			document.getElementById("testDiv").style.width = documentElementWidth;
+			document.getElementById("testDiv").style.height = documentElementHeight;
+		}
+	</script>
+</body>
+</html>

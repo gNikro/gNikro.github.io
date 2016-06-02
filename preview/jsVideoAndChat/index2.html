@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<link rel="stylesheet" href="style.css">
+		
+		<div class="voiceVideoWarper">
+			<div class="voiceVideo" id="speackerPlayer"></div>
+		</div>
+	</head>
+	
+	<script>
+
+		var speackerPlayer;
+		window.onresize = onDocumentResize;
+		window.onload = initVideo;
+		
+		function onDocumentResize()
+		{
+			resizeElement(document.getElementById("speackerPlayer"));
+		}
+		
+		function resizeElement(documentElement) 
+		{
+			var w = window;
+			var d = document;
+			var e = d.documentElement;
+			var g = d.getElementsByTagName('body')[0];
+			
+			var screenWidth = documentElement.offsetWidth;//w.innerWidth || e.clientWidth || g.clientWidth;
+			var screenHeight = w.innerHeight|| e.clientHeight|| g.clientHeight;
+			
+			var documentElementWidth = documentElement.offsetWidth;
+			var documentElementHeight = documentElement.offsetHeight;
+			
+			var ratio = 0;
+			
+			if(screenWidth < screenHeight)
+				ratio = screenWidth / documentElementWidth;
+			else
+				ratio = screenHeight / documentElementHeight;
+				
+			documentElementWidth *= ratio;
+			documentElementHeight *= ratio;
+			
+			documentElement.style.height = toPx(documentElementHeight);
+			//obj.style.width = toPx(objWidth);
+			
+			//player.setSize(documentElementWidth, objHeight);
+		}
+		
+		function toPx(value)
+		{
+			return value + "px";
+		}
+		
+		var startTime;
+		
+		function initVideo(_startTime)
+		{
+			
+			var tag = document.createElement('script');
+			tag.src = "https://www.youtube.com/player_api";
+			var firstScriptTag = document.getElementsByTagName('script')[0];
+			firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+			
+			startTime = _startTime;
+		}
+		
+		function onYouTubePlayerAPIReady() 
+		{
+			speackerPlayer = new YT.Player
+			(
+				'speackerPlayer', 
+				{
+					height: '390',
+					width: '640',
+					
+					playerVars: {
+						color: 'white',
+						controls: '0',
+						autohide:'1',
+						disablekb:'1',
+						showinfo:'0',
+						autoplay:'1'
+					}
+					,
+					events: {
+						
+						onReady: initialize
+					}
+				}
+			);
+			
+			onDocumentResize();
+		}
+		
+		function initialize()
+		{
+			speackerPlayer.loadVideoById({
+									'videoId': '256UbEOEKCs',
+									'startSeconds': startTime,
+									//'endSeconds': 60,
+									'suggestedQuality': 'large'});
+									
+			speackerPlayer.setVolume(0);
+		}
+	</script>
+	
+	</body>
+
+
+</html>

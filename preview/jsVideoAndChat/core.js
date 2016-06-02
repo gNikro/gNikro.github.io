@@ -6,6 +6,22 @@ function $extend(from, fields) {
 	if( fields.toString !== Object.prototype.toString ) proto.toString = fields.toString;
 	return proto;
 }
+var DateHelper = function() {
+};
+DateHelper.__name__ = true;
+DateHelper.getTimezoneDate = function() {
+	var date = new Date();
+	if(date.getTimezoneOffset() != -180) {
+		var t = date.getTime() + date.getTimezoneOffset() * 60 * 1000 + 10800000;
+		var d = new Date();
+		d.setTime(t);
+		date = d;
+	}
+	return date;
+};
+DateHelper.prototype = {
+	__class__: DateHelper
+};
 var EntryPoint = function() { };
 EntryPoint.__name__ = true;
 EntryPoint.main = function() {
@@ -70,7 +86,7 @@ var Main = function() {
 	var startDate;
 	var startTime;
 	if(bytes.length == 11) {
-		var currentDate = new Date();
+		var currentDate = DateHelper.getTimezoneDate();
 		var s = currentDate.getFullYear() + "-" + this.formatToTime(currentDate.getMonth() + 1) + "-" + this.formatToTime(currentDate.getDate());
 		currentDate = HxOverrides.strDate(s);
 		startDate = currentDate.getTime();
@@ -79,61 +95,52 @@ var Main = function() {
 		startDate = bytes.getDouble(3);
 		startTime = bytes.getDouble(11);
 	}
-	if(new Date().getTime() - startDate < -31622400000) return;
-	if(startDate > new Date().getTime() + 31622400000) return;
+	var currentTime = DateHelper.getTimezoneDate().getTime();
+	if(currentTime - startDate < -31622400000) return;
+	if(startDate > currentTime + 31622400000) return;
 	if(!isKey) return;
-	haxe_Log.trace((function($this) {
-		var $r;
-		var d = new Date();
-		d.setTime(startDate);
-		$r = d;
-		return $r;
-	}(this)),{ fileName : "Main.hx", lineNumber : 64, className : "Main", methodName : "new"});
-	haxe_Log.trace((function($this) {
-		var $r;
-		var d1 = new Date();
-		d1.setTime(startDate + startTime);
-		$r = d1;
-		return $r;
-	}(this)),{ fileName : "Main.hx", lineNumber : 65, className : "Main", methodName : "new"});
-	this.mainViewModel = new view_data_MainViewModel();
-	this.mainView = new view_MainView(this.mainViewModel);
-	haxe_Log.trace("isTest",{ fileName : "Main.hx", lineNumber : 70, className : "Main", methodName : "new", customParams : [isTest]});
-	if(isTest) Settings.getInstance().START_TIME = new Date().getTime() - 30000; else {
+	var date1 = 0;
+	var date2 = 0;
+	if(isTest) Settings.getInstance().START_TIME = currentTime - 30000; else {
+		var tempDate = DateHelper.getTimezoneDate();
 		var date = startDate;
 		var time = startTime;
 		var month1 = ((function($this) {
 			var $r;
-			var d2 = new Date();
-			d2.setTime(date);
-			$r = d2;
+			var d = new Date();
+			d.setTime(date);
+			$r = d;
 			return $r;
 		}(this))).getMonth();
-		var month2 = new Date().getMonth();
-		var date1 = month1 * 30 + ((function($this) {
+		var month2 = tempDate.getMonth();
+		var date11 = month1 * 30 + ((function($this) {
 			var $r;
-			var d3 = new Date();
-			d3.setTime(date);
-			$r = d3;
+			var d1 = new Date();
+			d1.setTime(date);
+			$r = d1;
 			return $r;
 		}(this))).getDate();
-		var date2 = month2 * 30 + new Date().getDate();
-		if(date1 < date2) this.showEndState(); else Settings.getInstance().START_TIME = date + time;
+		var date21 = month2 * 30 + tempDate.getDate();
+		if(date11 < date21) this.showEndState(); else Settings.getInstance().START_TIME = date + time;
 	}
+	this.mainViewModel = new view_data_MainViewModel();
+	this.mainView = new view_MainView(this.mainViewModel);
+	if(date1 < date2) this.showEndState();
 	addStartCallback($bind(this,this.startApp));
-	if(Settings.getInstance().START_TIME - new Date().getTime() <= 0) this.initVideo(); else this.showWaitingState();
+	if(Settings.getInstance().START_TIME - currentTime <= 0) this.initVideo(); else this.showWaitingState();
+	var namesListLoader = new external_DataLoader();
+	namesListLoader.addEventListener("onLoad",$bind(this,this.onNamesListLoaded));
+	namesListLoader.load("usersList.txt");
 };
 Main.__name__ = true;
 Main.prototype = {
 	initVideo: function(e) {
-		haxe_Log.trace("init video",{ fileName : "Main.hx", lineNumber : 110, className : "Main", methodName : "initVideo", customParams : [e]});
-		var currentTime = new Date().getTime();
+		var currentTime = DateHelper.getTimezoneDate().getTime();
 		var videoStartTime = (currentTime - Settings.getInstance().START_TIME) / 1000;
 		if(videoStartTime < 0) videoStartTime = 0;
 		initVideo(videoStartTime);
 	}
 	,showEndState: function() {
-		haxe_Log.trace("show end",{ fileName : "Main.hx", lineNumber : 122, className : "Main", methodName : "showEndState"});
 		window.document.getElementById("eventEnd").hidden = false;
 		this.mainView.hideAll();
 		onVideoEnded();
@@ -162,17 +169,11 @@ Main.prototype = {
 		return valueAsString;
 	}
 	,showWaitingState: function() {
-		haxe_Log.trace("show waiting",{ fileName : "Main.hx", lineNumber : 156, className : "Main", methodName : "showWaitingState"});
 		this.mainView.waitingState();
 		this.mainView.waitingScreen.addEventListener("waitingEnd",$bind(this,this.initVideo));
 	}
 	,startApp: function() {
-		haxe_Log.trace("start app",{ fileName : "Main.hx", lineNumber : 163, className : "Main", methodName : "startApp"});
 		this.mainView.appState();
-		var namesListLoader = new external_DataLoader();
-		namesListLoader.addEventListener("onLoad",$bind(this,this.onNamesListLoaded));
-		namesListLoader.load("usersList.txt");
-		new chatManagment_ChatController(this.mainViewModel);
 	}
 	,onNamesListLoaded: function(e) {
 		var data = e.data;
@@ -180,7 +181,9 @@ Main.prototype = {
 		if(data.indexOf("\r\n") != -1) namesList = data.split("\r\n"); else namesList = data.split("\n");
 		namesList.sort($bind(this,this.sortOnTime));
 		namesList.unshift("Вы");
-		this.mainViewModel.addUsers(namesList);
+		this.mainViewModel.userNamesList = namesList;
+		this.mainView.start();
+		new chatManagment_ChatController(this.mainViewModel);
 	}
 	,sortOnTime: function(x,y) {
 		if(Math.random() > 0.5) return 1; else return -1;
@@ -226,7 +229,7 @@ chatManagment_ChatController.prototype = {
 	,onUpdate: function() {
 		if(this.chatEvents.length > 0) {
 			var currentMessage = this.chatEvents[0];
-			if(currentMessage.time < new Date().getTime()) {
+			if(currentMessage.time < DateHelper.getTimezoneDate().getTime()) {
 				this.viewModel.addMessage(currentMessage.name,currentMessage.message);
 				this.chatEvents.shift();
 			}
@@ -242,11 +245,26 @@ chatManagment_ChatController.prototype = {
 			++_g;
 			var chatMessageParts = chatMessage.split("|");
 			var time = chatMessageParts[0];
+			var timeParts = time.split(":");
+			var dateParts = [];
+			if(timeParts.length == 2) timeParts.push("00");
+			var todayDate = DateHelper.getTimezoneDate();
+			dateParts.unshift(this.formatToTime(todayDate.getDate()));
+			dateParts.unshift(this.formatToTime(todayDate.getMonth() + 1));
+			dateParts.unshift(Std.string(todayDate.getFullYear()));
+			time = dateParts.join("-") + " " + timeParts.join(":");
+			var timeAsDate = HxOverrides.strDate(time);
 			var name = chatMessageParts[1];
 			var message = chatMessageParts[2];
-			var messageTime = Settings.getInstance().START_TIME + parseFloat(time) * 1000;
-			if(messageTime > new Date().getTime()) this.chatEvents.push(new chatManagment_ChatEventMessage(messageTime,name,message));
+			var messageTime = timeAsDate.getTime();
+			if(messageTime > todayDate.getTime()) this.chatEvents.push(new chatManagment_ChatEventMessage(messageTime,name,message));
 		}
+	}
+	,formatToTime: function(value) {
+		var valueAsString;
+		if(value == null) valueAsString = "null"; else valueAsString = "" + value;
+		if(valueAsString.length == 1) valueAsString = "0" + valueAsString;
+		return valueAsString;
 	}
 	,sortOnTime: function(x,y) {
 		if(x.time > y.time) return 1; else if(x.time < y.time) return -1; else return 0;
@@ -898,7 +916,8 @@ js_html_compat_Uint8Array._subarray = function(start,end) {
 	return a;
 };
 var view_MainView = function(viewModel) {
-	this.usersCount = 300;
+	this.lastState = -1;
+	this.usersCount = 0;
 	this.viewModel = viewModel;
 	this.initialize();
 };
@@ -906,15 +925,18 @@ view_MainView.__name__ = true;
 view_MainView.prototype = {
 	hideAll: function() {
 		this.waitingScreen.hide();
-		this.mainContainer.hidden = true;
+		this.chatContainer.hidden = true;
+		this.usersListContainer.hidden = true;
 	}
 	,waitingState: function() {
 		this.waitingScreen.show();
-		this.mainContainer.hidden = true;
+		this.chatContainer.hidden = false;
+		this.usersListContainer.hidden = false;
 	}
 	,appState: function() {
 		this.waitingScreen.hide();
-		this.mainContainer.hidden = false;
+		this.chatContainer.hidden = false;
+		this.usersListContainer.hidden = false;
 	}
 	,initialize: function() {
 		this.buildUi();
@@ -923,25 +945,61 @@ view_MainView.prototype = {
 		this.sendButton.onclick = $bind(this,this.sendMessage);
 		this.viewModel.addEventListener("userListChange",$bind(this,this.updateUsersList));
 		this.viewModel.addEventListener("messageAdd",$bind(this,this.updateMessagesLists));
-		new haxe_Timer(34285).run = $bind(this,this.onUsersCountUpdate);
+	}
+	,start: function() {
+		var state = this.getUsersToTimeState();
+		var count = 0;
+		this.lastState = state;
+		if(state == 0) count += 10 + Math.floor(Math.random() * 20); else if(state == 1) count += 50 + Math.floor(Math.random() * 50); else if(state == 2) count += 280 + Math.floor(Math.random() * 40);
+		var _g = 0;
+		while(_g < count) {
+			var i = _g++;
+			this.viewModel.addUser(this.viewModel.userNamesList[Math.floor(Math.random() * this.viewModel.userNamesList.length)],true);
+		}
+		this.usersCount += count;
+		this.getUsersUpdateTimer();
 		this.onUsersCountUpdate();
-		this.showDivTimer = new haxe_Timer(15000);
+		this.updateUsersList();
+	}
+	,getUsersToTimeState: function() {
+		var currentTime = DateHelper.getTimezoneDate().getTime();
+		if(Settings.getInstance().START_TIME - currentTime > 1800000) return 0; else if(Settings.getInstance().START_TIME - currentTime < 180000 && Settings.getInstance().START_TIME - currentTime > 300000) return 1; else return 2;
+	}
+	,getUsersUpdateTimer: function() {
+		var state = this.getUsersToTimeState();
+		var interval = 0;
+		if(state == 0) interval = 120000; else if(state == 1) interval = Math.floor(30000.); else if(state == 1) interval = 34285;
+		if(this.usersUpdateTimer != null) this.usersUpdateTimer.stop();
+		this.usersUpdateTimer = new haxe_Timer(interval);
+		this.usersUpdateTimer.run = $bind(this,this.onUsersCountUpdate);
 	}
 	,onShowDiv: function() {
 		this.showDiv.hidden = false;
-		this.showDivTimer.stop();
 	}
 	,onUsersCountUpdate: function() {
-		this.usersCount += 1;
+		var state = this.getUsersToTimeState();
+		var count = 0;
+		if(state == 0) count += Math.floor(1 + Math.random() * 3); else if(state == 1) count += Math.floor(3 + Math.random() * 2); else if(state == 1) count += 1;
+		var _g = 0;
+		while(_g < count) {
+			var i = _g++;
+			this.viewModel.addUser(this.viewModel.userNamesList[Math.floor(Math.random() * this.viewModel.userNamesList.length)],true);
+		}
+		this.usersCount += count;
 		this.usersListHeader.innerText = this.userlistBlockHeaderPattern.split("{0}").join(Std.string(this.usersCount));
+		if(this.lastState != state) {
+			this.lastState = state;
+			this.getUsersUpdateTimer();
+		}
+		this.updateUsersList();
 	}
 	,buildUi: function() {
-		haxe_Log.trace("build ui",{ fileName : "MainView.hx", lineNumber : 94, className : "view.MainView", methodName : "buildUi"});
 		this.waitingScreen = new view_WaitingScreen();
 		this.showDiv = window.document.getElementById("showDiv");
-		this.mainContainer = window.document.getElementById("container");
+		this.usersListContainer = window.document.getElementById("usersListContainer");
 		this.usersList = window.document.getElementById("users");
 		this.usersListHeader = window.document.getElementById("usersHeader");
+		this.chatContainer = window.document.getElementById("chatContainer");
 		this.chatMessages = window.document.getElementById("chat");
 		this.chatTextInput = js_Boot.__cast(window.document.getElementById("chatInput") , HTMLInputElement);
 		this.sendButton = window.document.getElementById("sendButton");
@@ -954,6 +1012,7 @@ view_MainView.prototype = {
 		if(this.chatTextInput.value.length == 0) return;
 		this.viewModel.addMessage("Вы",this.chatTextInput.value);
 		this.chatTextInput.value = "";
+		this.chatTextInput.select();
 	}
 	,updateMessagesLists: function(e) {
 		var text = "";
@@ -962,9 +1021,11 @@ view_MainView.prototype = {
 		while(_g < _g1.length) {
 			var messageData = _g1[_g];
 			++_g;
-			text += "<div class=\"chatName\">" + Std.string(messageData.name) + "</div><div class=\"chatMessage\">" + Std.string(messageData.message) + "</div>";
+			text += "<div class=\"chatMessege\"><span class=\"chatName\">" + Std.string(messageData.name) + ":</span>" + Std.string(messageData.message) + "</div>";
 		}
 		this.chatMessages.innerHTML = text;
+		var scrollHeight = Math.floor(Math.max(this.chatMessages.scrollHeight,this.chatMessages.clientHeight));
+		this.chatMessages.scrollTop = scrollHeight - this.chatMessages.clientHeight;
 	}
 	,updateUsersList: function(e) {
 		var text = "";
@@ -973,10 +1034,11 @@ view_MainView.prototype = {
 		while(_g < _g1.length) {
 			var userName = _g1[_g];
 			++_g;
-			text += "<div class=\"member\"><img src=\"img/red-member.png\">" + userName + "</div>";
+			text += "<div class=\"member\"><img src=\"img/gray-member.png\">" + userName + "</div>";
 		}
 		this.usersList.innerHTML = text;
-		this.usersCount += this.viewModel.usersList.length;
+		var scrollHeight = Math.floor(Math.max(this.usersList.scrollHeight,this.usersList.clientHeight));
+		this.usersList.scrollTop = scrollHeight - this.usersList.clientHeight;
 	}
 	,__class__: view_MainView
 };
@@ -993,7 +1055,7 @@ view_WaitingScreen.prototype = $extend(events_Observer.prototype,{
 		this.timer.run = $bind(this,this.onTick);
 	}
 	,onTick: function() {
-		var currentTime = new Date().getTime();
+		var currentTime = DateHelper.getTimezoneDate().getTime();
 		var startTime = Settings.getInstance().START_TIME;
 		if(startTime - currentTime <= 0) {
 			this.timer.stop();
@@ -1006,7 +1068,7 @@ view_WaitingScreen.prototype = $extend(events_Observer.prototype,{
 			seconds = Math.floor(seconds % 60);
 			minutes = Math.floor(minutes % 60);
 			if(days > 0) hours = hours % 24;
-			this.waitingTimer.innerText = (days > 0?this.formatToTime(days) + ":":"") + this.formatToTime(hours) + ":" + this.formatToTime(minutes) + ":" + this.formatToTime(seconds);
+			if(this.waitingTimer != null) this.waitingTimer.innerText = (days > 0?this.formatToTime(days) + ":":"") + this.formatToTime(hours) + ":" + this.formatToTime(minutes) + ":" + this.formatToTime(seconds);
 		}
 	}
 	,formatToTime: function(value) {
@@ -1045,9 +1107,10 @@ view_data_MainViewModel.prototype = $extend(events_Observer.prototype,{
 		}
 		this.dispatchEvent(new view_events_UserListEvent("userListChange"));
 	}
-	,addUser: function(user) {
+	,addUser: function(user,silent) {
+		if(silent == null) silent = false;
 		this.usersList.push(user);
-		this.dispatchEvent(new view_events_UserListEvent("userListChange"));
+		if(silent == false) this.dispatchEvent(new view_events_UserListEvent("userListChange"));
 	}
 	,addMessage: function(name,message) {
 		this.messages.push({ name : name, message : message});
