@@ -10,6 +10,8 @@ function $extend(from, fields) {
 	return proto;
 }
 var Actor = function(view,atlas) {
+	this.isUnderMouse = false;
+	this.colorData = new swfdata_ColorData();
 	this.position = new openfl_geom_Point();
 	this.atlas = atlas;
 	this.view = view;
@@ -23,9 +25,22 @@ $hxClasses["Actor"] = Actor;
 Actor.__name__ = ["Actor"];
 Actor.prototype = {
 	update: function() {
+		if(this.__init == false) {
+			this.__init = true;
+			this.set_alpha(0);
+			motion_Actuate.tween(this,0.5,{ alpha : 1}).delay(0.1);
+		}
 		this.view.update();
 	}
+	,get_alpha: function() {
+		return this.colorData.a;
+	}
+	,set_alpha: function(value) {
+		this.colorData.a = value;
+		return value;
+	}
 	,__class__: Actor
+	,__properties__: {set_alpha:"set_alpha",get_alpha:"get_alpha"}
 };
 var ApplicationMain = function() { };
 $hxClasses["ApplicationMain"] = ApplicationMain;
@@ -83,7 +98,7 @@ ApplicationMain.init = function() {
 	}
 };
 ApplicationMain.main = function() {
-	ApplicationMain.config = { build : "1207", company : "...", file : "TestOpenflConverter", fps : 45, name : "TestOpenflConverter", orientation : "", packageName : "TestOpenflConverter", version : "1.0.0", windows : [{ antialiasing : 0, background : 0, borderless : false, depthBuffer : false, display : 0, fullscreen : false, hardware : true, height : 800, parameters : "{}", resizable : false, stencilBuffer : true, title : "TestOpenflConverter", vsync : false, width : 800, x : null, y : null}]};
+	ApplicationMain.config = { build : "1272", company : "...", file : "TestOpenflConverter", fps : 45, name : "TestOpenflConverter", orientation : "", packageName : "TestOpenflConverter", version : "1.0.0", windows : [{ antialiasing : 0, background : 0, borderless : false, depthBuffer : false, display : 0, fullscreen : false, hardware : true, height : 800, parameters : "{}", resizable : false, stencilBuffer : true, title : "TestOpenflConverter", vsync : false, width : 800, x : null, y : null}]};
 };
 ApplicationMain.start = function() {
 	var hasMain = false;
@@ -1764,14 +1779,14 @@ TestRenderer.prototype = $extend(openfl_display_Sprite.prototype,{
 		this.stage.stage3Ds.data[0].requestContext3D(openfl_display3D__$Context3DRenderMode_Context3DRenderMode_$Impl_$.fromString("auto"));
 	}
 	,onContextCreatedError: function(e) {
-		haxe_Log.trace(e.toString(),{ fileName : "TestRenderer.hx", lineNumber : 60, className : "TestRenderer", methodName : "onContextCreatedError"});
+		haxe_Log.trace(e.toString(),{ fileName : "TestRenderer.hx", lineNumber : 61, className : "TestRenderer", methodName : "onContextCreatedError"});
 	}
 	,onContextCreated: function(e) {
-		haxe_Log.trace("on context created",{ fileName : "TestRenderer.hx", lineNumber : 66, className : "TestRenderer", methodName : "onContextCreated"});
+		haxe_Log.trace("on context created",{ fileName : "TestRenderer.hx", lineNumber : 67, className : "TestRenderer", methodName : "onContextCreated"});
 		this.context3D = this.stage.stage3Ds.data[0].context3D;
 		this.context3D.configureBackBuffer(this.stage.stageWidth,this.stage.stageHeight,0,true);
 		this.context3D.setCulling(3);
-		this.context3D.enableErrorChecking = false;
+		this.context3D.enableErrorChecking = true;
 		this.context3D.setDepthTest(true,0);
 		renderer_TextureManager.context = this.context3D;
 		var outlineAtlas = new swfdata_atlas_GLTextureAtlas("outline",openfl_Assets.getBitmapData("img/outline_pattern.png",true),openfl_display3D__$Context3DTextureFormat_Context3DTextureFormat_$Impl_$.toString(1),0);
@@ -1781,6 +1796,8 @@ TestRenderer.prototype = $extend(openfl_display_Sprite.prototype,{
 		this.stage.addEventListener("mouseDown",$bind(this,this.onMouseDown));
 		this.stage.addEventListener("mouseUp",$bind(this,this.onMouseUp));
 		this.stage.addEventListener("rightMouseDown",$bind(this,this.onRightDown));
+		this.stage.addEventListener("rightMouseUp",$bind(this,this.onRightUp));
+		this.stage.addEventListener("menuSelect",$bind(this,this.onMenuSelect));
 		this.bgTexture = this.context3D.createTexture(256,256,1,false,0);
 		this.bgTexture.uploadFromBitmapData(openfl_Assets.getBitmapData("img/bg_tile_pattern.png",true),0);
 		this.renderer.bgTexture = this.bgTexture;
@@ -1825,6 +1842,13 @@ TestRenderer.prototype = $extend(openfl_display_Sprite.prototype,{
 			var tree = new Actor(tmp3,__map_reserved[treeId] != null?_this7.getReserved(treeId):_this7.h[treeId]);
 			tree.position.setTo(-16,i);
 			this.scene.addActor(tree);
+			treeId = "albion_mirabelle" + tags[Math.floor(Math.random() * tags.length)];
+			var _this8 = this.linkagesMap;
+			var tmp4 = __map_reserved[treeId] != null?_this8.getReserved(treeId):_this8.h[treeId];
+			var _this9 = this.atlasMap;
+			tree = new Actor(tmp4,__map_reserved[treeId] != null?_this9.getReserved(treeId):_this9.h[treeId]);
+			tree.position.setTo(-14,i);
+			this.scene.addActor(tree);
 		}
 		var _g1 = -16;
 		while(_g1 < 14) {
@@ -1833,50 +1857,57 @@ TestRenderer.prototype = $extend(openfl_display_Sprite.prototype,{
 				continue;
 			}
 			var treeId1 = "albion_mirabelle" + tags[Math.floor(Math.random() * tags.length)];
-			var _this8 = this.linkagesMap;
-			var tmp4 = __map_reserved[treeId1] != null?_this8.getReserved(treeId1):_this8.h[treeId1];
-			var _this9 = this.atlasMap;
-			var tree1 = new Actor(tmp4,__map_reserved[treeId1] != null?_this9.getReserved(treeId1):_this9.h[treeId1]);
+			var _this10 = this.linkagesMap;
+			var tmp5 = __map_reserved[treeId1] != null?_this10.getReserved(treeId1):_this10.h[treeId1];
+			var _this11 = this.atlasMap;
+			var tree1 = new Actor(tmp5,__map_reserved[treeId1] != null?_this11.getReserved(treeId1):_this11.h[treeId1]);
 			tree1.position.setTo(i1,-15);
 			this.scene.addActor(tree1);
+			treeId1 = "albion_mirabelle" + tags[Math.floor(Math.random() * tags.length)];
+			var _this12 = this.linkagesMap;
+			var tmp6 = __map_reserved[treeId1] != null?_this12.getReserved(treeId1):_this12.h[treeId1];
+			var _this13 = this.atlasMap;
+			tree1 = new Actor(tmp6,__map_reserved[treeId1] != null?_this13.getReserved(treeId1):_this13.h[treeId1]);
+			tree1.position.setTo(i1,-13);
+			this.scene.addActor(tree1);
 		}
-		var _this10 = this.linkagesMap;
-		var tmp5 = __map_reserved.bath != null?_this10.getReserved("bath"):_this10.h["bath"];
-		var _this11 = this.atlasMap;
-		var bath = new Actor(tmp5,__map_reserved.bath != null?_this11.getReserved("bath"):_this11.h["bath"]);
-		bath.position.setTo(-12,-11);
-		var _this12 = this.linkagesMap;
-		var tmp6 = __map_reserved.valentine2016_kisses != null?_this12.getReserved("valentine2016_kisses"):_this12.h["valentine2016_kisses"];
-		var _this13 = this.atlasMap;
-		var valentine2016_kisses = new Actor(tmp6,__map_reserved.valentine2016_kisses != null?_this13.getReserved("valentine2016_kisses"):_this13.h["valentine2016_kisses"]);
-		valentine2016_kisses.position.setTo(-7,-10);
 		var _this14 = this.linkagesMap;
-		var tmp7 = __map_reserved.amure_lemure_0 != null?_this14.getReserved("amure_lemure_0"):_this14.h["amure_lemure_0"];
+		var tmp7 = __map_reserved.bath != null?_this14.getReserved("bath"):_this14.h["bath"];
 		var _this15 = this.atlasMap;
-		var lemure1 = new Actor(tmp7,__map_reserved.amure_lemure_0 != null?_this15.getReserved("amure_lemure_0"):_this15.h["amure_lemure_0"]);
-		lemure1.position.setTo(-4,-1);
+		var bath = new Actor(tmp7,__map_reserved.bath != null?_this15.getReserved("bath"):_this15.h["bath"]);
+		bath.position.setTo(-12,-11);
 		var _this16 = this.linkagesMap;
-		var tmp8 = __map_reserved.amure_lemure_1 != null?_this16.getReserved("amure_lemure_1"):_this16.h["amure_lemure_1"];
+		var tmp8 = __map_reserved.valentine2016_kisses != null?_this16.getReserved("valentine2016_kisses"):_this16.h["valentine2016_kisses"];
 		var _this17 = this.atlasMap;
-		var lemure2 = new Actor(tmp8,__map_reserved.amure_lemure_1 != null?_this17.getReserved("amure_lemure_1"):_this17.h["amure_lemure_1"]);
-		lemure2.position.setTo(2,0);
+		var valentine2016_kisses = new Actor(tmp8,__map_reserved.valentine2016_kisses != null?_this17.getReserved("valentine2016_kisses"):_this17.h["valentine2016_kisses"]);
+		valentine2016_kisses.position.setTo(-7,-10);
 		var _this18 = this.linkagesMap;
-		var tmp9 = __map_reserved.ftown_buryasha != null?_this18.getReserved("ftown_buryasha"):_this18.h["ftown_buryasha"];
+		var tmp9 = __map_reserved.amure_lemure_0 != null?_this18.getReserved("amure_lemure_0"):_this18.h["amure_lemure_0"];
 		var _this19 = this.atlasMap;
-		var ftown_buryasha = new Actor(tmp9,__map_reserved.ftown_buryasha != null?_this19.getReserved("ftown_buryasha"):_this19.h["ftown_buryasha"]);
-		ftown_buryasha.position.setTo(2,-5);
+		var lemure1 = new Actor(tmp9,__map_reserved.amure_lemure_0 != null?_this19.getReserved("amure_lemure_0"):_this19.h["amure_lemure_0"]);
+		lemure1.position.setTo(-4,-1);
 		var _this20 = this.linkagesMap;
-		var tmp10 = __map_reserved.circus != null?_this20.getReserved("circus"):_this20.h["circus"];
+		var tmp10 = __map_reserved.amure_lemure_1 != null?_this20.getReserved("amure_lemure_1"):_this20.h["amure_lemure_1"];
 		var _this21 = this.atlasMap;
-		var circus = new Actor(tmp10,__map_reserved.circus != null?_this21.getReserved("circus"):_this21.h["circus"]);
+		var lemure2 = new Actor(tmp10,__map_reserved.amure_lemure_1 != null?_this21.getReserved("amure_lemure_1"):_this21.h["amure_lemure_1"]);
+		lemure2.position.setTo(2,0);
+		var _this22 = this.linkagesMap;
+		var tmp11 = __map_reserved.ftown_buryasha != null?_this22.getReserved("ftown_buryasha"):_this22.h["ftown_buryasha"];
+		var _this23 = this.atlasMap;
+		var ftown_buryasha = new Actor(tmp11,__map_reserved.ftown_buryasha != null?_this23.getReserved("ftown_buryasha"):_this23.h["ftown_buryasha"]);
+		ftown_buryasha.position.setTo(2,-5);
+		var _this24 = this.linkagesMap;
+		var tmp12 = __map_reserved.circus != null?_this24.getReserved("circus"):_this24.h["circus"];
+		var _this25 = this.atlasMap;
+		var circus = new Actor(tmp12,__map_reserved.circus != null?_this25.getReserved("circus"):_this25.h["circus"]);
 		circus.position.setTo(-10,10);
 		this.scene.addActor(bath);
 		this.scene.addActor(valentine2016_kisses);
 		this.scene.addActor(lemure1);
-		var _this22 = this.linkagesMap;
-		var tmp11 = __map_reserved.bull_smith != null?_this22.getReserved("bull_smith"):_this22.h["bull_smith"];
-		var _this23 = this.atlasMap;
-		this.scene.addActor(new Actor(tmp11,__map_reserved.bull_smith != null?_this23.getReserved("bull_smith"):_this23.h["bull_smith"]));
+		var _this26 = this.linkagesMap;
+		var tmp13 = __map_reserved.bull_smith != null?_this26.getReserved("bull_smith"):_this26.h["bull_smith"];
+		var _this27 = this.atlasMap;
+		this.scene.addActor(new Actor(tmp13,__map_reserved.bull_smith != null?_this27.getReserved("bull_smith"):_this27.h["bull_smith"]));
 		this.scene.addActor(lemure2);
 		this.scene.addActor(ftown_buryasha);
 		this.scene.addActor(circus);
@@ -1884,12 +1915,23 @@ TestRenderer.prototype = $extend(openfl_display_Sprite.prototype,{
 		this.scene.addActor(bushLab3);
 		this.scene.addActor(bushLab1);
 	}
+	,onMenuSelect: function(e) {
+		e.preventDefault();
+	}
 	,onRightDown: function(e) {
+		e.stopImmediatePropagation();
+		e.preventDefault();
+		this.scene.rightDown = true;
+	}
+	,onRightUp: function(e) {
+		this.scene.rightDown = false;
 	}
 	,onMouseUp: function(e) {
+		this.scene.leftClick = false;
 		this.stage.removeEventListener("mouseMove",$bind(this,this.onMouseMove));
 	}
 	,onMouseDown: function(e) {
+		this.scene.leftClick = true;
 		this.stage.addEventListener("mouseMove",$bind(this,this.onMouseMove));
 		this.clickPosition.setTo(this.get_mouseX(),this.get_mouseY());
 	}
@@ -2698,6 +2740,7 @@ var Scene = function(target) {
 	this._RECT_HALF_WIDTH = 24.;
 	this._RECT_HEIGHT = 24;
 	this._RECT_WIDTH = 48;
+	this.underMouseColor = new swfdata_ColorData(2,2,2,1.25);
 	this.actorsList = [];
 	this.drawingMatrix = new openfl_geom_Matrix();
 	this.drawingBound = new openfl_geom_Rectangle();
@@ -2722,17 +2765,37 @@ Scene.prototype = $extend(openfl_display_Sprite.prototype,{
 		var _g1 = 0;
 		var _g = this.actorsList.length;
 		while(_g1 < _g) {
-			var currentActor = this.actorsList[_g1++];
+			var i = _g1++;
+			this.underMouseColor.r = 2;
+			this.underMouseColor.g = 2;
+			this.underMouseColor.b = 2;
+			this.underMouseColor.a = 1.25;
+			var currentActor = this.actorsList[i];
 			currentActor.update();
 			var pos = currentActor.position;
 			pos = this.toScreen(pos.x,pos.y);
 			this.drawer.set_atlas(currentActor.atlas);
 			this.drawingBound.setTo(0,0,0,0);
-			this.drawingMatrix.setTo(1,0,0,1,this.get_x() + pos.x,this.get_y() + pos.y);
-			this.drawer.set_checkMouseHit(true);
-			this.drawer.drawDisplayObject(currentActor.view,this.drawingMatrix,this.drawingBound);
-			if(this.drawer.get_isHitMouse()) {
-				haxe_Log.trace(currentActor.id,{ fileName : "Scene.hx", lineNumber : 72, className : "Scene", methodName : "update"});
+			if(currentActor.isUnderMouse) {
+				this.underMouseColor.mulColorData(currentActor.colorData);
+				this.drawer.set_checkMouseHit(true);
+				this.drawingMatrix.setTo(1,0,0,1,this.get_x() + pos.x,this.get_y() + pos.y);
+				this.drawer.drawDisplayObject(currentActor.view,this.drawingMatrix,this.drawingBound,this.underMouseColor);
+			} else {
+				this.drawingMatrix.setTo(1,0,0,1,this.get_x() + pos.x,this.get_y() + pos.y);
+				this.drawer.set_checkMouseHit(true);
+				this.drawer.drawDisplayObject(currentActor.view,this.drawingMatrix,this.drawingBound,currentActor.colorData);
+			}
+			currentActor.isUnderMouse = this.drawer.get_isHitMouse();
+			if(currentActor.isUnderMouse && this.rightDown) {
+				currentActor.set_alpha(0.7);
+			} else {
+				currentActor.set_alpha(1);
+			}
+			if(currentActor.isUnderMouse && this.leftClick) {
+				currentActor.colorData.r = 1.7;
+			} else {
+				currentActor.colorData.r = 1;
 			}
 		}
 	}
@@ -4925,7 +4988,31 @@ gl_drawer_GLDrawer.prototype = {
 		var textureTransform = this.currentSubTexture.get_transform();
 		texture.pivotX = -(drawingBounds.x * textureTransform.scaleX + (texture.width - this.texturePadding2) / 2);
 		texture.pivotY = -(drawingBounds.y * textureTransform.scaleY + (texture.height - this.texturePadding2) / 2);
-		this.renderer.draw(texture,this.drawMatrix);
+		var isMask = this.drawingData.isMask;
+		this.renderer.draw(texture,this.drawMatrix,this.drawingData.colorData);
+		var transformedDrawingX = drawingBounds.x * this.currentSubTexture.get_transform().scaleX;
+		var transformedDrawingY = drawingBounds.y * this.currentSubTexture.get_transform().scaleY;
+		var transformedDrawingWidth = drawingBounds.width * 2 * this.currentSubTexture.get_transform().scaleX / 2;
+		var transformedDrawingHeight = drawingBounds.height * 2 * this.currentSubTexture.get_transform().scaleY / 2;
+		if(!isMask && !this.hitTestResult && this.checkMouseHit) {
+			this.drawMatrix.invert();
+			GeomMath.transformPoint(this.drawMatrix,this.mousePoint.x,this.mousePoint.y,false,this.transformedMousePoint);
+			var transformedPoint = this.transformedMousePoint;
+			var isHit = false;
+			if(transformedPoint.x > transformedDrawingX && transformedPoint.x < transformedDrawingX + transformedDrawingWidth) {
+				if(transformedPoint.y > transformedDrawingY && transformedPoint.y < transformedDrawingY + transformedDrawingHeight) {
+					isHit = true;
+				}
+			}
+			if(isHit) {
+				isHit = texture.getAlphaAtUV((transformedPoint.x - transformedDrawingX) / (transformedDrawingWidth + this.texturePadding2),(transformedPoint.y - transformedDrawingY) / (transformedDrawingHeight + this.texturePadding2)) > 5;
+			}
+			this.hitTestResult = isHit;
+		}
+		if(!isMask && this.checkBounds) {
+			this.currentBoundForDraw.setTo(this.drawingRectagon.x,this.drawingRectagon.y,this.drawingRectagon.width,this.drawingRectagon.height);
+			GeomMath.rectangleUnion(this.drawingData.bound,this.currentBoundForDraw);
+		}
 	}
 	,__class__: gl_drawer_GLDrawer
 };
@@ -35132,6 +35219,33 @@ openfl_events_ActivityEvent.prototype = $extend(openfl_events_Event.prototype,{
 	}
 	,__class__: openfl_events_ActivityEvent
 });
+var openfl_events_ContextMenuEvent = function(type,bubbles,cancelable,mouseTarget,contextMenuOwner) {
+	if(cancelable == null) {
+		cancelable = false;
+	}
+	if(bubbles == null) {
+		bubbles = false;
+	}
+	openfl_events_Event.call(this,type,bubbles,cancelable);
+	this.mouseTarget = mouseTarget;
+	this.contextMenuOwner = contextMenuOwner;
+};
+$hxClasses["openfl.events.ContextMenuEvent"] = openfl_events_ContextMenuEvent;
+openfl_events_ContextMenuEvent.__name__ = ["openfl","events","ContextMenuEvent"];
+openfl_events_ContextMenuEvent.__super__ = openfl_events_Event;
+openfl_events_ContextMenuEvent.prototype = $extend(openfl_events_Event.prototype,{
+	clone: function() {
+		var event = new openfl_events_ContextMenuEvent(this.type,this.bubbles,this.cancelable,this.mouseTarget,this.contextMenuOwner);
+		event.target = this.target;
+		event.currentTarget = this.currentTarget;
+		event.eventPhase = this.eventPhase;
+		return event;
+	}
+	,toString: function() {
+		return this.__formatToString("ContextMenuEvent",["type","bubbles","cancelable","mouseTarget","contextMenuOwner"]);
+	}
+	,__class__: openfl_events_ContextMenuEvent
+});
 var openfl_events_TextEvent = function(type,bubbles,cancelable,text) {
 	if(text == null) {
 		text = "";
@@ -43678,6 +43792,7 @@ haxe_lang_Iterable.prototype = {
 	__class__: haxe_lang_Iterable
 };
 var renderer_BackgroundBorder = function(renderer1,texture,tile_size,size) {
+	this.colorData = new swfdata_ColorData(1,1,1,1.5);
 	this.tile_size = 34;
 	this.lastDeltaY = 0;
 	this.lastDeltaX = 0;
@@ -43732,7 +43847,7 @@ renderer_BackgroundBorder.prototype = {
 		this.matricesInvalidateFlags[3] = false;
 	}
 	,drawBorder: function(index) {
-		this.renderer.draw(this.texture,this.cachedMatrices[index]);
+		this.renderer.draw(this.texture,this.cachedMatrices[index],this.colorData);
 	}
 	,validateMatrices: function() {
 		if(this.matricesInvalidateFlags[0] == false) {
@@ -43790,10 +43905,10 @@ renderer_BaseAgalShader.prototype = {
 		this.fragmentData = renderer_BaseAgalShader.AGALAssembler.assemble(0,this.getFragmentCode());
 	}
 	,getVertexCode: function() {
-		return "mov vt0, va2\t\t\t\t\t\t\n" + "mov vt0, va0\t\t\t\t\t\t\n" + "mul vt1, va0.xy, vc5.zw      \n" + "mul vt2, vt1.xy, vc4.xy      \n" + "add vt2.x, vt2.x, vt2.y            \n" + "add vt2.x, vt2.x, vc5.x      \n" + "mul vt3, vt1.xy, vc4.zw      \n" + "add vt3.x, vt3.x, vt3.y            \n" + "add vt3.x, vt3.x, vc5.y      \n" + "mov vt2.y, vt3.x \n" + "mov vt2.zw, vt0.zw\t\t\t\t\t\n" + "m44 vt3, vt2, vc0\t\t\t\t\t\n" + "mov op\t\t\tvt3\t\t\t\t\t\t\n" + "mul vt0.xy, va1.xy, vc6.zw\t\n" + "add vt0.xy, vt0.xy, vc6.xy\t\n" + "mov v0, vt0 \n" + "mov v1, va2";
+		return "mov vt0, va2\t\t\t\t\t\t\n" + "mov vt0, va0\t\t\t\t\t\t\n" + "mul vt1, va0.xy, vc5.zw      \n" + "mul vt2, vt1.xy, vc4.xy      \n" + "add vt2.x, vt2.x, vt2.y            \n" + "add vt2.x, vt2.x, vc5.x      \n" + "mul vt3, vt1.xy, vc4.zw      \n" + "add vt3.x, vt3.x, vt3.y            \n" + "add vt3.x, vt3.x, vc5.y      \n" + "mov vt2.y, vt3.x \n" + "mov vt2.zw, vt0.zw\t\t\t\t\t\n" + "m44 vt3, vt2, vc0\t\t\t\t\t\n" + "mov op\t\t\tvt3\t\t\t\t\t\t\n" + "mul vt0.xy, va1.xy, vc6.zw\t\n" + "add vt0.xy, vt0.xy, vc6.xy\t\n" + "mov v0, vt0 \n" + "mov v1, vc7";
 	}
 	,getFragmentCode: function() {
-		return "tex \tft0\t\tv0\t\t\tfs0\t<2d, clamp, linear>\t\n" + "mov\toc\t\tft0\t\t\t\t\t\t  ";
+		return "tex \tft0\t\tv0\t\t\tfs0\t<2d, clamp, linear>\t\n" + "mul\tft0\t\tft0\t\t\tv1\t\t\t\t\t\t\n" + "mov\toc\t\tft0\t\t\t\t\t\t  ";
 	}
 	,__class__: renderer_BaseAgalShader
 };
@@ -43898,7 +44013,7 @@ var renderer_BatchGeometry = function(batchSize) {
 		this.indexDataRaw[indexDataIndex++] = 4 * i;
 		this.indexDataRaw[indexDataIndex++] = 4 * i + 2;
 		this.indexDataRaw[indexDataIndex++] = 4 * i + 3;
-		order = 4 + i * 3;
+		order = 4 + i * 4;
 		this.orderBufferDataRaw[orderDataIndex++] = order;
 		this.orderBufferDataRaw[orderDataIndex++] = order;
 		this.orderBufferDataRaw[orderDataIndex++] = order;
@@ -44078,7 +44193,7 @@ renderer_Renderer.prototype = {
 	,__drawBG: function() {
 		this.setTexture(this.bgTexture);
 		var scale = 3.125;
-		var value = [scale,0,0,scale,400,400,256,256,-this.bgPosition.x / 300,-this.bgPosition.y / 300,scale,scale];
+		var value = [scale,0,0,scale,400,400,256,256,-this.bgPosition.x / 300,-this.bgPosition.y / 300,scale,scale,1,1,1,1];
 		var vectorData = new openfl_VectorData();
 		vectorData.length = value.length;
 		vectorData.fixed = true;
@@ -44091,14 +44206,14 @@ renderer_Renderer.prototype = {
 			vec[i] = value[i];
 		}
 		vectorData.data = vec;
-		this.context3D.setProgramConstantsFromVector(1,4,vectorData,3);
+		this.context3D.setProgramConstantsFromVector(1,4,vectorData,4);
 		this.context3D.drawTriangles(this.drawingGeometry.indexBuffer);
 		this.backgroundOutline.draw(this.bgPosition.x,this.bgPosition.y);
 		this.__draw();
 		this.drawingListSize = 0;
 		this.texturesListSize = 0;
 	}
-	,draw: function(texture,matrix) {
+	,draw: function(texture,matrix,colorData) {
 		this.texturesDrawList[this.texturesListSize++] = texture;
 		var a = matrix.a;
 		var b = matrix.b;
@@ -44124,14 +44239,18 @@ renderer_Renderer.prototype = {
 		this.drawingList[this.drawingListSize++] = texture.v;
 		this.drawingList[this.drawingListSize++] = texture.uscale;
 		this.drawingList[this.drawingListSize++] = texture.vscale;
+		this.drawingList[this.drawingListSize++] = colorData.r;
+		this.drawingList[this.drawingListSize++] = colorData.g;
+		this.drawingList[this.drawingListSize++] = colorData.b;
+		this.drawingList[this.drawingListSize++] = colorData.a;
 	}
 	,__draw: function() {
 		var _g1 = 0;
-		var _g = this.drawingListSize / 12 | 0;
+		var _g = this.drawingListSize / 16 | 0;
 		while(_g1 < _g) {
 			var i = _g1++;
 			this.setTexture(this.texturesDrawList[i]._atlas.gpuData);
-			var value = this.drawingList.slice(i * 12,(i + 1) * 12);
+			var value = this.drawingList.slice(i * 16,(i + 1) * 16);
 			var vectorData = new openfl_VectorData();
 			vectorData.length = value.length;
 			vectorData.fixed = true;
@@ -44144,7 +44263,7 @@ renderer_Renderer.prototype = {
 				vec[i1] = value[i1];
 			}
 			vectorData.data = vec;
-			this.context3D.setProgramConstantsFromVector(1,4,vectorData,3);
+			this.context3D.setProgramConstantsFromVector(1,4,vectorData,4);
 			this.context3D.drawTriangles(this.drawingGeometry.indexBuffer);
 		}
 	}
@@ -45438,7 +45557,13 @@ swfdata_atlas_GLSubTexture.__name__ = ["swfdata","atlas","GLSubTexture"];
 swfdata_atlas_GLSubTexture.__interfaces__ = [swfdata_atlas_ITexture];
 swfdata_atlas_GLSubTexture.prototype = {
 	getAlphaAtUV: function(u,v) {
-		return 0;
+		var bitmapData = this._atlas.atlasData;
+		if(bitmapData == null) {
+			return 255;
+		}
+		u = u * this.width / bitmapData.width;
+		v = v * this.height / bitmapData.height;
+		return bitmapData.getPixel32((this.u + u) * bitmapData.width | 0,(this.v + v) * bitmapData.height | 0) >> 24 & 255;
 	}
 	,get_id: function() {
 		return this._id;
@@ -48368,6 +48493,8 @@ openfl_events_Event.TAB_ENABLED_CHANGE = "tabEnabledChange";
 openfl_events_Event.TAB_INDEX_CHANGE = "tabIndexChange";
 openfl_events_Event.UNLOAD = "unload";
 openfl_events_ActivityEvent.ACTIVITY = "activity";
+openfl_events_ContextMenuEvent.MENU_ITEM_SELECT = "menuItemSelect";
+openfl_events_ContextMenuEvent.MENU_SELECT = "menuSelect";
 openfl_events_TextEvent.LINK = "link";
 openfl_events_TextEvent.TEXT_INPUT = "textInput";
 openfl_events_ErrorEvent.ERROR = "error";
