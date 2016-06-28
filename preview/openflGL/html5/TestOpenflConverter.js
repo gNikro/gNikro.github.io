@@ -98,7 +98,7 @@ ApplicationMain.init = function() {
 	if(total == 0) ApplicationMain.start();
 };
 ApplicationMain.main = function() {
-	ApplicationMain.config = { build : "980", company : "...", file : "TestOpenflConverter", fps : 45, name : "TestOpenflConverter", orientation : "", packageName : "TestOpenflConverter", version : "1.0.0", windows : [{ antialiasing : 0, background : 0, borderless : false, depthBuffer : false, display : 0, fullscreen : false, hardware : true, height : 800, parameters : "{}", resizable : false, stencilBuffer : true, title : "TestOpenflConverter", vsync : false, width : 800, x : null, y : null}]};
+	ApplicationMain.config = { build : "982", company : "...", file : "TestOpenflConverter", fps : 45, name : "TestOpenflConverter", orientation : "", packageName : "TestOpenflConverter", version : "1.0.0", windows : [{ antialiasing : 0, background : 0, borderless : false, depthBuffer : false, display : 0, fullscreen : false, hardware : true, height : 800, parameters : "{}", resizable : false, stencilBuffer : true, title : "TestOpenflConverter", vsync : false, width : 800, x : null, y : null}]};
 };
 ApplicationMain.start = function() {
 	var hasMain = false;
@@ -37655,9 +37655,10 @@ renderer_Renderer.prototype = {
 	,__drawBG: function() {
 		this.setTexture(this.bgTexture);
 		var scale = 3.125;
+		var size = 250;
 		this.context3D.setProgramConstantsFromVector(1,4,(function($this) {
 			var $r;
-			var value = [scale,0,0,scale,400,400,256,256,-$this.bgPosition.x / 300,-$this.bgPosition.y / 300,scale,scale,1,1,1,1];
+			var value = [scale,0,0,scale,400,400,256,256,-$this.bgPosition.x / size,-$this.bgPosition.y / size,scale,scale,1,1,1,1];
 			var vectorData = new openfl_VectorData();
 			vectorData.length = value.length;
 			vectorData.fixed = true;
