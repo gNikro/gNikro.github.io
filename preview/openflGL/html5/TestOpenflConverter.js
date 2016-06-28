@@ -74,12 +74,6 @@ ApplicationMain.create = function() {
 	types.push("TEXT");
 	urls.push("animation/ftown_buryasha.animation");
 	types.push("TEXT");
-	urls.push("animation/notused/boy.animation");
-	types.push("TEXT");
-	urls.push("animation/notused/leprechaun_gold.animation");
-	types.push("TEXT");
-	urls.push("animation/notused/rainbow_catcher_npc.animation");
-	types.push("TEXT");
 	urls.push("animation/valentine2016_kisses.animation");
 	types.push("TEXT");
 	if(ApplicationMain.config.assetsPrefix != null) {
@@ -104,7 +98,7 @@ ApplicationMain.init = function() {
 	if(total == 0) ApplicationMain.start();
 };
 ApplicationMain.main = function() {
-	ApplicationMain.config = { build : "972", company : "...", file : "TestOpenflConverter", fps : 45, name : "TestOpenflConverter", orientation : "", packageName : "TestOpenflConverter", version : "1.0.0", windows : [{ antialiasing : 0, background : 0, borderless : false, depthBuffer : false, display : 0, fullscreen : false, hardware : true, height : 800, parameters : "{}", resizable : false, stencilBuffer : true, title : "TestOpenflConverter", vsync : false, width : 800, x : null, y : null}]};
+	ApplicationMain.config = { build : "980", company : "...", file : "TestOpenflConverter", fps : 45, name : "TestOpenflConverter", orientation : "", packageName : "TestOpenflConverter", version : "1.0.0", windows : [{ antialiasing : 0, background : 0, borderless : false, depthBuffer : false, display : 0, fullscreen : false, hardware : true, height : 800, parameters : "{}", resizable : false, stencilBuffer : true, title : "TestOpenflConverter", vsync : false, width : 800, x : null, y : null}]};
 };
 ApplicationMain.start = function() {
 	var hasMain = false;
@@ -1576,15 +1570,6 @@ var DefaultAssetLibrary = function() {
 	this.path.set(id,id);
 	this.type.set(id,"TEXT");
 	id = "animation/ftown_buryasha.animation";
-	this.path.set(id,id);
-	this.type.set(id,"TEXT");
-	id = "animation/notused/boy.animation";
-	this.path.set(id,id);
-	this.type.set(id,"TEXT");
-	id = "animation/notused/leprechaun_gold.animation";
-	this.path.set(id,id);
-	this.type.set(id,"TEXT");
-	id = "animation/notused/rainbow_catcher_npc.animation";
 	this.path.set(id,id);
 	this.type.set(id,"TEXT");
 	id = "animation/valentine2016_kisses.animation";
@@ -3604,7 +3589,7 @@ format_tools_InflateImpl.run = function(i,bufsize) {
 	if(bufsize == null) bufsize = 65536;
 	var buf = haxe_io_Bytes.alloc(bufsize);
 	var output = new haxe_io_BytesBuffer();
-	var inflate = new format_tools_InflateImpl(i);
+	var inflate = new format_tools_InflateImpl(i,false,false);
 	while(true) {
 		var len = inflate.readBytes(buf,0,bufsize);
 		output.addBytes(buf,0,len);
