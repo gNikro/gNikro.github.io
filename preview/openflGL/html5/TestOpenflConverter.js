@@ -23,6 +23,8 @@ ApplicationMain.create = function() {
 	ApplicationMain.preloader.create(ApplicationMain.config);
 	var urls = [];
 	var types = [];
+	urls.push("animation/bull_smith.animation");
+	types.push("TEXT");
 	if(ApplicationMain.config.assetsPrefix != null) {
 		var _g1 = 0;
 		var _g = urls.length;
@@ -45,7 +47,7 @@ ApplicationMain.init = function() {
 	}
 };
 ApplicationMain.main = function() {
-	ApplicationMain.config = { build : "636", company : "...", file : "TestOpenflConverter", fps : 30, name : "TestOpenflConverter", orientation : "", packageName : "TestOpenflConverter", version : "1.0.0", windows : [{ antialiasing : 0, background : 0, borderless : false, depthBuffer : false, display : 0, fullscreen : false, hardware : true, height : 800, parameters : "{}", resizable : false, stencilBuffer : true, title : "TestOpenflConverter", vsync : false, width : 800, x : null, y : null}]};
+	ApplicationMain.config = { build : "1021", company : "...", file : "TestOpenflConverter", fps : 30, name : "TestOpenflConverter", orientation : "", packageName : "TestOpenflConverter", version : "1.0.0", windows : [{ antialiasing : 0, background : 0, borderless : false, depthBuffer : false, display : 0, fullscreen : false, hardware : true, height : 800, parameters : "{}", resizable : false, stencilBuffer : true, title : "TestOpenflConverter", vsync : false, width : 800, x : null, y : null}]};
 };
 ApplicationMain.start = function() {
 	var hasMain = false;
@@ -1703,211 +1705,77 @@ openfl_display_Sprite.prototype = $extend(openfl_display_DisplayObjectContainer.
 	,__class__: openfl_display_Sprite
 	,__properties__: $extend(openfl_display_DisplayObjectContainer.prototype.__properties__,{get_graphics:"get_graphics"})
 });
-var TestS3D = function() {
-	this.trisCount = 100;
-	this.positions = [];
-	this.tetha = 0;
-	this.phi = 0;
-	this.camera = new openfl_geom_Matrix3D();
+var TestRenderer = function() {
+	this.scenesList = [];
 	openfl_display_Sprite.call(this);
-	haxe_Log.trace("get s3d",{ fileName : "TestS3D.hx", lineNumber : 34, className : "TestS3D", methodName : "new"});
-	this.stage.stage3Ds.data[0].addEventListener("context3DCreate",$bind(this,this.onContextCreated));
-	this.stage.stage3Ds.data[0].addEventListener("error",$bind(this,this.onContextCreatedError));
-	this.stage.stage3Ds.data[0].requestContext3D(openfl_display3D__$Context3DRenderMode_Context3DRenderMode_$Impl_$.fromString("auto"));
+	if(this.stage != null) {
+		this.initialize();
+	} else {
+		this.addEventListener("addedToStage",$bind(this,this.initialize));
+	}
 };
-$hxClasses["TestS3D"] = TestS3D;
-TestS3D.__name__ = ["TestS3D"];
-TestS3D.__super__ = openfl_display_Sprite;
-TestS3D.prototype = $extend(openfl_display_Sprite.prototype,{
-	onContextCreatedError: function(e) {
-		haxe_Log.trace(e.toString(),{ fileName : "TestS3D.hx", lineNumber : 42, className : "TestS3D", methodName : "onContextCreatedError"});
+$hxClasses["TestRenderer"] = TestRenderer;
+TestRenderer.__name__ = ["TestRenderer"];
+TestRenderer.__super__ = openfl_display_Sprite;
+TestRenderer.prototype = $extend(openfl_display_Sprite.prototype,{
+	initialize: function(e) {
+		this.removeEventListener("addedToStage",$bind(this,this.initialize));
+		this.stage.stage3Ds.data[0].addEventListener("context3DCreate",$bind(this,this.onContextCreated));
+		this.stage.stage3Ds.data[0].addEventListener("error",$bind(this,this.onContextCreatedError));
+		this.stage.stage3Ds.data[0].requestContext3D(openfl_display3D__$Context3DRenderMode_Context3DRenderMode_$Impl_$.fromString("auto"));
+	}
+	,onContextCreatedError: function(e) {
+		haxe_Log.trace(e.toString(),{ fileName : "TestRenderer.hx", lineNumber : 50, className : "TestRenderer", methodName : "onContextCreatedError"});
 	}
 	,onContextCreated: function(e) {
-		haxe_Log.trace("on context created",{ fileName : "TestS3D.hx", lineNumber : 48, className : "TestS3D", methodName : "onContextCreated"});
+		haxe_Log.trace("on context created",{ fileName : "TestRenderer.hx", lineNumber : 56, className : "TestRenderer", methodName : "onContextCreated"});
 		this.context3D = this.stage.stage3Ds.data[0].context3D;
 		this.context3D.configureBackBuffer(this.stage.stageWidth,this.stage.stageHeight,0,false);
 		this.context3D.setCulling(3);
 		this.context3D.enableErrorChecking = false;
-		this.indexBuffer = this.context3D.createIndexBuffer(3);
-		this.vertexBuffer = this.context3D.createVertexBuffer(3,3);
-		var indices = [0,1,2];
-		var vectorData = new openfl_VectorData();
-		vectorData.length = indices.length;
-		vectorData.fixed = true;
-		var length = indices.length;
-		var vec = new Array(length);
-		var _g1 = 0;
-		var _g = indices.length;
-		while(_g1 < _g) {
-			var i = _g1++;
-			vec[i] = indices[i];
-		}
-		vectorData.data = vec;
-		this.indexBuffer.uploadFromVector(vectorData,0,3);
-		var vertices = [-0.5,-0.5,0.5,0,0.5,0.5,0.5,-0.5,0.5];
-		var vectorData1 = new openfl_VectorData();
-		vectorData1.length = vertices.length;
-		vectorData1.fixed = true;
-		var length1 = vertices.length;
-		var vec1 = new Array(length1);
-		var _g11 = 0;
-		var _g2 = vertices.length;
-		while(_g11 < _g2) {
-			var i1 = _g11++;
-			vec1[i1] = vertices[i1];
-		}
-		vectorData1.data = vec1;
-		this.vertexBuffer.uploadFromVector(vectorData1,0,3);
-		var agal = new openfl_utils_AGALMiniAssembler(true);
-		this.shaderProgramm = this.context3D.createProgram();
-		var vertexData;
-		var fragmentData;
-		this.shaderProgramm.upload(agal.assemble(1,"mov\tvt0\t\t\tva0\t\t\t\t\t\t\n" + "mov \tvt2\t\t\tvc0\t\t\t\t\t\t\n" + "mov \tvt4\t\t\tvc1\t\t\t\t\t\t\n" + "mov\tvt3 \t\tva0\t\t\t\t\t    \n" + "mul\tvt3.x\t\tvt3.x\t\tvt4.x\t\t\n" + "mul\tvt3.y\t\tvt3.y\t\tvt4.y\t\t\n" + "sub\tvt0.x\t\tvt3.x\t\tvt3.y\t\t\n" + "mov\tvt3 \t\tva0\t\t\t\t\t\t\n" + "mul\tvt3.x\t\tvt3.x\t\tvt4.y\t\t\n" + "mul\tvt3.y\t\tvt3.y\t\tvt4.x\t\t\n" + "add\tvt0.y\t\tvt3.x\t\tvt3.y\t\t\n" + "mul\tvt0.xy\t\tvt0.xy\t\tvc0.zz\t\t\n" + "add\tvt0.xy\t\tvt0.xy\t\tvc0.xy\t\t\n" + "mov\top\t\t\tvt0\t\t\t\t\t\t\n" + "mov\tv0\t\t\tva0"),agal.assemble(0,"mov ft0 v0 \n mul ft0 ft0 fc0 \n mov oc ft0"));
+		renderer_TextureManager.context = this.context3D;
+		this.renderer = new renderer_Renderer(this.context3D);
 		this.stage.addEventListener("enterFrame",$bind(this,this.onUpdate));
 		this.stage.addEventListener("mouseDown",$bind(this,this.onMouseDown));
 		this.stage.addEventListener("rightMouseDown",$bind(this,this.onRightDown));
+		var scene1 = this.showAnimatedScene("animation/bull_smith.animation");
+		scene1.set_x(0);
+		scene1.set_y(0);
 	}
 	,onRightDown: function(e) {
-		this.trisCount -= 20;
 	}
 	,onMouseDown: function(e) {
-		this.trisCount += 20;
 	}
 	,onUpdate: function(e) {
-		this.phi += 0.01;
-		this.tetha += 0.01;
-		this.context3D.clear();
-		this.context3D.setProgram(this.shaderProgramm);
-		this.context3D.setVertexBufferAt(0,this.vertexBuffer,0,3);
 		var _g1 = 0;
-		var _g = this.trisCount;
-		while(_g1 < _g) {
-			var i = _g1++;
-			var addx = Math.cos(this.phi * 3 + i) * (i % 2 == 0?1:-1);
-			var addy = Math.sin(this.phi * 3 + i);
-			var currentPos;
-			if(this.positions.length == i) {
-				currentPos = new openfl_geom_Vector3D(-1 + Math.random() * 2,-1 + Math.random() * 2,0.05 + Math.random() * 0.5);
-				this.positions[i] = currentPos;
-			} else {
-				currentPos = this.positions[i];
-			}
-			var r = Math.abs(Math.sin(this.phi + i * 4));
-			var g = Math.abs(Math.cos(this.tetha + i * 4));
-			var b = 1.5 - (r + g);
-			if(i % 5 == 0) {
-				addx /= 4;
-				addy *= 1.2;
-				currentPos.x += addx / (this.stage.stageWidth / 2);
-				currentPos.y -= addy / (this.stage.stageHeight / 2);
-			} else {
-				currentPos.x += addx / (this.stage.stageWidth / 2);
-				currentPos.y -= addy / (this.stage.stageHeight / 2);
-				currentPos.z = 0.040 + addx * 0.040;
-			}
-			currentPos.w += addx + addy + i / this.trisCount;
-			var angleRad = FastMath.convertToRadian(currentPos.w);
-			var value = [currentPos.x,currentPos.y,currentPos.z,1];
-			var vectorData = new openfl_VectorData();
-			vectorData.length = value.length;
-			vectorData.fixed = true;
-			var length = value.length;
-			var vec = new Array(length);
-			var _g11 = 0;
-			var _g2 = value.length;
-			while(_g11 < _g2) {
-				var i1 = _g11++;
-				vec[i1] = value[i1];
-			}
-			vectorData.data = vec;
-			this.context3D.setProgramConstantsFromVector(1,0,vectorData);
-			var value1 = [Math.sin(angleRad),Math.cos(angleRad),0,0];
-			var vectorData1 = new openfl_VectorData();
-			vectorData1.length = value1.length;
-			vectorData1.fixed = true;
-			var length1 = value1.length;
-			var vec1 = new Array(length1);
-			var _g12 = 0;
-			var _g3 = value1.length;
-			while(_g12 < _g3) {
-				var i2 = _g12++;
-				vec1[i2] = value1[i2];
-			}
-			vectorData1.data = vec1;
-			this.context3D.setProgramConstantsFromVector(1,1,vectorData1);
-			var value2 = [r + 0.3,g + 0.3,b + 0.3,3];
-			var vectorData2 = new openfl_VectorData();
-			vectorData2.length = value2.length;
-			vectorData2.fixed = true;
-			var length2 = value2.length;
-			var vec2 = new Array(length2);
-			var _g13 = 0;
-			var _g4 = value2.length;
-			while(_g13 < _g4) {
-				var i3 = _g13++;
-				vec2[i3] = value2[i3];
-			}
-			vectorData2.data = vec2;
-			this.context3D.setProgramConstantsFromVector(0,0,vectorData2,1);
-			this.context3D.drawTriangles(this.indexBuffer,0);
-		}
-		var r1 = Math.abs(Math.sin(this.phi * 4));
-		var g1 = Math.abs(Math.cos(this.tetha * 4));
-		var b1 = 2 - (r1 + g1);
-		var value3 = [(this.stage.get_mouseX() / this.stage.stageWidth - 0.5) * 2,-(this.stage.get_mouseY() / this.stage.stageHeight - 0.5) * 2,0.25,1];
-		var vectorData3 = new openfl_VectorData();
-		vectorData3.length = value3.length;
-		vectorData3.fixed = true;
-		var length3 = value3.length;
-		var vec3 = new Array(length3);
-		var _g14 = 0;
-		var _g5 = value3.length;
-		while(_g14 < _g5) {
-			var i4 = _g14++;
-			vec3[i4] = value3[i4];
-		}
-		vectorData3.data = vec3;
-		this.context3D.setProgramConstantsFromVector(1,0,vectorData3);
-		var value4 = [Math.sin(this.phi),Math.cos(this.phi),0,0];
-		var vectorData4 = new openfl_VectorData();
-		vectorData4.length = value4.length;
-		vectorData4.fixed = true;
-		var length4 = value4.length;
-		var vec4 = new Array(length4);
-		var _g15 = 0;
-		var _g6 = value4.length;
-		while(_g15 < _g6) {
-			var i5 = _g15++;
-			vec4[i5] = value4[i5];
-		}
-		vectorData4.data = vec4;
-		this.context3D.setProgramConstantsFromVector(1,1,vectorData4);
-		var value5 = [r1 + 0.8,g1 + 0.7,b1 + 0.7,2];
-		var vectorData5 = new openfl_VectorData();
-		vectorData5.length = value5.length;
-		vectorData5.fixed = true;
-		var length5 = value5.length;
-		var vec5 = new Array(length5);
-		var _g16 = 0;
-		var _g7 = value5.length;
-		while(_g16 < _g7) {
-			var i6 = _g16++;
-			vec5[i6] = value5[i6];
-		}
-		vectorData5.data = vec5;
-		this.context3D.setProgramConstantsFromVector(0,0,vectorData5,1);
-		this.context3D.drawTriangles(this.indexBuffer,0);
-		this.context3D.present();
+		var _g = this.scenesList.length;
+		while(_g1 < _g) this.scenesList[_g1++].update();
+		this.renderer.update();
 	}
-	,__class__: TestS3D
+	,showAnimatedScene: function(path) {
+		var swfExporter = new swfdataexporter_SwfExporter();
+		var swfParserLight = new swfparser_SwfParserLight();
+		var swfTags = [];
+		var data = openfl_Assets.getBytes(path);
+		data.__endian = 1;
+		var textureAtlas = swfExporter.importSwfGL(data,swfParserLight.get_context().shapeLibrary,swfTags);
+		swfParserLight.get_context().library.addShapes(swfParserLight.get_context().shapeLibrary);
+		swfParserLight.processDisplayObject(swfTags);
+		var scene = new Scene(this.renderer);
+		this.addChild(scene);
+		scene.show(swfParserLight.get_context().library,textureAtlas);
+		this.scenesList.push(scene);
+		return scene;
+	}
+	,__class__: TestRenderer
 });
 var Main = function() {
-	TestS3D.call(this);
+	TestRenderer.call(this);
 };
 $hxClasses["Main"] = Main;
 Main.__name__ = ["Main"];
-Main.__super__ = TestS3D;
-Main.prototype = $extend(TestS3D.prototype,{
+Main.__super__ = TestRenderer;
+Main.prototype = $extend(TestRenderer.prototype,{
 	__class__: Main
 });
 var DocumentClass = function() {
@@ -2009,6 +1877,19 @@ var DefaultAssetLibrary = function() {
 	this.path = new haxe_ds_StringMap();
 	this.className = new haxe_ds_StringMap();
 	lime_AssetLibrary.call(this);
+	var _this = this.path;
+	if(__map_reserved["animation/bull_smith.animation"] != null) {
+		_this.setReserved("animation/bull_smith.animation","animation/bull_smith.animation");
+	} else {
+		_this.h["animation/bull_smith.animation"] = "animation/bull_smith.animation";
+	}
+	var _this1 = this.type;
+	var value = "TEXT";
+	if(__map_reserved["animation/bull_smith.animation"] != null) {
+		_this1.setReserved("animation/bull_smith.animation",value);
+	} else {
+		_this1.h["animation/bull_smith.animation"] = value;
+	}
 	var assetsPrefix = null;
 	if(ApplicationMain.config != null && Object.prototype.hasOwnProperty.call(ApplicationMain.config,"assetsPrefix")) {
 		assetsPrefix = ApplicationMain.config.assetsPrefix;
@@ -2017,13 +1898,13 @@ var DefaultAssetLibrary = function() {
 		var tmp = this.path.keys();
 		while(tmp.hasNext()) {
 			var k = tmp.next();
-			var _this = this.path;
-			var value = assetsPrefix + (__map_reserved[k] != null?_this.getReserved(k):_this.h[k]);
-			var _this1 = this.path;
+			var _this2 = this.path;
+			var value1 = assetsPrefix + (__map_reserved[k] != null?_this2.getReserved(k):_this2.h[k]);
+			var _this3 = this.path;
 			if(__map_reserved[k] != null) {
-				_this1.setReserved(k,value);
+				_this3.setReserved(k,value1);
 			} else {
-				_this1.h[k] = value;
+				_this3.h[k] = value1;
 			}
 		}
 	}
@@ -2259,6 +2140,54 @@ FastMath.angle = function(x1,y1,x2,y2) {
 FastMath.prototype = {
 	__class__: FastMath
 };
+var GeomMath = function() {
+};
+$hxClasses["GeomMath"] = GeomMath;
+GeomMath.__name__ = ["GeomMath"];
+GeomMath.transformPoint = function(matrix,x,y,noDelta,result) {
+	if(noDelta == null) {
+		noDelta = false;
+	}
+	var dx = noDelta?0:matrix.tx;
+	var dy = noDelta?0:matrix.ty;
+	result.x = matrix.a * x + matrix.c * y + dx;
+	result.y = matrix.d * y + matrix.b * x + dy;
+	return result;
+};
+GeomMath.transformRectangle = function(matrix,rectangle) {
+	rectangle.x = matrix.a * rectangle.x + matrix.c * rectangle.y + matrix.tx;
+	rectangle.y = matrix.d * rectangle.y + matrix.b * rectangle.x + matrix.ty;
+	return rectangle;
+};
+GeomMath.concatMatrices = function(matrixA,matrixB,dest) {
+	var a = matrixA.a * matrixB.a + matrixA.b * matrixB.c;
+	var b = matrixA.a * matrixB.b + matrixA.b * matrixB.d;
+	var c = matrixA.c * matrixB.a + matrixA.d * matrixB.c;
+	var d = matrixA.c * matrixB.b + matrixA.d * matrixB.d;
+	var tx = matrixA.tx * matrixB.a + matrixA.ty * matrixB.c + matrixB.tx;
+	var ty = matrixA.tx * matrixB.b + matrixA.ty * matrixB.d + matrixB.ty;
+	dest.a = a;
+	dest.b = b;
+	dest.c = c;
+	dest.d = d;
+	dest.tx = tx;
+	dest.ty = ty;
+};
+GeomMath.rectangleUnion = function(rect,toUnion) {
+	if(rect.width == 0 || rect.height == 0) {
+		rect.setTo(toUnion.x,toUnion.y,toUnion.width,toUnion.height);
+		return;
+	} else if(toUnion.width == 0 || toUnion.height == 0) {
+		return;
+	}
+	var x0 = rect.x > toUnion.x?toUnion.x:rect.x;
+	var x1 = rect.get_right() < toUnion.get_right()?toUnion.get_right():rect.get_right();
+	var y0 = rect.y > toUnion.y?toUnion.y:rect.y;
+	rect.setTo(x0,y0,x1 - x0,(rect.get_bottom() < toUnion.get_bottom()?toUnion.get_bottom():rect.get_bottom()) - y0);
+};
+GeomMath.prototype = {
+	__class__: GeomMath
+};
 var HxOverrides = function() { };
 $hxClasses["HxOverrides"] = HxOverrides;
 HxOverrides.__name__ = ["HxOverrides"];
@@ -2295,6 +2224,22 @@ HxOverrides.iter = function(a) {
 	}, next : function() {
 		return this.arr[this.cur++];
 	}};
+};
+var IUpdatable = function() { };
+$hxClasses["IUpdatable"] = IUpdatable;
+IUpdatable.__name__ = ["IUpdatable"];
+IUpdatable.prototype = {
+	__class__: IUpdatable
+};
+var Internal_$trace = function() {
+};
+$hxClasses["Internal_trace"] = Internal_$trace;
+Internal_$trace.__name__ = ["Internal_trace"];
+Internal_$trace.trace = function(args) {
+	haxe_Log.trace(args,{ fileName : "Internal_trace.hx", lineNumber : 8, className : "Internal_trace", methodName : "trace"});
+};
+Internal_$trace.prototype = {
+	__class__: Internal_$trace
 };
 var List = function() {
 	this.length = 0;
@@ -2417,6 +2362,15 @@ Reflect.isFunction = function(f) {
 		return false;
 	}
 };
+Reflect.compare = function(a,b) {
+	if(a == b) {
+		return 0;
+	} else if(a > b) {
+		return 1;
+	} else {
+		return -1;
+	}
+};
 Reflect.compareMethods = function(f1,f2) {
 	if(f1 == f2) {
 		return true;
@@ -2426,6 +2380,13 @@ Reflect.compareMethods = function(f1,f2) {
 	}
 	if(f1.scope == f2.scope && f1.method == f2.method) {
 		return f1.method != null;
+	} else {
+		return false;
+	}
+};
+Reflect.isEnumValue = function(v) {
+	if(v != null) {
+		return v.__enum__ != null;
 	} else {
 		return false;
 	}
@@ -2443,6 +2404,43 @@ Reflect.makeVarArgs = function(f) {
 		return f(a);
 	};
 };
+var Scene = function(target) {
+	this.drawingBound = new openfl_geom_Rectangle();
+	this.mousePoint = new openfl_geom_Point();
+	openfl_display_Sprite.call(this);
+	this.target = target;
+	this.drawer = new gl_drawer_GLDisplayListDrawer(null,this.mousePoint);
+	this.drawer.set_checkBounds(true);
+	this.drawingData = new swfdrawer_data_DrawingData();
+	this.drawer.set_smooth(true);
+};
+$hxClasses["Scene"] = Scene;
+Scene.__name__ = ["Scene"];
+Scene.__super__ = openfl_display_Sprite;
+Scene.prototype = $extend(openfl_display_Sprite.prototype,{
+	show: function(library,textureAtlas) {
+		this.drawer.set_atlas(textureAtlas);
+		this.drawer.set_target(this.target);
+		this.currentDisplayObject = library.linkagesList[0];
+	}
+	,update: function() {
+		if(this.currentDisplayObject == null) {
+			return;
+		}
+		this.drawingBound.setTo(0,0,0,0);
+		this.currentDisplayObject.update();
+		var _g = 0;
+		while(_g < 15) {
+			var i = _g++;
+			var _g1 = 0;
+			while(_g1 < 9) {
+				var j = _g1++;
+				this.drawer.drawDisplayObject(this.currentDisplayObject,new openfl_geom_Matrix(1,0,0,1,this.get_x() + i * 60,this.get_y() + j * 100),this.drawingBound,new swfdata_ColorData());
+			}
+		}
+	}
+	,__class__: Scene
+});
 var Std = function() { };
 $hxClasses["Std"] = Std;
 Std.__name__ = ["Std"];
@@ -2642,6 +2640,106 @@ _$UInt_UInt_$Impl_$.toFloat = function(this1) {
 	} else {
 		return this1 + 0.0;
 	}
+};
+var fastbytearray_ByteArrayUtils = function() {
+};
+$hxClasses["fastbytearray.ByteArrayUtils"] = fastbytearray_ByteArrayUtils;
+fastbytearray_ByteArrayUtils.__name__ = ["fastbytearray","ByteArrayUtils"];
+fastbytearray_ByteArrayUtils.addBitsValue = function(mask,value) {
+	if(value >= 0) {
+		mask |= value;
+	} else {
+		mask |= ~value << 1;
+	}
+	return mask;
+};
+fastbytearray_ByteArrayUtils.calculateMaxFixedBits = function(signed,a,b) {
+	return fastbytearray_ByteArrayUtils.calculateMaxBits(signed,a * 65536 | 0,b * 65536 | 0);
+};
+fastbytearray_ByteArrayUtils.calculateMaxBits = function(signed,a,b) {
+	var bitMask = 0;
+	var valueMax = -2147483648;
+	if(!signed) {
+		bitMask = a | b;
+	} else {
+		bitMask = fastbytearray_ByteArrayUtils.addBitsValue(0,a);
+		bitMask = fastbytearray_ByteArrayUtils.addBitsValue(bitMask,b);
+		if(-2147483648 < a) {
+			valueMax = a;
+		}
+		if(valueMax < b) {
+			valueMax = b;
+		}
+	}
+	var bits = 0;
+	if(bitMask > 0) {
+		bits = fastbytearray_ByteArrayUtils.calculateBits(bitMask);
+		if(signed && valueMax > 0 && fastbytearray_ByteArrayUtils.calculateBits(valueMax) >= bits) {
+			++bits;
+		}
+	}
+	return bits;
+};
+fastbytearray_ByteArrayUtils.calculateMaxBits4 = function(signed,a,b,c,d) {
+	var bitMask = 0;
+	var valueMax = -2147483648;
+	if(!signed) {
+		bitMask = a | b | c | d;
+	} else {
+		bitMask = fastbytearray_ByteArrayUtils.addBitsValue(0,a);
+		bitMask = fastbytearray_ByteArrayUtils.addBitsValue(bitMask,b);
+		bitMask = fastbytearray_ByteArrayUtils.addBitsValue(bitMask,c);
+		bitMask = fastbytearray_ByteArrayUtils.addBitsValue(bitMask,d);
+		if(-2147483648 < a) {
+			valueMax = a;
+		}
+		if(valueMax < b) {
+			valueMax = b;
+		}
+		if(valueMax < c) {
+			valueMax = c;
+		}
+		if(valueMax < d) {
+			valueMax = d;
+		}
+	}
+	var bits = 0;
+	if(bitMask > 0) {
+		bits = fastbytearray_ByteArrayUtils.calculateBits(bitMask);
+		if(signed && valueMax > 0 && fastbytearray_ByteArrayUtils.calculateBits(valueMax) >= bits) {
+			++bits;
+		}
+	}
+	return bits;
+};
+fastbytearray_ByteArrayUtils.calculateBits = function(value) {
+	if(value == 0) {
+		return 1;
+	}
+	return Math.floor(Math.log(value | 0) / fastbytearray_ByteArrayUtils.LOG_2 + 1);
+};
+fastbytearray_ByteArrayUtils.clampBitsToMaxBytes = function(value) {
+	var valueBitsSize = fastbytearray_ByteArrayUtils.calculateBits(value);
+	if(valueBitsSize < 8) {
+		return 1;
+	} else if(valueBitsSize < 17) {
+		return 2;
+	} else if(valueBitsSize < 25) {
+		return 3;
+	} else if(valueBitsSize < 33) {
+		return 4;
+	}
+	return 0;
+};
+fastbytearray_ByteArrayUtils.prototype = {
+	__class__: fastbytearray_ByteArrayUtils
+};
+var fastbytearray_Constants = function() {
+};
+$hxClasses["fastbytearray.Constants"] = fastbytearray_Constants;
+fastbytearray_Constants.__name__ = ["fastbytearray","Constants"];
+fastbytearray_Constants.prototype = {
+	__class__: fastbytearray_Constants
 };
 var format_png_Color = $hxClasses["format.png.Color"] = { __ename__ : true, __constructs__ : ["ColGrey","ColTrue","ColIndexed"] };
 format_png_Color.ColGrey = function(alpha) { var $x = ["ColGrey",0,alpha]; $x.__enum__ = format_png_Color; $x.toString = $estr; return $x; };
@@ -3799,18 +3897,753 @@ format_png_Writer.prototype = {
 	}
 	,__class__: format_png_Writer
 };
+var format_tools_Adler32 = function() {
+	this.a1 = 1;
+	this.a2 = 0;
+};
+$hxClasses["format.tools.Adler32"] = format_tools_Adler32;
+format_tools_Adler32.__name__ = ["format","tools","Adler32"];
+format_tools_Adler32.read = function(i) {
+	var a = new format_tools_Adler32();
+	var a2a = i.readByte();
+	var a2b = i.readByte();
+	a.a1 = i.readByte() << 8 | i.readByte();
+	a.a2 = a2a << 8 | a2b;
+	return a;
+};
+format_tools_Adler32.prototype = {
+	update: function(b,pos,len) {
+		var a1 = this.a1;
+		var a2 = this.a2;
+		var _g1 = pos;
+		var _g = pos + len;
+		while(_g1 < _g) {
+			a1 = (a1 + b.b[_g1++]) % 65521;
+			a2 = (a2 + a1) % 65521;
+		}
+		this.a1 = a1;
+		this.a2 = a2;
+	}
+	,equals: function(a) {
+		if(a.a1 == this.a1) {
+			return a.a2 == this.a2;
+		} else {
+			return false;
+		}
+	}
+	,__class__: format_tools_Adler32
+};
 var format_tools_Deflate = function() { };
 $hxClasses["format.tools.Deflate"] = format_tools_Deflate;
 format_tools_Deflate.__name__ = ["format","tools","Deflate"];
 format_tools_Deflate.run = function(b) {
-	return haxe_zip_Compress.run(b,9);
+	throw new js__$Boot_HaxeError("Deflate is not supported on this platform");
+};
+var format_tools_Huffman = $hxClasses["format.tools.Huffman"] = { __ename__ : true, __constructs__ : ["Found","NeedBit","NeedBits"] };
+format_tools_Huffman.Found = function(i) { var $x = ["Found",0,i]; $x.__enum__ = format_tools_Huffman; $x.toString = $estr; return $x; };
+format_tools_Huffman.NeedBit = function(left,right) { var $x = ["NeedBit",1,left,right]; $x.__enum__ = format_tools_Huffman; $x.toString = $estr; return $x; };
+format_tools_Huffman.NeedBits = function(n,table) { var $x = ["NeedBits",2,n,table]; $x.__enum__ = format_tools_Huffman; $x.toString = $estr; return $x; };
+var format_tools_HuffTools = function() {
+};
+$hxClasses["format.tools.HuffTools"] = format_tools_HuffTools;
+format_tools_HuffTools.__name__ = ["format","tools","HuffTools"];
+format_tools_HuffTools.prototype = {
+	treeDepth: function(t) {
+		switch(t[1]) {
+		case 0:
+			return 0;
+		case 1:
+			var b = t[3];
+			var da = this.treeDepth(t[2]);
+			var db = this.treeDepth(b);
+			return 1 + (da < db?da:db);
+		case 2:
+			throw new js__$Boot_HaxeError("assert");
+			break;
+		}
+	}
+	,treeCompress: function(t) {
+		var d = this.treeDepth(t);
+		if(d == 0) {
+			return t;
+		}
+		if(d == 1) {
+			if(t[1] == 1) {
+				return format_tools_Huffman.NeedBit(this.treeCompress(t[2]),this.treeCompress(t[3]));
+			} else {
+				throw new js__$Boot_HaxeError("assert");
+			}
+		}
+		var size = 1 << d;
+		var table = [];
+		var _g1 = 0;
+		while(_g1 < size) {
+			++_g1;
+			table.push(format_tools_Huffman.Found(-1));
+		}
+		this.treeWalk(table,0,0,d,t);
+		return format_tools_Huffman.NeedBits(d,table);
+	}
+	,treeWalk: function(table,p,cd,d,t) {
+		if(t[1] == 1) {
+			var b = t[3];
+			var a = t[2];
+			if(d > 0) {
+				this.treeWalk(table,p,cd + 1,d - 1,a);
+				this.treeWalk(table,p | 1 << cd,cd + 1,d - 1,b);
+			} else {
+				table[p] = this.treeCompress(t);
+			}
+		} else {
+			table[p] = this.treeCompress(t);
+		}
+	}
+	,treeMake: function(bits,maxbits,v,len) {
+		if(len > maxbits) {
+			throw new js__$Boot_HaxeError("Invalid huffman");
+		}
+		var idx = v << 5 | len;
+		if(bits.h.hasOwnProperty(idx)) {
+			return format_tools_Huffman.Found(bits.h[idx]);
+		}
+		v <<= 1;
+		++len;
+		return format_tools_Huffman.NeedBit(this.treeMake(bits,maxbits,v,len),this.treeMake(bits,maxbits,v | 1,len));
+	}
+	,make: function(lengths,pos,nlengths,maxbits) {
+		var counts = [];
+		var tmp = [];
+		if(maxbits > 32) {
+			throw new js__$Boot_HaxeError("Invalid huffman");
+		}
+		var _g1 = 0;
+		while(_g1 < maxbits) {
+			++_g1;
+			counts.push(0);
+			tmp.push(0);
+		}
+		var _g11 = 0;
+		while(_g11 < nlengths) {
+			var p = lengths[_g11++ + pos];
+			if(p >= maxbits) {
+				throw new js__$Boot_HaxeError("Invalid huffman");
+			}
+			counts[p]++;
+		}
+		var code = 0;
+		var _g12 = 1;
+		var _g = maxbits - 1;
+		while(_g12 < _g) {
+			var i = _g12++;
+			code = code + counts[i] << 1;
+			tmp[i] = code;
+		}
+		var bits = new haxe_ds_IntMap();
+		var _g13 = 0;
+		while(_g13 < nlengths) {
+			var i1 = _g13++;
+			var l = lengths[i1 + pos];
+			if(l != 0) {
+				var n = tmp[l - 1];
+				tmp[l - 1] = n + 1;
+				bits.h[n << 5 | l] = i1;
+			}
+		}
+		return this.treeCompress(format_tools_Huffman.NeedBit(this.treeMake(bits,maxbits,0,1),this.treeMake(bits,maxbits,1,1)));
+	}
+	,__class__: format_tools_HuffTools
 };
 var format_tools_Inflate = function() { };
 $hxClasses["format.tools.Inflate"] = format_tools_Inflate;
 format_tools_Inflate.__name__ = ["format","tools","Inflate"];
 format_tools_Inflate.run = function(bytes) {
-	return haxe_zip_Uncompress.run(bytes);
+	return format_tools_InflateImpl.run(new haxe_io_BytesInput(bytes));
 };
+var format_tools__$InflateImpl_Window = function(hasCrc) {
+	this.buffer = new haxe_io_Bytes(new ArrayBuffer(65536));
+	this.pos = 0;
+	if(hasCrc) {
+		this.crc = new format_tools_Adler32();
+	}
+};
+$hxClasses["format.tools._InflateImpl.Window"] = format_tools__$InflateImpl_Window;
+format_tools__$InflateImpl_Window.__name__ = ["format","tools","_InflateImpl","Window"];
+format_tools__$InflateImpl_Window.prototype = {
+	slide: function() {
+		if(this.crc != null) {
+			this.crc.update(this.buffer,0,32768);
+		}
+		var b = new haxe_io_Bytes(new ArrayBuffer(65536));
+		this.pos -= 32768;
+		b.blit(0,this.buffer,32768,this.pos);
+		this.buffer = b;
+	}
+	,addBytes: function(b,p,len) {
+		if(this.pos + len > 65536) {
+			this.slide();
+		}
+		this.buffer.blit(this.pos,b,p,len);
+		this.pos += len;
+	}
+	,addByte: function(c) {
+		if(this.pos == 65536) {
+			this.slide();
+		}
+		this.buffer.b[this.pos] = c & 255;
+		this.pos++;
+	}
+	,getLastChar: function() {
+		return this.buffer.b[this.pos - 1];
+	}
+	,available: function() {
+		return this.pos;
+	}
+	,checksum: function() {
+		if(this.crc != null) {
+			this.crc.update(this.buffer,0,this.pos);
+		}
+		return this.crc;
+	}
+	,__class__: format_tools__$InflateImpl_Window
+};
+var format_tools__$InflateImpl_State = $hxClasses["format.tools._InflateImpl.State"] = { __ename__ : true, __constructs__ : ["Head","Block","CData","Flat","Crc","Dist","DistOne","Done"] };
+format_tools__$InflateImpl_State.Head = ["Head",0];
+format_tools__$InflateImpl_State.Head.toString = $estr;
+format_tools__$InflateImpl_State.Head.__enum__ = format_tools__$InflateImpl_State;
+format_tools__$InflateImpl_State.Block = ["Block",1];
+format_tools__$InflateImpl_State.Block.toString = $estr;
+format_tools__$InflateImpl_State.Block.__enum__ = format_tools__$InflateImpl_State;
+format_tools__$InflateImpl_State.CData = ["CData",2];
+format_tools__$InflateImpl_State.CData.toString = $estr;
+format_tools__$InflateImpl_State.CData.__enum__ = format_tools__$InflateImpl_State;
+format_tools__$InflateImpl_State.Flat = ["Flat",3];
+format_tools__$InflateImpl_State.Flat.toString = $estr;
+format_tools__$InflateImpl_State.Flat.__enum__ = format_tools__$InflateImpl_State;
+format_tools__$InflateImpl_State.Crc = ["Crc",4];
+format_tools__$InflateImpl_State.Crc.toString = $estr;
+format_tools__$InflateImpl_State.Crc.__enum__ = format_tools__$InflateImpl_State;
+format_tools__$InflateImpl_State.Dist = ["Dist",5];
+format_tools__$InflateImpl_State.Dist.toString = $estr;
+format_tools__$InflateImpl_State.Dist.__enum__ = format_tools__$InflateImpl_State;
+format_tools__$InflateImpl_State.DistOne = ["DistOne",6];
+format_tools__$InflateImpl_State.DistOne.toString = $estr;
+format_tools__$InflateImpl_State.DistOne.__enum__ = format_tools__$InflateImpl_State;
+format_tools__$InflateImpl_State.Done = ["Done",7];
+format_tools__$InflateImpl_State.Done.toString = $estr;
+format_tools__$InflateImpl_State.Done.__enum__ = format_tools__$InflateImpl_State;
+var format_tools_InflateImpl = function(i,header,crc) {
+	if(crc == null) {
+		crc = true;
+	}
+	if(header == null) {
+		header = true;
+	}
+	this["final"] = false;
+	this.htools = new format_tools_HuffTools();
+	this.huffman = this.buildFixedHuffman();
+	this.huffdist = null;
+	this.len = 0;
+	this.dist = 0;
+	this.state = header?format_tools__$InflateImpl_State.Head:format_tools__$InflateImpl_State.Block;
+	this.input = i;
+	this.bits = 0;
+	this.nbits = 0;
+	this.needed = 0;
+	this.output = null;
+	this.outpos = 0;
+	this.lengths = [];
+	var _g = 0;
+	while(_g < 19) {
+		++_g;
+		this.lengths.push(-1);
+	}
+	this.window = new format_tools__$InflateImpl_Window(crc);
+};
+$hxClasses["format.tools.InflateImpl"] = format_tools_InflateImpl;
+format_tools_InflateImpl.__name__ = ["format","tools","InflateImpl"];
+format_tools_InflateImpl.run = function(i,bufsize) {
+	if(bufsize == null) {
+		bufsize = 65536;
+	}
+	var buf = new haxe_io_Bytes(new ArrayBuffer(bufsize));
+	var output = new haxe_io_BytesBuffer();
+	var inflate = new format_tools_InflateImpl(i,false,false);
+	while(true) {
+		var len = inflate.readBytes(buf,0,bufsize);
+		if(len < 0 || len > buf.length) {
+			throw new js__$Boot_HaxeError(haxe_io_Error.OutsideBounds);
+		}
+		var b2 = buf.b;
+		var _g1 = 0;
+		while(_g1 < len) output.b.push(b2[_g1++]);
+		if(len < bufsize) {
+			break;
+		}
+	}
+	return output.getBytes();
+};
+format_tools_InflateImpl.prototype = {
+	buildFixedHuffman: function() {
+		if(format_tools_InflateImpl.FIXED_HUFFMAN != null) {
+			return format_tools_InflateImpl.FIXED_HUFFMAN;
+		}
+		var a = [];
+		var _g = 0;
+		while(_g < 288) {
+			var n = _g++;
+			a.push(n <= 143?8:n <= 255?9:n <= 279?7:8);
+		}
+		format_tools_InflateImpl.FIXED_HUFFMAN = this.htools.make(a,0,288,10);
+		return format_tools_InflateImpl.FIXED_HUFFMAN;
+	}
+	,readBytes: function(b,pos,len) {
+		this.needed = len;
+		this.outpos = pos;
+		this.output = b;
+		if(len > 0) {
+			while(this.inflateLoop()) {
+			}
+		}
+		return len - this.needed;
+	}
+	,getBits: function(n) {
+		while(this.nbits < n) {
+			this.bits |= this.input.readByte() << this.nbits;
+			this.nbits += 8;
+		}
+		var b = this.bits & (1 << n) - 1;
+		this.nbits -= n;
+		this.bits >>= n;
+		return b;
+	}
+	,getBit: function() {
+		if(this.nbits == 0) {
+			this.nbits = 8;
+			this.bits = this.input.readByte();
+		}
+		var b = (this.bits & 1) == 1;
+		this.nbits--;
+		this.bits >>= 1;
+		return b;
+	}
+	,getRevBits: function(n) {
+		if(n == 0) {
+			return 0;
+		} else if(this.getBit()) {
+			return 1 << n - 1 | this.getRevBits(n - 1);
+		} else {
+			return this.getRevBits(n - 1);
+		}
+	}
+	,resetBits: function() {
+		this.bits = 0;
+		this.nbits = 0;
+	}
+	,addBytes: function(b,p,len) {
+		this.window.addBytes(b,p,len);
+		this.output.blit(this.outpos,b,p,len);
+		this.needed -= len;
+		this.outpos += len;
+	}
+	,addByte: function(b) {
+		this.window.addByte(b);
+		this.output.b[this.outpos] = b & 255;
+		this.needed--;
+		this.outpos++;
+	}
+	,addDistOne: function(n) {
+		var c = this.window.getLastChar();
+		var _g1 = 0;
+		while(_g1 < n) {
+			++_g1;
+			this.addByte(c);
+		}
+	}
+	,addDist: function(d,len) {
+		this.addBytes(this.window.buffer,this.window.pos - d,len);
+	}
+	,applyHuffman: function(h) {
+		switch(h[1]) {
+		case 0:
+			return h[2];
+		case 1:
+			var b = h[3];
+			var a = h[2];
+			return this.applyHuffman(this.getBit()?b:a);
+		case 2:
+			return this.applyHuffman(h[3][this.getBits(h[2])]);
+		}
+	}
+	,inflateLengths: function(a,max) {
+		var i = 0;
+		var prev = 0;
+		while(i < max) {
+			var n = this.applyHuffman(this.huffman);
+			switch(n) {
+			case 0:case 1:case 2:case 3:case 4:case 5:case 6:case 7:case 8:case 9:case 10:case 11:case 12:case 13:case 14:case 15:
+				prev = n;
+				a[i] = n;
+				++i;
+				break;
+			case 16:
+				var end = i + 3 + this.getBits(2);
+				if(end > max) {
+					throw new js__$Boot_HaxeError("Invalid data");
+				}
+				while(i < end) {
+					a[i] = prev;
+					++i;
+				}
+				break;
+			case 17:
+				i += 3 + this.getBits(3);
+				if(i > max) {
+					throw new js__$Boot_HaxeError("Invalid data");
+				}
+				break;
+			case 18:
+				i += 11 + this.getBits(7);
+				if(i > max) {
+					throw new js__$Boot_HaxeError("Invalid data");
+				}
+				break;
+			default:
+				throw new js__$Boot_HaxeError("Invalid data");
+			}
+		}
+	}
+	,inflateLoop: function() {
+		switch(this.state[1]) {
+		case 0:
+			var cmf = this.input.readByte();
+			if((cmf & 15) != 8) {
+				throw new js__$Boot_HaxeError("Invalid data");
+			}
+			var flg = this.input.readByte();
+			var fdict = (flg & 32) != 0;
+			if(((cmf << 8) + flg) % 31 != 0) {
+				throw new js__$Boot_HaxeError("Invalid data");
+			}
+			if(fdict) {
+				throw new js__$Boot_HaxeError("Unsupported dictionary");
+			}
+			this.state = format_tools__$InflateImpl_State.Block;
+			return true;
+		case 1:
+			this["final"] = this.getBit();
+			switch(this.getBits(2)) {
+			case 0:
+				this.len = this.input.readUInt16();
+				if(this.input.readUInt16() != 65535 - this.len) {
+					throw new js__$Boot_HaxeError("Invalid data");
+				}
+				this.state = format_tools__$InflateImpl_State.Flat;
+				var r = this.inflateLoop();
+				this.resetBits();
+				return r;
+			case 1:
+				this.huffman = this.buildFixedHuffman();
+				this.huffdist = null;
+				this.state = format_tools__$InflateImpl_State.CData;
+				return true;
+			case 2:
+				var hlit = this.getBits(5) + 257;
+				var hdist = this.getBits(5) + 1;
+				var hclen = this.getBits(4) + 4;
+				var _g1 = 0;
+				while(_g1 < hclen) this.lengths[format_tools_InflateImpl.CODE_LENGTHS_POS[_g1++]] = this.getBits(3);
+				var _g = hclen;
+				while(_g < 19) this.lengths[format_tools_InflateImpl.CODE_LENGTHS_POS[_g++]] = 0;
+				this.huffman = this.htools.make(this.lengths,0,19,8);
+				var lengths = [];
+				var _g11 = 0;
+				var _g2 = hlit + hdist;
+				while(_g11 < _g2) {
+					++_g11;
+					lengths.push(0);
+				}
+				this.inflateLengths(lengths,hlit + hdist);
+				this.huffdist = this.htools.make(lengths,hlit,hdist,16);
+				this.huffman = this.htools.make(lengths,0,hlit,16);
+				this.state = format_tools__$InflateImpl_State.CData;
+				return true;
+			default:
+				throw new js__$Boot_HaxeError("Invalid data");
+			}
+			break;
+		case 2:
+			var n = this.applyHuffman(this.huffman);
+			if(n < 256) {
+				this.addByte(n);
+				return this.needed > 0;
+			} else if(n == 256) {
+				this.state = this["final"]?format_tools__$InflateImpl_State.Crc:format_tools__$InflateImpl_State.Block;
+				return true;
+			} else {
+				n -= 257;
+				var extra_bits = format_tools_InflateImpl.LEN_EXTRA_BITS_TBL[n];
+				if(extra_bits == -1) {
+					throw new js__$Boot_HaxeError("Invalid data");
+				}
+				this.len = format_tools_InflateImpl.LEN_BASE_VAL_TBL[n] + this.getBits(extra_bits);
+				var dist_code = this.huffdist == null?this.getRevBits(5):this.applyHuffman(this.huffdist);
+				extra_bits = format_tools_InflateImpl.DIST_EXTRA_BITS_TBL[dist_code];
+				if(extra_bits == -1) {
+					throw new js__$Boot_HaxeError("Invalid data");
+				}
+				this.dist = format_tools_InflateImpl.DIST_BASE_VAL_TBL[dist_code] + this.getBits(extra_bits);
+				if(this.dist > this.window.available()) {
+					throw new js__$Boot_HaxeError("Invalid data");
+				}
+				this.state = this.dist == 1?format_tools__$InflateImpl_State.DistOne:format_tools__$InflateImpl_State.Dist;
+				return true;
+			}
+			break;
+		case 3:
+			var rlen = this.len < this.needed?this.len:this.needed;
+			var bytes = this.input.read(rlen);
+			this.len -= rlen;
+			this.addBytes(bytes,0,rlen);
+			if(this.len == 0) {
+				this.state = this["final"]?format_tools__$InflateImpl_State.Crc:format_tools__$InflateImpl_State.Block;
+			}
+			return this.needed > 0;
+		case 4:
+			var calc = this.window.checksum();
+			if(calc == null) {
+				this.state = format_tools__$InflateImpl_State.Done;
+				return true;
+			}
+			if(!calc.equals(format_tools_Adler32.read(this.input))) {
+				throw new js__$Boot_HaxeError("Invalid CRC");
+			}
+			this.state = format_tools__$InflateImpl_State.Done;
+			return true;
+		case 5:
+			while(this.len > 0 && this.needed > 0) {
+				var rdist = this.len < this.dist?this.len:this.dist;
+				var rlen1 = this.needed < rdist?this.needed:rdist;
+				this.addDist(this.dist,rlen1);
+				this.len -= rlen1;
+			}
+			if(this.len == 0) {
+				this.state = format_tools__$InflateImpl_State.CData;
+			}
+			return this.needed > 0;
+		case 6:
+			var rlen2 = this.len < this.needed?this.len:this.needed;
+			this.addDistOne(rlen2);
+			this.len -= rlen2;
+			if(this.len == 0) {
+				this.state = format_tools__$InflateImpl_State.CData;
+			}
+			return this.needed > 0;
+		case 7:
+			return false;
+		}
+	}
+	,__class__: format_tools_InflateImpl
+};
+var swfdrawer_IDrawer = function() { };
+$hxClasses["swfdrawer.IDrawer"] = swfdrawer_IDrawer;
+swfdrawer_IDrawer.__name__ = ["swfdrawer","IDrawer"];
+swfdrawer_IDrawer.prototype = {
+	__class__: swfdrawer_IDrawer
+};
+var gl_drawer_GLDisplayListDrawer = function(atlas,mousePoint) {
+	this.drawingData = new swfdrawer_data_DrawingData();
+	this.drawersMap = new haxe_ds_IntMap();
+	this.mousePoint = mousePoint;
+	this._atlas = atlas;
+	this.initialize();
+};
+$hxClasses["gl.drawer.GLDisplayListDrawer"] = gl_drawer_GLDisplayListDrawer;
+gl_drawer_GLDisplayListDrawer.__name__ = ["gl","drawer","GLDisplayListDrawer"];
+gl_drawer_GLDisplayListDrawer.__interfaces__ = [swfdrawer_IDrawer];
+gl_drawer_GLDisplayListDrawer.prototype = {
+	set_atlas: function(atlas) {
+		this._atlas = atlas;
+		this.shapeDrawer.set_atlas(atlas);
+		return atlas;
+	}
+	,set_checkBounds: function(value) {
+		this.shapeDrawer.checkBounds = value;
+		return value;
+	}
+	,set_checkMouseHit: function(value) {
+		this.shapeDrawer.checkMouseHit = value;
+		return value;
+	}
+	,set_debugDraw: function(value) {
+		this.shapeDrawer.isDebugDraw = value;
+		return value;
+	}
+	,get_isHitMouse: function() {
+		return this.shapeDrawer.hitTestResult;
+	}
+	,initialize: function() {
+		this.shapeDrawer = new gl_drawer_GLShapeDrawer(this._atlas,this.mousePoint);
+		var spriteDrawer = new swfdrawer_SpriteDrawer(this);
+		var movieClipDrawer = new swfdrawer_MovieClipDrawer(this);
+		this.drawersMap.h[1] = this.shapeDrawer;
+		this.drawersMap.h[2] = spriteDrawer;
+		this.drawersMap.h[3] = movieClipDrawer;
+	}
+	,clear: function() {
+		this.shapeDrawer.clearMouseHitStatus();
+		this.drawingData.clear();
+	}
+	,drawDisplayObject: function(displayObject,transform,bound,colorData) {
+		this.clear();
+		this.drawingData.transform = transform;
+		this.drawingData.bound = bound;
+		if(colorData != null) {
+			this.drawingData.colorData.mulColorData(colorData);
+		} else if(displayObject.colorData != null) {
+			this.drawingData.colorData.mulColorData(displayObject.colorData);
+		}
+		this.draw(displayObject,this.drawingData);
+	}
+	,draw: function(displayObject,drawingData) {
+		var drawer = this.drawersMap.h[displayObject.displayObjectType];
+		if(drawer != null) {
+			drawer.draw(displayObject,drawingData);
+		} else {
+			throw new js__$Boot_HaxeError(new openfl_errors_Error("drawer for " + Std.string(displayObject) + " is not defined"));
+		}
+	}
+	,setHightlightColor: function(value,alpha) {
+	}
+	,get_hightlightSize: function() {
+		return 0;
+	}
+	,set_hightlightSize: function(value) {
+		return value;
+	}
+	,set_hightlight: function(value) {
+		this.shapeDrawer.hightlight = value;
+		return value;
+	}
+	,set_grassWind: function(value) {
+		this.shapeDrawer.isUseGrassWind = value;
+		return value;
+	}
+	,get_grassWind: function() {
+		return this.shapeDrawer.isUseGrassWind;
+	}
+	,set_debugConvas: function(value) {
+		this.shapeDrawer.convas = value;
+		return value;
+	}
+	,set_smooth: function(value) {
+		this.shapeDrawer.smooth = value;
+		return value;
+	}
+	,get_target: function() {
+		return this.target;
+	}
+	,set_target: function(value) {
+		this.shapeDrawer.renderer = value;
+		return this.target = value;
+	}
+	,__class__: gl_drawer_GLDisplayListDrawer
+	,__properties__: {set_target:"set_target",get_target:"get_target",set_smooth:"set_smooth",set_debugConvas:"set_debugConvas",set_grassWind:"set_grassWind",get_grassWind:"get_grassWind",set_hightlight:"set_hightlight",set_hightlightSize:"set_hightlightSize",get_hightlightSize:"get_hightlightSize",get_isHitMouse:"get_isHitMouse",set_debugDraw:"set_debugDraw",set_checkMouseHit:"set_checkMouseHit",set_checkBounds:"set_checkBounds",set_atlas:"set_atlas"}
+};
+var gl_drawer_GLDrawer = function(mousePoint) {
+	this.isUseGrassWind = false;
+	this.transformedMousePoint = new openfl_geom_Point();
+	this.currentBoundForDraw = new openfl_geom_Rectangle();
+	this.hitTestResult = false;
+	this.checkBounds = false;
+	this.checkMouseHit = false;
+	this.isDebugDraw = false;
+	this.drawMatrix = new openfl_geom_Matrix();
+	this.smooth = true;
+	this.hightlight = false;
+	this.mousePoint = mousePoint;
+	this.drawingRectagon = new swfdata_Rectagon(0,0,0,0,this.drawMatrix);
+};
+$hxClasses["gl.drawer.GLDrawer"] = gl_drawer_GLDrawer;
+gl_drawer_GLDrawer.__name__ = ["gl","drawer","GLDrawer"];
+gl_drawer_GLDrawer.__interfaces__ = [swfdrawer_IDrawer];
+gl_drawer_GLDrawer.prototype = {
+	clearMouseHitStatus: function() {
+		this.hitTestResult = false;
+	}
+	,applyDrawStyle: function() {
+		this.currentSubTexture = this.textureAtlas.getTexture(this.textureId);
+		var transform = this.currentSubTexture.get_transform();
+		var mulX = transform.positionMultiplierX;
+		var mulY = transform.positionMultiplierY;
+		this.drawMatrix.a *= mulX;
+		this.drawMatrix.d *= mulY;
+		this.drawMatrix.b *= mulX;
+		this.drawMatrix.c *= mulY;
+	}
+	,cleanDrawStyle: function() {
+		this.textureId = -1;
+		this.currentSubTexture = null;
+	}
+	,draw: function(drawable,drawingData) {
+		this.drawingData = drawingData;
+		drawingData.setFromDisplayObject(drawable);
+		this.textureId = drawable.characterId;
+		this.texturePadding2 = this.textureAtlas.get_padding() * 2;
+	}
+	,hitTest: function(pixelPerfect,texture,transformedDrawingX,transformedDrawingY,transformedDrawingWidth,transformedDrawingHeight,transformedPoint) {
+		var isHit = false;
+		if(transformedPoint.x > transformedDrawingX && transformedPoint.x < transformedDrawingX + transformedDrawingWidth) {
+			if(transformedPoint.y > transformedDrawingY && transformedPoint.y < transformedDrawingY + transformedDrawingHeight) {
+				isHit = true;
+			}
+		}
+		if(pixelPerfect && isHit) {
+			isHit = texture.getAlphaAtUV((transformedPoint.x - transformedDrawingX) / (transformedDrawingWidth + this.texturePadding2),(transformedPoint.y - transformedDrawingY) / (transformedDrawingHeight + this.texturePadding2)) > 5;
+		}
+		return isHit;
+	}
+	,setMaskData: function() {
+	}
+	,clearMaskData: function() {
+	}
+	,drawRectangle: function(drawingBounds,transform) {
+		this.drawMatrix.identity();
+		this.drawMatrix.concat(transform);
+		this.applyDrawStyle();
+		var texture = this.currentSubTexture;
+		var textureTransform = this.currentSubTexture.get_transform();
+		texture.pivotX = -(drawingBounds.x * textureTransform.scaleX + (texture.width - this.texturePadding2) / 2);
+		texture.pivotY = -(drawingBounds.y * textureTransform.scaleY + (texture.height - this.texturePadding2) / 2);
+		this.renderer.draw(texture,this.drawMatrix);
+	}
+	,__class__: gl_drawer_GLDrawer
+};
+var gl_drawer_GLShapeDrawer = function(atlas,mousePoint) {
+	this.myMatrix = new openfl_geom_Matrix();
+	gl_drawer_GLDrawer.call(this,mousePoint);
+	this.textureAtlas = atlas;
+};
+$hxClasses["gl.drawer.GLShapeDrawer"] = gl_drawer_GLShapeDrawer;
+gl_drawer_GLShapeDrawer.__name__ = ["gl","drawer","GLShapeDrawer"];
+gl_drawer_GLShapeDrawer.__super__ = gl_drawer_GLDrawer;
+gl_drawer_GLShapeDrawer.prototype = $extend(gl_drawer_GLDrawer.prototype,{
+	set_atlas: function(value) {
+		this.textureAtlas = value;
+		return value;
+	}
+	,draw: function(drawable,drawingData) {
+		gl_drawer_GLDrawer.prototype.draw.call(this,drawable,drawingData);
+		this.myMatrix.identity();
+		if(drawable.transform != null) {
+			this.myMatrix.concat(drawable.transform);
+		}
+		this.myMatrix.concat(drawingData.transform);
+		this.drawRectangle(drawable._shapeBounds,this.myMatrix);
+		this.cleanDrawStyle();
+	}
+	,__class__: gl_drawer_GLShapeDrawer
+	,__properties__: {set_atlas:"set_atlas"}
+});
 var haxe_StackItem = $hxClasses["haxe.StackItem"] = { __ename__ : true, __constructs__ : ["CFunction","Module","FilePos","Method","LocalFunction"] };
 haxe_StackItem.CFunction = ["CFunction",0];
 haxe_StackItem.CFunction.toString = $estr;
@@ -4007,42 +4840,6 @@ haxe_Timer.prototype = {
 	}
 	,__class__: haxe_Timer
 };
-var haxe_crypto_Adler32 = function() {
-	this.a1 = 1;
-	this.a2 = 0;
-};
-$hxClasses["haxe.crypto.Adler32"] = haxe_crypto_Adler32;
-haxe_crypto_Adler32.__name__ = ["haxe","crypto","Adler32"];
-haxe_crypto_Adler32.read = function(i) {
-	var a = new haxe_crypto_Adler32();
-	var a2a = i.readByte();
-	var a2b = i.readByte();
-	a.a1 = i.readByte() << 8 | i.readByte();
-	a.a2 = a2a << 8 | a2b;
-	return a;
-};
-haxe_crypto_Adler32.prototype = {
-	update: function(b,pos,len) {
-		var a1 = this.a1;
-		var a2 = this.a2;
-		var _g1 = pos;
-		var _g = pos + len;
-		while(_g1 < _g) {
-			a1 = (a1 + b.b[_g1++]) % 65521;
-			a2 = (a2 + a1) % 65521;
-		}
-		this.a1 = a1;
-		this.a2 = a2;
-	}
-	,equals: function(a) {
-		if(a.a1 == this.a1) {
-			return a.a2 == this.a2;
-		} else {
-			return false;
-		}
-	}
-	,__class__: haxe_crypto_Adler32
-};
 var haxe_crypto_BaseCode = function(base) {
 	var len = base.length;
 	var nbits = 1;
@@ -4124,6 +4921,169 @@ haxe_crypto_Crc32.prototype = {
 	}
 	,__class__: haxe_crypto_Crc32
 };
+var haxe_ds_BalancedTree = function() {
+};
+$hxClasses["haxe.ds.BalancedTree"] = haxe_ds_BalancedTree;
+haxe_ds_BalancedTree.__name__ = ["haxe","ds","BalancedTree"];
+haxe_ds_BalancedTree.prototype = {
+	set: function(key,value) {
+		this.root = this.setLoop(key,value,this.root);
+	}
+	,get: function(key) {
+		var node = this.root;
+		while(node != null) {
+			var c = this.compare(key,node.key);
+			if(c == 0) {
+				return node.value;
+			}
+			if(c < 0) {
+				node = node.left;
+			} else {
+				node = node.right;
+			}
+		}
+		return null;
+	}
+	,keys: function() {
+		var ret = [];
+		this.keysLoop(this.root,ret);
+		return HxOverrides.iter(ret);
+	}
+	,setLoop: function(k,v,node) {
+		if(node == null) {
+			return new haxe_ds_TreeNode(null,k,v,null);
+		}
+		var c = this.compare(k,node.key);
+		if(c == 0) {
+			return new haxe_ds_TreeNode(node.left,k,v,node.right,node == null?0:node._height);
+		} else if(c < 0) {
+			return this.balance(this.setLoop(k,v,node.left),node.key,node.value,node.right);
+		} else {
+			return this.balance(node.left,node.key,node.value,this.setLoop(k,v,node.right));
+		}
+	}
+	,keysLoop: function(node,acc) {
+		if(node != null) {
+			this.keysLoop(node.left,acc);
+			acc.push(node.key);
+			this.keysLoop(node.right,acc);
+		}
+	}
+	,balance: function(l,k,v,r) {
+		var hl = l == null?0:l._height;
+		var hr = r == null?0:r._height;
+		if(hl > hr + 2) {
+			var _this = l.left;
+			var tmp = _this == null?0:_this._height;
+			var _this1 = l.right;
+			if(tmp >= (_this1 == null?0:_this1._height)) {
+				return new haxe_ds_TreeNode(l.left,l.key,l.value,new haxe_ds_TreeNode(l.right,k,v,r));
+			} else {
+				return new haxe_ds_TreeNode(new haxe_ds_TreeNode(l.left,l.key,l.value,l.right.left),l.right.key,l.right.value,new haxe_ds_TreeNode(l.right.right,k,v,r));
+			}
+		} else if(hr > hl + 2) {
+			var _this2 = r.right;
+			var tmp1 = _this2 == null?0:_this2._height;
+			var _this3 = r.left;
+			if(tmp1 > (_this3 == null?0:_this3._height)) {
+				return new haxe_ds_TreeNode(new haxe_ds_TreeNode(l,k,v,r.left),r.key,r.value,r.right);
+			} else {
+				return new haxe_ds_TreeNode(new haxe_ds_TreeNode(l,k,v,r.left.left),r.left.key,r.left.value,new haxe_ds_TreeNode(r.left.right,r.key,r.value,r.right));
+			}
+		} else {
+			return new haxe_ds_TreeNode(l,k,v,r,(hl > hr?hl:hr) + 1);
+		}
+	}
+	,compare: function(k1,k2) {
+		return Reflect.compare(k1,k2);
+	}
+	,__class__: haxe_ds_BalancedTree
+};
+var haxe_ds_TreeNode = function(l,k,v,r,h) {
+	if(h == null) {
+		h = -1;
+	}
+	this.left = l;
+	this.key = k;
+	this.value = v;
+	this.right = r;
+	if(h == -1) {
+		var tmp;
+		var _this = this.left;
+		var tmp1 = _this == null?0:_this._height;
+		var _this1 = this.right;
+		if(tmp1 > (_this1 == null?0:_this1._height)) {
+			var _this2 = this.left;
+			if(_this2 == null) {
+				tmp = 0;
+			} else {
+				tmp = _this2._height;
+			}
+		} else {
+			var _this3 = this.right;
+			if(_this3 == null) {
+				tmp = 0;
+			} else {
+				tmp = _this3._height;
+			}
+		}
+		this._height = tmp + 1;
+	} else {
+		this._height = h;
+	}
+};
+$hxClasses["haxe.ds.TreeNode"] = haxe_ds_TreeNode;
+haxe_ds_TreeNode.__name__ = ["haxe","ds","TreeNode"];
+haxe_ds_TreeNode.prototype = {
+	__class__: haxe_ds_TreeNode
+};
+var haxe_ds_EnumValueMap = function() {
+	haxe_ds_BalancedTree.call(this);
+};
+$hxClasses["haxe.ds.EnumValueMap"] = haxe_ds_EnumValueMap;
+haxe_ds_EnumValueMap.__name__ = ["haxe","ds","EnumValueMap"];
+haxe_ds_EnumValueMap.__interfaces__ = [haxe_IMap];
+haxe_ds_EnumValueMap.__super__ = haxe_ds_BalancedTree;
+haxe_ds_EnumValueMap.prototype = $extend(haxe_ds_BalancedTree.prototype,{
+	compare: function(k1,k2) {
+		var d = k1[1] - k2[1];
+		if(d != 0) {
+			return d;
+		}
+		var p1 = k1.slice(2);
+		var p2 = k2.slice(2);
+		if(p1.length == 0 && p2.length == 0) {
+			return 0;
+		}
+		return this.compareArgs(p1,p2);
+	}
+	,compareArgs: function(a1,a2) {
+		var ld = a1.length - a2.length;
+		if(ld != 0) {
+			return ld;
+		}
+		var _g1 = 0;
+		var _g = a1.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			var d = this.compareArg(a1[i],a2[i]);
+			if(d != 0) {
+				return d;
+			}
+		}
+		return 0;
+	}
+	,compareArg: function(v1,v2) {
+		if(Reflect.isEnumValue(v1) && Reflect.isEnumValue(v2)) {
+			return this.compare(v1,v2);
+		} else if((v1 instanceof Array) && v1.__enum__ == null && ((v2 instanceof Array) && v2.__enum__ == null)) {
+			return this.compareArgs(v1,v2);
+		} else {
+			return Reflect.compare(v1,v2);
+		}
+	}
+	,__class__: haxe_ds_EnumValueMap
+});
 var haxe_ds_IntMap = function() {
 	this.h = { };
 };
@@ -4131,7 +5091,10 @@ $hxClasses["haxe.ds.IntMap"] = haxe_ds_IntMap;
 haxe_ds_IntMap.__name__ = ["haxe","ds","IntMap"];
 haxe_ds_IntMap.__interfaces__ = [haxe_IMap];
 haxe_ds_IntMap.prototype = {
-	get: function(key) {
+	set: function(key,value) {
+		this.h[key] = value;
+	}
+	,get: function(key) {
 		return this.h[key];
 	}
 	,remove: function(key) {
@@ -4182,6 +5145,15 @@ haxe_ds_ObjectMap.prototype = {
 		delete(this.h.__keys__[id]);
 		return true;
 	}
+	,keys: function() {
+		var a = [];
+		for( var key in this.h.__keys__ ) {
+		if(this.h.hasOwnProperty(key)) {
+			a.push(this.h.__keys__[key]);
+		}
+		}
+		return HxOverrides.iter(a);
+	}
 	,__class__: haxe_ds_ObjectMap
 };
 var haxe_ds__$StringMap_StringMapIterator = function(map,keys) {
@@ -4214,7 +5186,14 @@ $hxClasses["haxe.ds.StringMap"] = haxe_ds_StringMap;
 haxe_ds_StringMap.__name__ = ["haxe","ds","StringMap"];
 haxe_ds_StringMap.__interfaces__ = [haxe_IMap];
 haxe_ds_StringMap.prototype = {
-	get: function(key) {
+	set: function(key,value) {
+		if(__map_reserved[key] != null) {
+			this.setReserved(key,value);
+		} else {
+			this.h[key] = value;
+		}
+	}
+	,get: function(key) {
 		if(__map_reserved[key] != null) {
 			return this.getReserved(key);
 		}
@@ -4776,517 +5755,6 @@ haxe_io_Path.prototype = {
 		return (this.dir == null?"":this.dir + (this.backslash?"\\":"/")) + this.file + (this.ext == null?"":"." + this.ext);
 	}
 	,__class__: haxe_io_Path
-};
-var haxe_zip_Compress = function() { };
-$hxClasses["haxe.zip.Compress"] = haxe_zip_Compress;
-haxe_zip_Compress.__name__ = ["haxe","zip","Compress"];
-haxe_zip_Compress.run = function(s,level) {
-	throw new js__$Boot_HaxeError("Not implemented for this platform");
-};
-var haxe_zip_Huffman = $hxClasses["haxe.zip.Huffman"] = { __ename__ : true, __constructs__ : ["Found","NeedBit","NeedBits"] };
-haxe_zip_Huffman.Found = function(i) { var $x = ["Found",0,i]; $x.__enum__ = haxe_zip_Huffman; $x.toString = $estr; return $x; };
-haxe_zip_Huffman.NeedBit = function(left,right) { var $x = ["NeedBit",1,left,right]; $x.__enum__ = haxe_zip_Huffman; $x.toString = $estr; return $x; };
-haxe_zip_Huffman.NeedBits = function(n,table) { var $x = ["NeedBits",2,n,table]; $x.__enum__ = haxe_zip_Huffman; $x.toString = $estr; return $x; };
-var haxe_zip_HuffTools = function() {
-};
-$hxClasses["haxe.zip.HuffTools"] = haxe_zip_HuffTools;
-haxe_zip_HuffTools.__name__ = ["haxe","zip","HuffTools"];
-haxe_zip_HuffTools.prototype = {
-	treeDepth: function(t) {
-		switch(t[1]) {
-		case 0:
-			return 0;
-		case 1:
-			var b = t[3];
-			var da = this.treeDepth(t[2]);
-			var db = this.treeDepth(b);
-			return 1 + (da < db?da:db);
-		case 2:
-			throw new js__$Boot_HaxeError("assert");
-			break;
-		}
-	}
-	,treeCompress: function(t) {
-		var d = this.treeDepth(t);
-		if(d == 0) {
-			return t;
-		}
-		if(d == 1) {
-			if(t[1] == 1) {
-				return haxe_zip_Huffman.NeedBit(this.treeCompress(t[2]),this.treeCompress(t[3]));
-			} else {
-				throw new js__$Boot_HaxeError("assert");
-			}
-		}
-		var size = 1 << d;
-		var table = [];
-		var _g1 = 0;
-		while(_g1 < size) {
-			++_g1;
-			table.push(haxe_zip_Huffman.Found(-1));
-		}
-		this.treeWalk(table,0,0,d,t);
-		return haxe_zip_Huffman.NeedBits(d,table);
-	}
-	,treeWalk: function(table,p,cd,d,t) {
-		if(t[1] == 1) {
-			var b = t[3];
-			var a = t[2];
-			if(d > 0) {
-				this.treeWalk(table,p,cd + 1,d - 1,a);
-				this.treeWalk(table,p | 1 << cd,cd + 1,d - 1,b);
-			} else {
-				table[p] = this.treeCompress(t);
-			}
-		} else {
-			table[p] = this.treeCompress(t);
-		}
-	}
-	,treeMake: function(bits,maxbits,v,len) {
-		if(len > maxbits) {
-			throw new js__$Boot_HaxeError("Invalid huffman");
-		}
-		var idx = v << 5 | len;
-		if(bits.h.hasOwnProperty(idx)) {
-			return haxe_zip_Huffman.Found(bits.h[idx]);
-		}
-		v <<= 1;
-		++len;
-		return haxe_zip_Huffman.NeedBit(this.treeMake(bits,maxbits,v,len),this.treeMake(bits,maxbits,v | 1,len));
-	}
-	,make: function(lengths,pos,nlengths,maxbits) {
-		var counts = [];
-		var tmp = [];
-		if(maxbits > 32) {
-			throw new js__$Boot_HaxeError("Invalid huffman");
-		}
-		var _g1 = 0;
-		while(_g1 < maxbits) {
-			++_g1;
-			counts.push(0);
-			tmp.push(0);
-		}
-		var _g11 = 0;
-		while(_g11 < nlengths) {
-			var p = lengths[_g11++ + pos];
-			if(p >= maxbits) {
-				throw new js__$Boot_HaxeError("Invalid huffman");
-			}
-			counts[p]++;
-		}
-		var code = 0;
-		var _g12 = 1;
-		var _g = maxbits - 1;
-		while(_g12 < _g) {
-			var i = _g12++;
-			code = code + counts[i] << 1;
-			tmp[i] = code;
-		}
-		var bits = new haxe_ds_IntMap();
-		var _g13 = 0;
-		while(_g13 < nlengths) {
-			var i1 = _g13++;
-			var l = lengths[i1 + pos];
-			if(l != 0) {
-				var n = tmp[l - 1];
-				tmp[l - 1] = n + 1;
-				bits.h[n << 5 | l] = i1;
-			}
-		}
-		return this.treeCompress(haxe_zip_Huffman.NeedBit(this.treeMake(bits,maxbits,0,1),this.treeMake(bits,maxbits,1,1)));
-	}
-	,__class__: haxe_zip_HuffTools
-};
-var haxe_zip__$InflateImpl_Window = function(hasCrc) {
-	this.buffer = new haxe_io_Bytes(new ArrayBuffer(65536));
-	this.pos = 0;
-	if(hasCrc) {
-		this.crc = new haxe_crypto_Adler32();
-	}
-};
-$hxClasses["haxe.zip._InflateImpl.Window"] = haxe_zip__$InflateImpl_Window;
-haxe_zip__$InflateImpl_Window.__name__ = ["haxe","zip","_InflateImpl","Window"];
-haxe_zip__$InflateImpl_Window.prototype = {
-	slide: function() {
-		if(this.crc != null) {
-			this.crc.update(this.buffer,0,32768);
-		}
-		var b = new haxe_io_Bytes(new ArrayBuffer(65536));
-		this.pos -= 32768;
-		b.blit(0,this.buffer,32768,this.pos);
-		this.buffer = b;
-	}
-	,addBytes: function(b,p,len) {
-		if(this.pos + len > 65536) {
-			this.slide();
-		}
-		this.buffer.blit(this.pos,b,p,len);
-		this.pos += len;
-	}
-	,addByte: function(c) {
-		if(this.pos == 65536) {
-			this.slide();
-		}
-		this.buffer.b[this.pos] = c & 255;
-		this.pos++;
-	}
-	,getLastChar: function() {
-		return this.buffer.b[this.pos - 1];
-	}
-	,available: function() {
-		return this.pos;
-	}
-	,checksum: function() {
-		if(this.crc != null) {
-			this.crc.update(this.buffer,0,this.pos);
-		}
-		return this.crc;
-	}
-	,__class__: haxe_zip__$InflateImpl_Window
-};
-var haxe_zip__$InflateImpl_State = $hxClasses["haxe.zip._InflateImpl.State"] = { __ename__ : true, __constructs__ : ["Head","Block","CData","Flat","Crc","Dist","DistOne","Done"] };
-haxe_zip__$InflateImpl_State.Head = ["Head",0];
-haxe_zip__$InflateImpl_State.Head.toString = $estr;
-haxe_zip__$InflateImpl_State.Head.__enum__ = haxe_zip__$InflateImpl_State;
-haxe_zip__$InflateImpl_State.Block = ["Block",1];
-haxe_zip__$InflateImpl_State.Block.toString = $estr;
-haxe_zip__$InflateImpl_State.Block.__enum__ = haxe_zip__$InflateImpl_State;
-haxe_zip__$InflateImpl_State.CData = ["CData",2];
-haxe_zip__$InflateImpl_State.CData.toString = $estr;
-haxe_zip__$InflateImpl_State.CData.__enum__ = haxe_zip__$InflateImpl_State;
-haxe_zip__$InflateImpl_State.Flat = ["Flat",3];
-haxe_zip__$InflateImpl_State.Flat.toString = $estr;
-haxe_zip__$InflateImpl_State.Flat.__enum__ = haxe_zip__$InflateImpl_State;
-haxe_zip__$InflateImpl_State.Crc = ["Crc",4];
-haxe_zip__$InflateImpl_State.Crc.toString = $estr;
-haxe_zip__$InflateImpl_State.Crc.__enum__ = haxe_zip__$InflateImpl_State;
-haxe_zip__$InflateImpl_State.Dist = ["Dist",5];
-haxe_zip__$InflateImpl_State.Dist.toString = $estr;
-haxe_zip__$InflateImpl_State.Dist.__enum__ = haxe_zip__$InflateImpl_State;
-haxe_zip__$InflateImpl_State.DistOne = ["DistOne",6];
-haxe_zip__$InflateImpl_State.DistOne.toString = $estr;
-haxe_zip__$InflateImpl_State.DistOne.__enum__ = haxe_zip__$InflateImpl_State;
-haxe_zip__$InflateImpl_State.Done = ["Done",7];
-haxe_zip__$InflateImpl_State.Done.toString = $estr;
-haxe_zip__$InflateImpl_State.Done.__enum__ = haxe_zip__$InflateImpl_State;
-var haxe_zip_InflateImpl = function(i,header,crc) {
-	if(crc == null) {
-		crc = true;
-	}
-	if(header == null) {
-		header = true;
-	}
-	this["final"] = false;
-	this.htools = new haxe_zip_HuffTools();
-	this.huffman = this.buildFixedHuffman();
-	this.huffdist = null;
-	this.len = 0;
-	this.dist = 0;
-	this.state = header?haxe_zip__$InflateImpl_State.Head:haxe_zip__$InflateImpl_State.Block;
-	this.input = i;
-	this.bits = 0;
-	this.nbits = 0;
-	this.needed = 0;
-	this.output = null;
-	this.outpos = 0;
-	this.lengths = [];
-	var _g = 0;
-	while(_g < 19) {
-		++_g;
-		this.lengths.push(-1);
-	}
-	this.window = new haxe_zip__$InflateImpl_Window(crc);
-};
-$hxClasses["haxe.zip.InflateImpl"] = haxe_zip_InflateImpl;
-haxe_zip_InflateImpl.__name__ = ["haxe","zip","InflateImpl"];
-haxe_zip_InflateImpl.run = function(i,bufsize) {
-	if(bufsize == null) {
-		bufsize = 65536;
-	}
-	var buf = new haxe_io_Bytes(new ArrayBuffer(bufsize));
-	var output = new haxe_io_BytesBuffer();
-	var inflate = new haxe_zip_InflateImpl(i);
-	while(true) {
-		var len = inflate.readBytes(buf,0,bufsize);
-		if(len < 0 || len > buf.length) {
-			throw new js__$Boot_HaxeError(haxe_io_Error.OutsideBounds);
-		}
-		var b2 = buf.b;
-		var _g1 = 0;
-		while(_g1 < len) output.b.push(b2[_g1++]);
-		if(len < bufsize) {
-			break;
-		}
-	}
-	return output.getBytes();
-};
-haxe_zip_InflateImpl.prototype = {
-	buildFixedHuffman: function() {
-		if(haxe_zip_InflateImpl.FIXED_HUFFMAN != null) {
-			return haxe_zip_InflateImpl.FIXED_HUFFMAN;
-		}
-		var a = [];
-		var _g = 0;
-		while(_g < 288) {
-			var n = _g++;
-			a.push(n <= 143?8:n <= 255?9:n <= 279?7:8);
-		}
-		haxe_zip_InflateImpl.FIXED_HUFFMAN = this.htools.make(a,0,288,10);
-		return haxe_zip_InflateImpl.FIXED_HUFFMAN;
-	}
-	,readBytes: function(b,pos,len) {
-		this.needed = len;
-		this.outpos = pos;
-		this.output = b;
-		if(len > 0) {
-			while(this.inflateLoop()) {
-			}
-		}
-		return len - this.needed;
-	}
-	,getBits: function(n) {
-		while(this.nbits < n) {
-			this.bits |= this.input.readByte() << this.nbits;
-			this.nbits += 8;
-		}
-		var b = this.bits & (1 << n) - 1;
-		this.nbits -= n;
-		this.bits >>= n;
-		return b;
-	}
-	,getBit: function() {
-		if(this.nbits == 0) {
-			this.nbits = 8;
-			this.bits = this.input.readByte();
-		}
-		var b = (this.bits & 1) == 1;
-		this.nbits--;
-		this.bits >>= 1;
-		return b;
-	}
-	,getRevBits: function(n) {
-		if(n == 0) {
-			return 0;
-		} else if(this.getBit()) {
-			return 1 << n - 1 | this.getRevBits(n - 1);
-		} else {
-			return this.getRevBits(n - 1);
-		}
-	}
-	,resetBits: function() {
-		this.bits = 0;
-		this.nbits = 0;
-	}
-	,addBytes: function(b,p,len) {
-		this.window.addBytes(b,p,len);
-		this.output.blit(this.outpos,b,p,len);
-		this.needed -= len;
-		this.outpos += len;
-	}
-	,addByte: function(b) {
-		this.window.addByte(b);
-		this.output.b[this.outpos] = b & 255;
-		this.needed--;
-		this.outpos++;
-	}
-	,addDistOne: function(n) {
-		var c = this.window.getLastChar();
-		var _g1 = 0;
-		while(_g1 < n) {
-			++_g1;
-			this.addByte(c);
-		}
-	}
-	,addDist: function(d,len) {
-		this.addBytes(this.window.buffer,this.window.pos - d,len);
-	}
-	,applyHuffman: function(h) {
-		switch(h[1]) {
-		case 0:
-			return h[2];
-		case 1:
-			var b = h[3];
-			var a = h[2];
-			return this.applyHuffman(this.getBit()?b:a);
-		case 2:
-			return this.applyHuffman(h[3][this.getBits(h[2])]);
-		}
-	}
-	,inflateLengths: function(a,max) {
-		var i = 0;
-		var prev = 0;
-		while(i < max) {
-			var n = this.applyHuffman(this.huffman);
-			switch(n) {
-			case 0:case 1:case 2:case 3:case 4:case 5:case 6:case 7:case 8:case 9:case 10:case 11:case 12:case 13:case 14:case 15:
-				prev = n;
-				a[i] = n;
-				++i;
-				break;
-			case 16:
-				var end = i + 3 + this.getBits(2);
-				if(end > max) {
-					throw new js__$Boot_HaxeError("Invalid data");
-				}
-				while(i < end) {
-					a[i] = prev;
-					++i;
-				}
-				break;
-			case 17:
-				i += 3 + this.getBits(3);
-				if(i > max) {
-					throw new js__$Boot_HaxeError("Invalid data");
-				}
-				break;
-			case 18:
-				i += 11 + this.getBits(7);
-				if(i > max) {
-					throw new js__$Boot_HaxeError("Invalid data");
-				}
-				break;
-			default:
-				throw new js__$Boot_HaxeError("Invalid data");
-			}
-		}
-	}
-	,inflateLoop: function() {
-		switch(this.state[1]) {
-		case 0:
-			var cmf = this.input.readByte();
-			if((cmf & 15) != 8) {
-				throw new js__$Boot_HaxeError("Invalid data");
-			}
-			var flg = this.input.readByte();
-			var fdict = (flg & 32) != 0;
-			if(((cmf << 8) + flg) % 31 != 0) {
-				throw new js__$Boot_HaxeError("Invalid data");
-			}
-			if(fdict) {
-				throw new js__$Boot_HaxeError("Unsupported dictionary");
-			}
-			this.state = haxe_zip__$InflateImpl_State.Block;
-			return true;
-		case 1:
-			this["final"] = this.getBit();
-			switch(this.getBits(2)) {
-			case 0:
-				this.len = this.input.readUInt16();
-				if(this.input.readUInt16() != 65535 - this.len) {
-					throw new js__$Boot_HaxeError("Invalid data");
-				}
-				this.state = haxe_zip__$InflateImpl_State.Flat;
-				var r = this.inflateLoop();
-				this.resetBits();
-				return r;
-			case 1:
-				this.huffman = this.buildFixedHuffman();
-				this.huffdist = null;
-				this.state = haxe_zip__$InflateImpl_State.CData;
-				return true;
-			case 2:
-				var hlit = this.getBits(5) + 257;
-				var hdist = this.getBits(5) + 1;
-				var hclen = this.getBits(4) + 4;
-				var _g1 = 0;
-				while(_g1 < hclen) this.lengths[haxe_zip_InflateImpl.CODE_LENGTHS_POS[_g1++]] = this.getBits(3);
-				var _g = hclen;
-				while(_g < 19) this.lengths[haxe_zip_InflateImpl.CODE_LENGTHS_POS[_g++]] = 0;
-				this.huffman = this.htools.make(this.lengths,0,19,8);
-				var lengths = [];
-				var _g11 = 0;
-				var _g2 = hlit + hdist;
-				while(_g11 < _g2) {
-					++_g11;
-					lengths.push(0);
-				}
-				this.inflateLengths(lengths,hlit + hdist);
-				this.huffdist = this.htools.make(lengths,hlit,hdist,16);
-				this.huffman = this.htools.make(lengths,0,hlit,16);
-				this.state = haxe_zip__$InflateImpl_State.CData;
-				return true;
-			default:
-				throw new js__$Boot_HaxeError("Invalid data");
-			}
-			break;
-		case 2:
-			var n = this.applyHuffman(this.huffman);
-			if(n < 256) {
-				this.addByte(n);
-				return this.needed > 0;
-			} else if(n == 256) {
-				this.state = this["final"]?haxe_zip__$InflateImpl_State.Crc:haxe_zip__$InflateImpl_State.Block;
-				return true;
-			} else {
-				n -= 257;
-				var extra_bits = haxe_zip_InflateImpl.LEN_EXTRA_BITS_TBL[n];
-				if(extra_bits == -1) {
-					throw new js__$Boot_HaxeError("Invalid data");
-				}
-				this.len = haxe_zip_InflateImpl.LEN_BASE_VAL_TBL[n] + this.getBits(extra_bits);
-				var dist_code = this.huffdist == null?this.getRevBits(5):this.applyHuffman(this.huffdist);
-				extra_bits = haxe_zip_InflateImpl.DIST_EXTRA_BITS_TBL[dist_code];
-				if(extra_bits == -1) {
-					throw new js__$Boot_HaxeError("Invalid data");
-				}
-				this.dist = haxe_zip_InflateImpl.DIST_BASE_VAL_TBL[dist_code] + this.getBits(extra_bits);
-				if(this.dist > this.window.available()) {
-					throw new js__$Boot_HaxeError("Invalid data");
-				}
-				this.state = this.dist == 1?haxe_zip__$InflateImpl_State.DistOne:haxe_zip__$InflateImpl_State.Dist;
-				return true;
-			}
-			break;
-		case 3:
-			var rlen = this.len < this.needed?this.len:this.needed;
-			var bytes = this.input.read(rlen);
-			this.len -= rlen;
-			this.addBytes(bytes,0,rlen);
-			if(this.len == 0) {
-				this.state = this["final"]?haxe_zip__$InflateImpl_State.Crc:haxe_zip__$InflateImpl_State.Block;
-			}
-			return this.needed > 0;
-		case 4:
-			var calc = this.window.checksum();
-			if(calc == null) {
-				this.state = haxe_zip__$InflateImpl_State.Done;
-				return true;
-			}
-			if(!calc.equals(haxe_crypto_Adler32.read(this.input))) {
-				throw new js__$Boot_HaxeError("Invalid CRC");
-			}
-			this.state = haxe_zip__$InflateImpl_State.Done;
-			return true;
-		case 5:
-			while(this.len > 0 && this.needed > 0) {
-				var rdist = this.len < this.dist?this.len:this.dist;
-				var rlen1 = this.needed < rdist?this.needed:rdist;
-				this.addDist(this.dist,rlen1);
-				this.len -= rlen1;
-			}
-			if(this.len == 0) {
-				this.state = haxe_zip__$InflateImpl_State.CData;
-			}
-			return this.needed > 0;
-		case 6:
-			var rlen2 = this.len < this.needed?this.len:this.needed;
-			this.addDistOne(rlen2);
-			this.len -= rlen2;
-			if(this.len == 0) {
-				this.state = haxe_zip__$InflateImpl_State.CData;
-			}
-			return this.needed > 0;
-		case 7:
-			return false;
-		}
-	}
-	,__class__: haxe_zip_InflateImpl
-};
-var haxe_zip_Uncompress = function() { };
-$hxClasses["haxe.zip.Uncompress"] = haxe_zip_Uncompress;
-haxe_zip_Uncompress.__name__ = ["haxe","zip","Uncompress"];
-haxe_zip_Uncompress.run = function(src,bufsize) {
-	return haxe_zip_InflateImpl.run(new haxe_io_BytesInput(src),bufsize);
 };
 var js__$Boot_HaxeError = function(val) {
 	Error.call(this);
@@ -32610,6 +33078,85 @@ openfl_filters_BitmapFilter.prototype = {
 	}
 	,__class__: openfl_filters_BitmapFilter
 };
+var openfl_filters_BlurFilter = function(blurX,blurY,quality) {
+	if(quality == null) {
+		quality = 1;
+	}
+	if(blurY == null) {
+		blurY = 4;
+	}
+	if(blurX == null) {
+		blurX = 4;
+	}
+	openfl_filters_BitmapFilter.call(this);
+	this.blurX = blurX;
+	this.blurY = blurY;
+	this.set_quality(quality);
+};
+$hxClasses["openfl.filters.BlurFilter"] = openfl_filters_BlurFilter;
+openfl_filters_BlurFilter.__name__ = ["openfl","filters","BlurFilter"];
+openfl_filters_BlurFilter.__super__ = openfl_filters_BitmapFilter;
+openfl_filters_BlurFilter.prototype = $extend(openfl_filters_BitmapFilter.prototype,{
+	clone: function() {
+		return new openfl_filters_BlurFilter(this.blurX,this.blurY,this.quality);
+	}
+	,set_quality: function(value) {
+		return this.quality = value;
+	}
+	,__class__: openfl_filters_BlurFilter
+	,__properties__: {set_quality:"set_quality"}
+});
+var openfl_filters_GlowFilter = function(color,alpha,blurX,blurY,strength,quality,inner,knockout) {
+	if(knockout == null) {
+		knockout = false;
+	}
+	if(inner == null) {
+		inner = false;
+	}
+	if(quality == null) {
+		quality = 1;
+	}
+	if(strength == null) {
+		strength = 2;
+	}
+	if(blurY == null) {
+		blurY = 6;
+	}
+	if(blurX == null) {
+		blurX = 6;
+	}
+	if(alpha == null) {
+		alpha = 1;
+	}
+	if(color == null) {
+		color = 16711680;
+	}
+	openfl_filters_BitmapFilter.call(this);
+	this.color = color;
+	this.alpha = alpha;
+	this.blurX = blurX;
+	this.blurY = blurY;
+	this.strength = strength;
+	this.set_quality(quality);
+	this.inner = inner;
+	this.set_knockout(knockout);
+};
+$hxClasses["openfl.filters.GlowFilter"] = openfl_filters_GlowFilter;
+openfl_filters_GlowFilter.__name__ = ["openfl","filters","GlowFilter"];
+openfl_filters_GlowFilter.__super__ = openfl_filters_BitmapFilter;
+openfl_filters_GlowFilter.prototype = $extend(openfl_filters_BitmapFilter.prototype,{
+	clone: function() {
+		return new openfl_filters_GlowFilter(this.color,this.alpha,this.blurX,this.blurY,this.strength,this.quality,this.inner,this.knockout);
+	}
+	,set_knockout: function(value) {
+		return this.knockout = value;
+	}
+	,set_quality: function(value) {
+		return this.quality = value;
+	}
+	,__class__: openfl_filters_GlowFilter
+	,__properties__: {set_quality:"set_quality",set_knockout:"set_knockout"}
+});
 var openfl_filters_ShaderFilter = function(shader) {
 	openfl_filters_BitmapFilter.call(this);
 	this.shader = shader;
@@ -39674,6 +40221,7 @@ var openfl_utils_AGALMiniAssembler = function(debugging) {
 	if(debugging == null) {
 		debugging = false;
 	}
+	this.__debugEnabled = debugging;
 	this.__r = new haxe_ds_StringMap();
 	this.__cur = new openfl__$internal_aglsl_assembler_Part();
 };
@@ -39696,7 +40244,7 @@ openfl_utils_AGALMiniAssembler.prototype = {
 		lime_graphics_opengl_GL.context.shaderSource(shader,shaderSourceString);
 		lime_graphics_opengl_GL.context.compileShader(shader);
 		if(lime_graphics_opengl_GL.context.getShaderParameter(shader,35713) == 0) {
-			haxe_Log.trace("--- ERR ---\n" + shaderSourceString,{ fileName : "AGALMiniAssembler.hx", lineNumber : 99, className : "openfl.utils.AGALMiniAssembler", methodName : "assemble"});
+			haxe_Log.trace("--- ERR ---\n" + shaderSourceString,{ fileName : "AGALMiniAssembler.hx", lineNumber : 100, className : "openfl.utils.AGALMiniAssembler", methodName : "assemble"});
 			var err = lime_graphics_opengl_GL.context.getShaderInfoLog(shader);
 			if(err != "") {
 				throw new js__$Boot_HaxeError(err);
@@ -39807,7 +40355,7 @@ openfl_utils_AGALMiniAssembler.prototype = {
 			var o = __map_reserved[key] != null?_this.getReserved(key):_this.h[key];
 			if(o != null) {
 				if((sampleroptset >>> o.shift & o.mask) != 0) {
-					haxe_Log.trace("Warning, duplicate sampler option",{ fileName : "AGALMiniAssembler.hx", lineNumber : 261, className : "openfl.utils.AGALMiniAssembler", methodName : "__emitSampler"});
+					haxe_Log.trace("Warning, duplicate sampler option",{ fileName : "AGALMiniAssembler.hx", lineNumber : 262, className : "openfl.utils.AGALMiniAssembler", methodName : "__emitSampler"});
 				}
 				sampleroptset = sampleroptset | o.mask << o.shift;
 				samplerbits = samplerbits & ~(o.mask << o.shift);
@@ -39948,7 +40496,7 @@ openfl_utils_AGALMiniAssembler.prototype = {
 		var tokens = this.__getMatches(new EReg("([\\w\\.\\+\\[\\]]+)","gi"),line);
 		if(tokens.length == 0) {
 			if(line.length >= 3) {
-				haxe_Log.trace("Warning: bad line " + Std.string(_$UInt_UInt_$Impl_$.toFloat(linenr)) + ": " + line,{ fileName : "AGALMiniAssembler.hx", lineNumber : 437, className : "openfl.utils.AGALMiniAssembler", methodName : "__processLine"});
+				haxe_Log.trace("Warning: bad line " + Std.string(_$UInt_UInt_$Impl_$.toFloat(linenr)) + ": " + line,{ fileName : "AGALMiniAssembler.hx", lineNumber : 438, className : "openfl.utils.AGALMiniAssembler", methodName : "__processLine"});
 			}
 			return;
 		}
@@ -39965,7 +40513,7 @@ openfl_utils_AGALMiniAssembler.prototype = {
 			break;
 		default:
 			if(this.__cur == null) {
-				haxe_Log.trace("Warning: bad line " + Std.string(_$UInt_UInt_$Impl_$.toFloat(linenr)) + ": " + line + " (Outside of any part definition)",{ fileName : "AGALMiniAssembler.hx", lineNumber : 468, className : "openfl.utils.AGALMiniAssembler", methodName : "__processLine"});
+				haxe_Log.trace("Warning: bad line " + Std.string(_$UInt_UInt_$Impl_$.toFloat(linenr)) + ": " + line + " (Outside of any part definition)",{ fileName : "AGALMiniAssembler.hx", lineNumber : 469, className : "openfl.utils.AGALMiniAssembler", methodName : "__processLine"});
 				return;
 			}
 			if(this.__cur.name == "comment") {
@@ -40410,6 +40958,40 @@ openfl_utils__$CompressionAlgorithm_CompressionAlgorithm_$Impl_$.toString = func
 		return null;
 	}
 };
+var openfl_utils__$Dictionary_Dictionary_$Impl_$ = {};
+$hxClasses["openfl.utils._Dictionary.Dictionary_Impl_"] = openfl_utils__$Dictionary_Dictionary_$Impl_$;
+openfl_utils__$Dictionary_Dictionary_$Impl_$.__name__ = ["openfl","utils","_Dictionary","Dictionary_Impl_"];
+openfl_utils__$Dictionary_Dictionary_$Impl_$.get = function(this1,key) {
+	return this1.get(key);
+};
+openfl_utils__$Dictionary_Dictionary_$Impl_$.set = function(this1,key,value) {
+	this1.set(key,value);
+	return value;
+};
+openfl_utils__$Dictionary_Dictionary_$Impl_$.iterator = function(this1) {
+	return this1.keys();
+};
+openfl_utils__$Dictionary_Dictionary_$Impl_$.toStringMap = function(t,weakKeys) {
+	return new haxe_ds_StringMap();
+};
+openfl_utils__$Dictionary_Dictionary_$Impl_$.toIntMap = function(t,weakKeys) {
+	return new haxe_ds_IntMap();
+};
+openfl_utils__$Dictionary_Dictionary_$Impl_$.toEnumValueMapMap = function(t,weakKeys) {
+	return new haxe_ds_EnumValueMap();
+};
+openfl_utils__$Dictionary_Dictionary_$Impl_$.toObjectMap = function(t,weakKeys) {
+	return new haxe_ds_ObjectMap();
+};
+openfl_utils__$Dictionary_Dictionary_$Impl_$.fromStringMap = function(map) {
+	return map;
+};
+openfl_utils__$Dictionary_Dictionary_$Impl_$.fromIntMap = function(map) {
+	return map;
+};
+openfl_utils__$Dictionary_Dictionary_$Impl_$.fromObjectMap = function(map) {
+	return map;
+};
 var openfl_utils__$Endian_Endian_$Impl_$ = {};
 $hxClasses["openfl.utils._Endian.Endian_Impl_"] = openfl_utils__$Endian_Endian_$Impl_$;
 openfl_utils__$Endian_Endian_$Impl_$.__name__ = ["openfl","utils","_Endian","Endian_Impl_"];
@@ -40498,6 +41080,3436 @@ haxe_lang_Iterable.__name__ = ["haxe","lang","Iterable"];
 haxe_lang_Iterable.prototype = {
 	__class__: haxe_lang_Iterable
 };
+var renderer_BaseAgalShader = function() {
+	this.isCompiled = false;
+};
+$hxClasses["renderer.BaseAgalShader"] = renderer_BaseAgalShader;
+renderer_BaseAgalShader.__name__ = ["renderer","BaseAgalShader"];
+renderer_BaseAgalShader.prototype = {
+	makePrgoram: function(context) {
+		var program = context.createProgram();
+		if(!this.isCompiled) {
+			this.compile();
+		}
+		program.upload(this.vertexData,this.fragmentData);
+		return program;
+	}
+	,compile: function() {
+		this.vertexData = renderer_BaseAgalShader.AGALAssembler.assemble(1,this.getVertexCode());
+		this.fragmentData = renderer_BaseAgalShader.AGALAssembler.assemble(0,this.getFragmentCode());
+	}
+	,getVertexCode: function() {
+		return "mov vt0, va2\t\t\t\t\t\t\n" + "mov vt0, va0\t\t\t\t\t\t\n" + "mul vt1, va0.xy, vc5.zw      \n" + "mul vt2, vt1.xy, vc4.xy      \n" + "add vt2.x, vt2.x, vt2.y            \n" + "add vt2.x, vt2.x, vc5.x      \n" + "mul vt3, vt1.xy, vc4.zw      \n" + "add vt3.x, vt3.x, vt3.y            \n" + "add vt3.x, vt3.x, vc5.y      \n" + "mov vt2.y, vt3.x \n" + "mov vt2.zw, vt0.zw\t\t\t\t\t\n" + "m44 vt3, vt2, vc0\t\t\t\t\t\n" + "mov op\t\t\tvt3\t\t\t\t\t\t\n" + "mul vt0.xy, va1.xy, vc6.zw\t\n" + "add vt0.xy, vt0.xy, vc6.xy\t\n" + "mov v0, vt0 \n" + "mov v1, va2";
+	}
+	,getFragmentCode: function() {
+		return "tex \tft0\t\tv0\t\t\tfs0\t<2d, clamp, linear>\t\n" + "mov\toc\t\tft0\t\t\t\t\t\t  ";
+	}
+	,__class__: renderer_BaseAgalShader
+};
+var renderer_BaseMesh = function() {
+	this.indexDataRaw = [];
+	this.uvDataRaw = [];
+	this.vertexDataRaw = [];
+};
+$hxClasses["renderer.BaseMesh"] = renderer_BaseMesh;
+renderer_BaseMesh.__name__ = ["renderer","BaseMesh"];
+renderer_BaseMesh.prototype = {
+	uploadToGpu: function(context3D) {
+		var verticesCount = this.vertexDataRaw.length / 3 | 0;
+		if(this.vertexBuffer == null) {
+			this.vertexBuffer = context3D.createVertexBuffer(verticesCount,3);
+		}
+		var value = this.vertexDataRaw;
+		var vectorData = new openfl_VectorData();
+		vectorData.length = value.length;
+		vectorData.fixed = true;
+		var length = value.length;
+		var vec = new Array(length);
+		var _g1 = 0;
+		var _g = value.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			vec[i] = value[i];
+		}
+		vectorData.data = vec;
+		this.vertexBuffer.uploadFromVector(vectorData,0,verticesCount);
+		if(this.uvBuffer == null) {
+			this.uvBuffer = context3D.createVertexBuffer(verticesCount,2);
+		}
+		var value1 = this.uvDataRaw;
+		var vectorData1 = new openfl_VectorData();
+		vectorData1.length = value1.length;
+		vectorData1.fixed = true;
+		var length1 = value1.length;
+		var vec1 = new Array(length1);
+		var _g11 = 0;
+		var _g2 = value1.length;
+		while(_g11 < _g2) {
+			var i1 = _g11++;
+			vec1[i1] = value1[i1];
+		}
+		vectorData1.data = vec1;
+		this.uvBuffer.uploadFromVector(vectorData1,0,verticesCount);
+		if(this.indexBuffer == null) {
+			this.indexBuffer = context3D.createIndexBuffer(this.indexDataRaw.length);
+		}
+		var value2 = this.indexDataRaw;
+		var vectorData2 = new openfl_VectorData();
+		vectorData2.length = value2.length;
+		vectorData2.fixed = true;
+		var length2 = value2.length;
+		var vec2 = new Array(length2);
+		var _g12 = 0;
+		var _g3 = value2.length;
+		while(_g12 < _g3) {
+			var i2 = _g12++;
+			vec2[i2] = value2[i2];
+		}
+		vectorData2.data = vec2;
+		this.indexBuffer.uploadFromVector(vectorData2,0,this.indexDataRaw.length);
+	}
+	,__class__: renderer_BaseMesh
+};
+var renderer_BatchGeometry = function(batchSize) {
+	this.orderBufferDataRaw = [];
+	renderer_BaseMesh.call(this);
+	var vertexDataIndex = 0;
+	var uvDataIndex = 0;
+	var indexDataIndex = 0;
+	var orderDataIndex = 0;
+	var order = 0;
+	var _g1 = 0;
+	while(_g1 < batchSize) {
+		var i = _g1++;
+		this.vertexDataRaw[vertexDataIndex++] = -0.5;
+		this.vertexDataRaw[vertexDataIndex++] = 0.5;
+		this.vertexDataRaw[vertexDataIndex++] = 0.5;
+		this.vertexDataRaw[vertexDataIndex++] = -0.5;
+		this.vertexDataRaw[vertexDataIndex++] = -0.5;
+		this.vertexDataRaw[vertexDataIndex++] = 0.5;
+		this.vertexDataRaw[vertexDataIndex++] = 0.5;
+		this.vertexDataRaw[vertexDataIndex++] = -0.5;
+		this.vertexDataRaw[vertexDataIndex++] = 0.5;
+		this.vertexDataRaw[vertexDataIndex++] = 0.5;
+		this.vertexDataRaw[vertexDataIndex++] = 0.5;
+		this.vertexDataRaw[vertexDataIndex++] = 0.5;
+		this.uvDataRaw[uvDataIndex++] = 0;
+		this.uvDataRaw[uvDataIndex++] = 1;
+		this.uvDataRaw[uvDataIndex++] = 0;
+		this.uvDataRaw[uvDataIndex++] = 0;
+		this.uvDataRaw[uvDataIndex++] = 1;
+		this.uvDataRaw[uvDataIndex++] = 0;
+		this.uvDataRaw[uvDataIndex++] = 1;
+		this.uvDataRaw[uvDataIndex++] = 1;
+		this.indexDataRaw[indexDataIndex++] = 4 * i;
+		this.indexDataRaw[indexDataIndex++] = 4 * i + 1;
+		this.indexDataRaw[indexDataIndex++] = 4 * i + 2;
+		this.indexDataRaw[indexDataIndex++] = 4 * i;
+		this.indexDataRaw[indexDataIndex++] = 4 * i + 2;
+		this.indexDataRaw[indexDataIndex++] = 4 * i + 3;
+		order = 4 + i * 3;
+		this.orderBufferDataRaw[orderDataIndex++] = order;
+		this.orderBufferDataRaw[orderDataIndex++] = order;
+		this.orderBufferDataRaw[orderDataIndex++] = order;
+		this.orderBufferDataRaw[orderDataIndex++] = order;
+	}
+};
+$hxClasses["renderer.BatchGeometry"] = renderer_BatchGeometry;
+renderer_BatchGeometry.__name__ = ["renderer","BatchGeometry"];
+renderer_BatchGeometry.__super__ = renderer_BaseMesh;
+renderer_BatchGeometry.prototype = $extend(renderer_BaseMesh.prototype,{
+	uploadToGpu: function(context3D) {
+		renderer_BaseMesh.prototype.uploadToGpu.call(this,context3D);
+		var verticesCount = this.vertexDataRaw.length / 3 | 0;
+		if(this.orderBuffer == null) {
+			this.orderBuffer = context3D.createVertexBuffer(verticesCount,1);
+		}
+		var value = this.orderBufferDataRaw;
+		var vectorData = new openfl_VectorData();
+		vectorData.length = value.length;
+		vectorData.fixed = true;
+		var length = value.length;
+		var vec = new Array(length);
+		var _g1 = 0;
+		var _g = value.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			vec[i] = value[i];
+		}
+		vectorData.data = vec;
+		this.orderBuffer.uploadFromVector(vectorData,0,verticesCount);
+	}
+	,setToContext: function(context3D) {
+		context3D.setVertexBufferAt(0,this.vertexBuffer,0,3);
+		context3D.setVertexBufferAt(1,this.uvBuffer,0,2);
+		context3D.setVertexBufferAt(2,this.orderBuffer,0,1);
+	}
+	,__class__: renderer_BatchGeometry
+});
+var renderer_GLFilter = function() {
+};
+$hxClasses["renderer.GLFilter"] = renderer_GLFilter;
+renderer_GLFilter.__name__ = ["renderer","GLFilter"];
+renderer_GLFilter.prototype = {
+	__class__: renderer_GLFilter
+};
+var renderer_ProjectionMatrix = function(v) {
+	openfl_geom_Matrix3D.call(this,v);
+	var a = [2.0,0.0,0.0,0.0,0.0,-2.0,0.0,0.0,0.0,0.0,1 / (renderer_ProjectionMatrix.FAR - renderer_ProjectionMatrix.NEAR),-renderer_ProjectionMatrix.NEAR / (renderer_ProjectionMatrix.FAR - renderer_ProjectionMatrix.NEAR),-1.0,1.0,0,1.0];
+	var vectorData = new openfl_VectorData();
+	vectorData.length = a.length;
+	vectorData.fixed = true;
+	var length = a.length;
+	var vec = new Array(length);
+	var _g1 = 0;
+	var _g = a.length;
+	while(_g1 < _g) {
+		var i = _g1++;
+		vec[i] = a[i];
+	}
+	vectorData.data = vec;
+	this.g2d_vector = vectorData;
+};
+$hxClasses["renderer.ProjectionMatrix"] = renderer_ProjectionMatrix;
+renderer_ProjectionMatrix.__name__ = ["renderer","ProjectionMatrix"];
+renderer_ProjectionMatrix.g2d_instance = null;
+renderer_ProjectionMatrix.getOrtho = function(p_width,p_height,p_transform) {
+	if(renderer_ProjectionMatrix.g2d_instance == null) {
+		renderer_ProjectionMatrix.g2d_instance = new renderer_ProjectionMatrix();
+	}
+	return renderer_ProjectionMatrix.g2d_instance.ortho(p_width,p_height,p_transform);
+};
+renderer_ProjectionMatrix.__super__ = openfl_geom_Matrix3D;
+renderer_ProjectionMatrix.prototype = $extend(openfl_geom_Matrix3D.prototype,{
+	ortho: function(p_width,p_height,p_transform) {
+		var this1 = this.g2d_vector;
+		if(!this1.fixed) {
+			if(0 >= this1.length) {
+				this1.length = 1;
+			}
+			if(this1.data.length < this1.length) {
+				var length = this1.data.length + 10;
+				var data = new Array(length);
+				haxe_ds__$Vector_Vector_$Impl_$.blit(this1.data,0,data,0,this1.data.length);
+				this1.data = data;
+			}
+		}
+		this1.data[0] = 2 / p_width;
+		var this2 = this.g2d_vector;
+		if(!this2.fixed) {
+			if(5 >= this2.length) {
+				this2.length = 6;
+			}
+			if(this2.data.length < this2.length) {
+				var length1 = this2.data.length + 10;
+				var data1 = new Array(length1);
+				haxe_ds__$Vector_Vector_$Impl_$.blit(this2.data,0,data1,0,this2.data.length);
+				this2.data = data1;
+			}
+		}
+		this2.data[5] = -2 / p_height;
+		this.copyRawDataFrom(this.g2d_vector);
+		if(p_transform != null) {
+			this.prepend(p_transform);
+		}
+		return this;
+	}
+	,perspective: function(p_width,p_height,zNear,zFar) {
+		var a = [2 / p_width,0.0,0.0,0.0,0.0,-2 / p_height,0.0,0.0,0,0,zFar / (zFar - zNear),1.0,0,0,zNear * zFar / (zNear - zFar),0];
+		var vectorData = new openfl_VectorData();
+		vectorData.length = a.length;
+		vectorData.fixed = true;
+		var length = a.length;
+		var vec = new Array(length);
+		var _g1 = 0;
+		var _g = a.length;
+		while(_g1 < _g) {
+			var i = _g1++;
+			vec[i] = a[i];
+		}
+		vectorData.data = vec;
+		this.copyRawDataFrom(vectorData);
+		return this;
+	}
+	,__class__: renderer_ProjectionMatrix
+});
+var renderer_Renderer = function(context3D) {
+	this.phi = 0;
+	this.mtx = new openfl_geom_Matrix();
+	this.projection = new renderer_ProjectionMatrix().ortho(800,800,null);
+	this.drawingListSize = 0;
+	this.drawingList = [];
+	this.drawingGeometry = new renderer_BatchGeometry(1);
+	this.context3D = context3D;
+	this.drawingGeometry.uploadToGpu(context3D);
+	this.shaderProgramm = new renderer_BaseAgalShader().makePrgoram(context3D);
+	var this1 = this.projection.rawData;
+	var value = [];
+	var _g1 = 0;
+	var _g = this1.data.length;
+	while(_g1 < _g) value.push(this1.data[_g1++]);
+	this.drawingList.concat(value);
+	context3D.setBlendFactors(7,5);
+};
+$hxClasses["renderer.Renderer"] = renderer_Renderer;
+renderer_Renderer.__name__ = ["renderer","Renderer"];
+renderer_Renderer.prototype = {
+	update: function() {
+		this.context3D.clear();
+		this.__draw();
+		this.drawingListSize = 0;
+		this.context3D.present();
+	}
+	,draw: function(texture,matrix) {
+		this.texture = texture;
+		var a = matrix.a;
+		var b = matrix.b;
+		var c = matrix.c;
+		var d = matrix.d;
+		var tx = matrix.tx;
+		var ty = matrix.ty;
+		var pivotX = texture.pivotX;
+		var pivotY = texture.pivotY;
+		if(pivotX != 0 || pivotY != 0) {
+			tx = tx - pivotX * a - pivotY * c;
+			ty = ty - pivotX * b - pivotY * d;
+		}
+		this.drawingList[this.drawingListSize++] = a;
+		this.drawingList[this.drawingListSize++] = c;
+		this.drawingList[this.drawingListSize++] = b;
+		this.drawingList[this.drawingListSize++] = d;
+		this.drawingList[this.drawingListSize++] = tx;
+		this.drawingList[this.drawingListSize++] = ty;
+		this.drawingList[this.drawingListSize++] = texture.width;
+		this.drawingList[this.drawingListSize++] = texture.height;
+		this.drawingList[this.drawingListSize++] = texture.u;
+		this.drawingList[this.drawingListSize++] = texture.v;
+		this.drawingList[this.drawingListSize++] = texture.uscale;
+		this.drawingList[this.drawingListSize++] = texture.vscale;
+	}
+	,__draw: function() {
+		this.phi += 0.01;
+		this.context3D.setProgram(this.shaderProgramm);
+		this.context3D.setTextureAt(0,this.texture._atlas.gpuData);
+		this.drawingGeometry.setToContext(this.context3D);
+		var quadsNum = this.drawingListSize / 12 | 0;
+		this.context3D.setProgramConstantsFromMatrix(1,0,this.projection,true);
+		var _g1 = 0;
+		var _g = quadsNum;
+		while(_g1 < _g) {
+			var i = _g1++;
+			var value = this.drawingList.slice(i * 12,(i + 1) * 12);
+			var vectorData = new openfl_VectorData();
+			vectorData.length = value.length;
+			vectorData.fixed = true;
+			var length = value.length;
+			var vec = new Array(length);
+			var _g11 = 0;
+			var _g2 = value.length;
+			while(_g11 < _g2) {
+				var i1 = _g11++;
+				vec[i1] = value[i1];
+			}
+			vectorData.data = vec;
+			this.context3D.setProgramConstantsFromVector(1,4,vectorData,3);
+			this.context3D.drawTriangles(this.drawingGeometry.indexBuffer);
+		}
+	}
+	,__class__: renderer_Renderer
+};
+var renderer_TextureManager = function() {
+};
+$hxClasses["renderer.TextureManager"] = renderer_TextureManager;
+renderer_TextureManager.__name__ = ["renderer","TextureManager"];
+renderer_TextureManager.context = null;
+renderer_TextureManager.createTexture = function(id,atlasData,format) {
+	return renderer_TextureManager.context.createTexture(atlasData.width,atlasData.height,openfl_display3D__$Context3DTextureFormat_Context3DTextureFormat_$Impl_$.fromString(format),false);
+};
+renderer_TextureManager.prototype = {
+	__class__: renderer_TextureManager
+};
+var swfdata_ColorData = function(r,g,b,a) {
+	if(a == null) {
+		a = 1;
+	}
+	if(b == null) {
+		b = 1;
+	}
+	if(g == null) {
+		g = 1;
+	}
+	if(r == null) {
+		r = 1;
+	}
+	this.b = 1;
+	this.g = 1;
+	this.r = 1;
+	this.a = 1;
+	this.a = a;
+	this.b = b;
+	this.g = g;
+	this.r = r;
+};
+$hxClasses["swfdata.ColorData"] = swfdata_ColorData;
+swfdata_ColorData.__name__ = ["swfdata","ColorData"];
+swfdata_ColorData.prototype = {
+	clear: function() {
+		this.a = 1;
+		this.r = 1;
+		this.b = 1;
+		this.g = 1;
+	}
+	,mulColorData: function(colorData) {
+		this.a *= colorData.a;
+		this.r *= colorData.r;
+		this.g *= colorData.g;
+		this.b *= colorData.b;
+	}
+	,__class__: swfdata_ColorData
+};
+var swfdata_ColorMatrix = function(arr) {
+	this.arr = arr;
+};
+$hxClasses["swfdata.ColorMatrix"] = swfdata_ColorMatrix;
+swfdata_ColorMatrix.__name__ = ["swfdata","ColorMatrix"];
+swfdata_ColorMatrix.prototype = {
+	premultiply: function(obj) {
+	}
+	,__class__: swfdata_ColorMatrix
+};
+var swfdata_ITimelineContainer = function() { };
+$hxClasses["swfdata.ITimelineContainer"] = swfdata_ITimelineContainer;
+swfdata_ITimelineContainer.__name__ = ["swfdata","ITimelineContainer"];
+swfdata_ITimelineContainer.prototype = {
+	__class__: swfdata_ITimelineContainer
+};
+var swfdata_IDisplayObjectContainer = function() { };
+$hxClasses["swfdata.IDisplayObjectContainer"] = swfdata_IDisplayObjectContainer;
+swfdata_IDisplayObjectContainer.__name__ = ["swfdata","IDisplayObjectContainer"];
+swfdata_IDisplayObjectContainer.__interfaces__ = [IUpdatable,swfdata_ITimelineContainer];
+swfdata_IDisplayObjectContainer.prototype = {
+	__class__: swfdata_IDisplayObjectContainer
+	,__properties__: {get_displayObjects:"get_displayObjects",get_numChildren:"get_numChildren"}
+};
+var swfdata_DisplayObjectContainer = function(displayObjectsCount) {
+	if(displayObjectsCount == null) {
+		displayObjectsCount = 0;
+	}
+	this.depthAndCharactersMapInitialize = false;
+	this.displayObjectsPlacedCount = 0;
+	this.displayObjectsCount = 0;
+	this.displayObjectsCount = displayObjectsCount;
+	this._displayObjects = [];
+};
+$hxClasses["swfdata.DisplayObjectContainer"] = swfdata_DisplayObjectContainer;
+swfdata_DisplayObjectContainer.__name__ = ["swfdata","DisplayObjectContainer"];
+swfdata_DisplayObjectContainer.__interfaces__ = [swfdata_IDisplayObjectContainer];
+swfdata_DisplayObjectContainer.prototype = {
+	get_numChildren: function() {
+		return this.displayObjectsCount;
+	}
+	,destroy: function() {
+		if(this._displayObjects != null) {
+			var _g1 = 0;
+			var _g = this.displayObjectsCount;
+			while(_g1 < _g) {
+				var i = _g1++;
+				if(this._displayObjects[i] != null) {
+					this._displayObjects[i].destroy();
+				}
+			}
+			this._displayObjects = null;
+		}
+	}
+	,addDisplayObject: function(displayObjectData) {
+		this._displayObjects[this.displayObjectsPlacedCount++] = displayObjectData;
+	}
+	,getObjectByDepth: function(depth) {
+		return null;
+	}
+	,getChildByName: function(name) {
+		var currentDisplayObject;
+		var currentDisplayList = this._displayObjects;
+		var childsCount = currentDisplayList.length;
+		var _g1 = 0;
+		while(_g1 < childsCount) {
+			currentDisplayObject = currentDisplayList[_g1++];
+			if(currentDisplayObject.name == name) {
+				return currentDisplayObject;
+			}
+		}
+		var _g11 = 0;
+		while(_g11 < childsCount) {
+			currentDisplayObject = currentDisplayList[_g11++];
+			if(js_Boot.__instanceof(currentDisplayObject,swfdata_IDisplayObjectContainer)) {
+				var tmp;
+				try {
+					tmp = js_Boot.__cast(currentDisplayObject , swfdata_IDisplayObjectContainer);
+				} catch( e ) {
+					haxe_CallStack.lastException = e;
+					tmp = null;
+				}
+				return tmp.getChildByName(name);
+			}
+		}
+		return null;
+	}
+	,gotoAndPlayAll: function(frameIndex) {
+		var _g1 = 0;
+		var _g = this.displayObjectsCount;
+		while(_g1 < _g) {
+			var i = _g1++;
+			if(js_Boot.__instanceof(this._displayObjects[i],swfdata_ITimelineContainer)) {
+				var tmp;
+				try {
+					tmp = js_Boot.__cast(this._displayObjects[i] , swfdata_ITimelineContainer);
+				} catch( e ) {
+					haxe_CallStack.lastException = e;
+					tmp = null;
+				}
+				tmp.gotoAndPlayAll(frameIndex);
+			}
+		}
+	}
+	,gotoAndStopAll: function(frameIndex) {
+		var _g1 = 0;
+		var _g = this.displayObjectsCount;
+		while(_g1 < _g) {
+			var i = _g1++;
+			var displayObjectAsTimeLine;
+			try {
+				displayObjectAsTimeLine = js_Boot.__cast(this._displayObjects[i] , swfdata_ITimelineContainer);
+			} catch( e ) {
+				haxe_CallStack.lastException = e;
+				displayObjectAsTimeLine = null;
+			}
+			if(displayObjectAsTimeLine != null) {
+				displayObjectAsTimeLine.gotoAndStopAll(frameIndex);
+			}
+		}
+	}
+	,update: function() {
+		var _g1 = 0;
+		var _g = this.displayObjectsCount;
+		while(_g1 < _g) {
+			var i = _g1++;
+			if(js_Boot.__instanceof(this._displayObjects[i],IUpdatable)) {
+				var tmp;
+				try {
+					tmp = js_Boot.__cast(this._displayObjects[i] , IUpdatable);
+				} catch( e ) {
+					haxe_CallStack.lastException = e;
+					tmp = null;
+				}
+				tmp.update();
+			}
+		}
+	}
+	,fillData: function(obj) {
+		var objDisplayObjects = obj.get_displayObjects();
+		var _g1 = 0;
+		var _g = this.displayObjectsCount;
+		while(_g1 < _g) {
+			var i = _g1++;
+			objDisplayObjects[i] = this._displayObjects[i];
+		}
+		obj.displayObjectsCount = this.displayObjectsCount;
+	}
+	,clone: function() {
+		var objectCloned = new swfdata_DisplayObjectContainer(this.displayObjectsCount);
+		this.fillData(objectCloned);
+		return objectCloned;
+	}
+	,get_displayObjects: function() {
+		return this._displayObjects;
+	}
+	,__class__: swfdata_DisplayObjectContainer
+	,__properties__: {get_displayObjects:"get_displayObjects",get_numChildren:"get_numChildren"}
+};
+var swfdata_DisplayObjectData = function(characterId,displayObjectType) {
+	if(displayObjectType == null) {
+		displayObjectType = 0;
+	}
+	if(characterId == null) {
+		characterId = -1;
+	}
+	this.hasPlaced = false;
+	this.hasMoved = false;
+	this._y = 0;
+	this._x = 0;
+	this.clipDepth = 0;
+	this.depth = -1;
+	this.isCalculatedInPrevFrame = false;
+	this.displayObjectType = displayObjectType;
+	this.characterId = characterId;
+};
+$hxClasses["swfdata.DisplayObjectData"] = swfdata_DisplayObjectData;
+swfdata_DisplayObjectData.__name__ = ["swfdata","DisplayObjectData"];
+swfdata_DisplayObjectData.prototype = {
+	set_alpha: function(value) {
+		this.colorData.a = value;
+		return value;
+	}
+	,get_alpha: function() {
+		return this.colorData.a;
+	}
+	,destroy: function() {
+		this.prototype = null;
+		this.mask = null;
+		this.colorTransform = null;
+		this.transform = null;
+		this.name = null;
+		this.libraryLinkage = null;
+	}
+	,setTransformMatrix: function(matrix) {
+		this.transform = matrix;
+	}
+	,setTransformFromMatrix: function(matrix) {
+		this.setTransformFromRawMatrix(matrix.a,matrix.b,matrix.c,matrix.d,matrix.tx,matrix.ty);
+	}
+	,setTransformFromRawMatrix: function(a,b,c,d,tx,ty) {
+		if(this.transform == null) {
+			this.transform = new openfl_geom_Matrix(a,b,c,d,tx,ty);
+		} else {
+			this.transform.setTo(a,b,c,d,tx,ty);
+		}
+	}
+	,get_x: function() {
+		return this._x;
+	}
+	,set_x: function(value) {
+		this._x = value;
+		return value;
+	}
+	,get_y: function() {
+		return this._y;
+	}
+	,set_y: function(value) {
+		this._y = value;
+		return value;
+	}
+	,fillFrom: function(displayObject) {
+		this.setTransformFromMatrix(displayObject.transform);
+		this.isMask = displayObject.isMask;
+		if(displayObject.name != null) {
+			this.name = displayObject.name;
+		}
+		if(displayObject.libraryLinkage != null) {
+			this.libraryLinkage = displayObject.libraryLinkage;
+		}
+	}
+	,setDataTo: function(objectCloned) {
+		objectCloned.name = this.name;
+		objectCloned.depth = this.depth;
+		objectCloned.characterId = this.characterId;
+		objectCloned.libraryLinkage = this.libraryLinkage;
+		objectCloned.prototype = this.prototype;
+		objectCloned.colorTransform = this.colorTransform;
+		objectCloned.isMask = this.isMask;
+		objectCloned.mask = this.mask;
+		objectCloned._x = this._x;
+		objectCloned._y = this._y;
+	}
+	,deepClone: function() {
+		return this;
+	}
+	,clone: function() {
+		var objectCloned = new swfdata_DisplayObjectData();
+		this.setDataTo(objectCloned);
+		return objectCloned;
+	}
+	,__class__: swfdata_DisplayObjectData
+	,__properties__: {set_y:"set_y",get_y:"get_y",set_x:"set_x",get_x:"get_x",set_alpha:"set_alpha",get_alpha:"get_alpha"}
+};
+var swfdata_DisplayObjectTypes = function() {
+};
+$hxClasses["swfdata.DisplayObjectTypes"] = swfdata_DisplayObjectTypes;
+swfdata_DisplayObjectTypes.__name__ = ["swfdata","DisplayObjectTypes"];
+swfdata_DisplayObjectTypes.prototype = {
+	__class__: swfdata_DisplayObjectTypes
+};
+var swfdata_FrameData = function(frameIndex,frameLabel,numChildren) {
+	if(numChildren == null) {
+		numChildren = 0;
+	}
+	swfdata_DisplayObjectContainer.call(this,numChildren);
+	if(frameLabel != null) {
+		this.frameLabel = frameLabel;
+	}
+	this.frameIndex = frameIndex;
+};
+$hxClasses["swfdata.FrameData"] = swfdata_FrameData;
+swfdata_FrameData.__name__ = ["swfdata","FrameData"];
+swfdata_FrameData.__super__ = swfdata_DisplayObjectContainer;
+swfdata_FrameData.prototype = $extend(swfdata_DisplayObjectContainer.prototype,{
+	destroy: function() {
+		swfdata_DisplayObjectContainer.prototype.destroy.call(this);
+		this.frameLabel = null;
+	}
+	,clone: function() {
+		var objectCloned = new swfdata_FrameData(this.frameIndex,this.frameLabel,this.get_numChildren());
+		this.fillData(objectCloned);
+		return objectCloned;
+	}
+	,toString: function() {
+		return "FrameData " + this.frameIndex + " frameObjects=" + this.get_displayObjects().length;
+	}
+	,clear: function() {
+		this.frameLabel = null;
+	}
+	,__class__: swfdata_FrameData
+});
+var swfdata_ITimeline = function() { };
+$hxClasses["swfdata.ITimeline"] = swfdata_ITimeline;
+swfdata_ITimeline.__name__ = ["swfdata","ITimeline"];
+swfdata_ITimeline.__interfaces__ = [swfdata_ITimelineContainer];
+swfdata_ITimeline.prototype = {
+	__class__: swfdata_ITimeline
+	,__properties__: {get_isPlaying:"get_isPlaying",get_currentFrame:"get_currentFrame",get_framesCount:"get_framesCount"}
+};
+var swfdata_SpriteData = function(characterId,displayObjectType,isCreateContainer,childsCount) {
+	if(childsCount == null) {
+		childsCount = 0;
+	}
+	if(isCreateContainer == null) {
+		isCreateContainer = true;
+	}
+	if(displayObjectType == null) {
+		displayObjectType = 2;
+	}
+	if(characterId == null) {
+		characterId = -1;
+	}
+	swfdata_DisplayObjectData.call(this,characterId,displayObjectType);
+	if(isCreateContainer) {
+		this.displayContainer = new swfdata_DisplayObjectContainer(childsCount);
+	}
+};
+$hxClasses["swfdata.SpriteData"] = swfdata_SpriteData;
+swfdata_SpriteData.__name__ = ["swfdata","SpriteData"];
+swfdata_SpriteData.__interfaces__ = [swfdata_IDisplayObjectContainer];
+swfdata_SpriteData.__super__ = swfdata_DisplayObjectData;
+swfdata_SpriteData.prototype = $extend(swfdata_DisplayObjectData.prototype,{
+	get_numChildren: function() {
+		return this.displayContainer.get_numChildren();
+	}
+	,destroy: function() {
+		swfdata_DisplayObjectData.prototype.destroy.call(this);
+		if(this.displayContainer != null) {
+			this.displayContainer.destroy();
+			this.displayContainer = null;
+		}
+	}
+	,update: function() {
+		this.displayContainer.update();
+	}
+	,updateMasks: function() {
+		this.calculateMasks(this);
+	}
+	,calculateMasks: function(displayObjectContainer) {
+		var currentMask = null;
+		var displayObjectsCount = displayObjectContainer.get_displayObjects().length;
+		var _g1 = 0;
+		while(_g1 < displayObjectsCount) {
+			var i = _g1++;
+			var currentDisplayObject = displayObjectContainer.get_displayObjects()[i];
+			if(currentDisplayObject == null) {
+				continue;
+			}
+			if(currentDisplayObject.isMask) {
+				currentMask = currentDisplayObject;
+			} else if(currentMask != null && currentDisplayObject.depth <= currentMask.clipDepth) {
+				currentDisplayObject.mask = currentMask;
+			}
+		}
+	}
+	,setDataTo: function(objectCloned) {
+		swfdata_DisplayObjectData.prototype.setDataTo.call(this,objectCloned);
+		if(this.displayContainer != null) {
+			var objestAsSpriteData;
+			try {
+				objestAsSpriteData = js_Boot.__cast(objectCloned , swfdata_SpriteData);
+			} catch( e ) {
+				haxe_CallStack.lastException = e;
+				objestAsSpriteData = null;
+			}
+			objestAsSpriteData.displayContainer = this.displayContainer;
+		}
+	}
+	,clone: function() {
+		var objectCloned = new swfdata_SpriteData(-1,2,false);
+		this.setDataTo(objectCloned);
+		return objectCloned;
+	}
+	,addDisplayObject: function(displayObjectData) {
+		this.displayContainer.addDisplayObject(displayObjectData);
+	}
+	,gotoAndPlayAll: function(frameIndex) {
+		this.displayContainer.gotoAndPlayAll(frameIndex);
+	}
+	,gotoAndStopAll: function(frameIndex) {
+		this.displayContainer.gotoAndStopAll(frameIndex);
+	}
+	,getObjectByDepth: function(depth) {
+		return this.displayContainer.getObjectByDepth(depth);
+	}
+	,getChildByName: function(name) {
+		return this.displayContainer.getChildByName(name);
+	}
+	,get_displayObjects: function() {
+		return this.displayContainer._displayObjects;
+	}
+	,__class__: swfdata_SpriteData
+	,__properties__: $extend(swfdata_DisplayObjectData.prototype.__properties__,{get_displayObjects:"get_displayObjects",get_numChildren:"get_numChildren"})
+});
+var swfdata_MovieClipData = function(characterId,framesCount) {
+	if(framesCount == null) {
+		framesCount = 0;
+	}
+	if(characterId == null) {
+		characterId = -1;
+	}
+	swfdata_SpriteData.call(this,characterId,3,false);
+	if(framesCount > 0) {
+		this.timeline = new swfdata_Timeline(framesCount);
+		this._currentFrameData = this.timeline._currentFrameData;
+	}
+};
+$hxClasses["swfdata.MovieClipData"] = swfdata_MovieClipData;
+swfdata_MovieClipData.__name__ = ["swfdata","MovieClipData"];
+swfdata_MovieClipData.__interfaces__ = [swfdata_ITimeline];
+swfdata_MovieClipData.__super__ = swfdata_SpriteData;
+swfdata_MovieClipData.prototype = $extend(swfdata_SpriteData.prototype,{
+	destroy: function() {
+		swfdata_SpriteData.prototype.destroy.call(this);
+		if(this.timeline != null) {
+			this.timeline.destroy();
+		}
+		this.timeline = null;
+	}
+	,updateMasks: function() {
+		this.calculateMasks(this.timeline._currentFrameData);
+	}
+	,getFrameByIndex: function(index) {
+		return this.timeline.frames[index];
+	}
+	,nextFrame: function() {
+		this.timeline.nextFrame();
+		this._currentFrameData = this.timeline._currentFrameData;
+	}
+	,prevFrame: function() {
+		this.timeline.prevFrame();
+		this._currentFrameData = this.timeline._currentFrameData;
+	}
+	,get_framesCount: function() {
+		return this.timeline.get_framesCount();
+	}
+	,get_currentFrame: function() {
+		return this.timeline._currentFrame;
+	}
+	,addFrame: function(frameData) {
+		this.timeline.addFrame(frameData);
+		this._currentFrameData = this.timeline._currentFrameData;
+	}
+	,play: function() {
+		this.timeline.play();
+	}
+	,gotoAndPlay: function(frame) {
+		this.timeline.gotoAndPlay(frame);
+		this._currentFrameData = this.timeline._currentFrameData;
+	}
+	,gotoAndPlayAll: function(frameIndex) {
+		this.timeline.gotoAndPlayAll(frameIndex);
+		this._currentFrameData = this.timeline._currentFrameData;
+	}
+	,stop: function() {
+		this.timeline.stop();
+	}
+	,gotoAndStop: function(frame) {
+		this.timeline.gotoAndStop(frame);
+		this._currentFrameData = this.timeline._currentFrameData;
+	}
+	,gotoAndStopAll: function(frameIndex) {
+		this.timeline.gotoAndStopAll(frameIndex);
+		this._currentFrameData = this.timeline._currentFrameData;
+	}
+	,get_isPlaying: function() {
+		return this.timeline.get_isPlaying();
+	}
+	,get_displayObjects: function() {
+		return this._currentFrameData._displayObjects;
+	}
+	,get_currentFrameData: function() {
+		return this._currentFrameData;
+	}
+	,addDisplayObject: function(displayObjectData) {
+		this._currentFrameData.addDisplayObject(displayObjectData);
+	}
+	,getObjectByDepth: function(depth) {
+		return null;
+	}
+	,getChildByName: function(name) {
+		var currentDisplayObject;
+		var currentFrameData = this._currentFrameData;
+		if(currentFrameData == null) {
+			currentFrameData = this.timeline._currentFrameData;
+		}
+		var currentDisplayList = currentFrameData.get_displayObjects();
+		var frameChildsCount = currentDisplayList.length;
+		var _g1 = 0;
+		while(_g1 < frameChildsCount) {
+			currentDisplayObject = currentDisplayList[_g1++];
+			if(currentDisplayObject.name == name) {
+				return currentDisplayObject;
+			}
+		}
+		var _g11 = 0;
+		while(_g11 < frameChildsCount) {
+			currentDisplayObject = currentDisplayList[_g11++];
+			if(js_Boot.__instanceof(currentDisplayObject,swfdata_IDisplayObjectContainer)) {
+				var tmp;
+				try {
+					tmp = js_Boot.__cast(currentDisplayObject , swfdata_IDisplayObjectContainer);
+				} catch( e ) {
+					haxe_CallStack.lastException = e;
+					tmp = null;
+				}
+				return tmp.getChildByName(name);
+			}
+		}
+		return null;
+	}
+	,update: function() {
+		this.timeline.update();
+		this._currentFrameData = this.timeline._currentFrameData;
+	}
+	,advanceFrame: function(delta) {
+		this.timeline.advanceFrame(delta);
+		this._currentFrameData = this.timeline._currentFrameData;
+	}
+	,setDataTo: function(objectCloned) {
+		swfdata_SpriteData.prototype.setDataTo.call(this,objectCloned);
+		var objestAsSpriteData;
+		try {
+			objestAsSpriteData = js_Boot.__cast(objectCloned , swfdata_MovieClipData);
+		} catch( e ) {
+			haxe_CallStack.lastException = e;
+			objestAsSpriteData = null;
+		}
+		objestAsSpriteData.timeline = this.timeline;
+		this._currentFrameData = this.timeline._currentFrameData;
+	}
+	,inlineClone: function() {
+		var objectCloned = new swfdata_MovieClipData(-1,0);
+		this.setDataTo(objectCloned);
+		return objectCloned;
+	}
+	,clone: function() {
+		var objectCloned = new swfdata_MovieClipData(-1,0);
+		this.setDataTo(objectCloned);
+		return objectCloned;
+	}
+	,__class__: swfdata_MovieClipData
+	,__properties__: $extend(swfdata_SpriteData.prototype.__properties__,{get_currentFrameData:"get_currentFrameData",get_isPlaying:"get_isPlaying",get_currentFrame:"get_currentFrame",get_framesCount:"get_framesCount"})
+});
+var swfdata_Rectagon = function(x,y,width,height,transform) {
+	this.resultBottomRight = new openfl_geom_Point();
+	this.resultBottomLeft = new openfl_geom_Point();
+	this.resultTopRight = new openfl_geom_Point();
+	this.resultTopLeft = new openfl_geom_Point();
+	this.bottomRight = new openfl_geom_Point();
+	this.bottomLeft = new openfl_geom_Point();
+	this.topRight = new openfl_geom_Point();
+	this.topLeft = new openfl_geom_Point();
+	this._transform = transform;
+	this.localX = x;
+	this.localY = y;
+	this.localWidth = width;
+	this.localHeight = height;
+	this.topLeft.setTo(x,y);
+	this.topRight.setTo(x + width,y);
+	this.bottomLeft.setTo(x,y + height);
+	this.bottomRight.setTo(x + width,y + height);
+};
+$hxClasses["swfdata.Rectagon"] = swfdata_Rectagon;
+swfdata_Rectagon.__name__ = ["swfdata","Rectagon"];
+swfdata_Rectagon.transformX = function(px,py,transform) {
+	return px * transform.a + py * transform.c + transform.tx;
+};
+swfdata_Rectagon.transformY = function(px,py,transform) {
+	return px * transform.b + py * transform.d + transform.ty;
+};
+swfdata_Rectagon.prototype = {
+	union: function(rectagon) {
+		if(this._transform == rectagon._transform) {
+			this._transform = this._transform.clone();
+		}
+		this._transform.concat(rectagon._transform);
+		this.localX = Math.min(this.localX,rectagon.localX);
+		this.localY = Math.min(this.localY,rectagon.localY);
+		this.localWidth = Math.max(this.localWidth,this.localWidth) - this.localX;
+		this.localHeight = Math.max(this.localHeight,this.localHeight) - this.localY;
+		this.setTo(this.localX,this.localY,this.localWidth,this.localHeight);
+	}
+	,clear: function() {
+		this.localX = 0;
+		this.localY = 0;
+		this.localWidth = 0;
+		this.localHeight = 0;
+		this.topLeft.setTo(0,0);
+		this.topRight.setTo(0,0);
+		this.bottomLeft.setTo(0,0);
+		this.bottomRight.setTo(0,0);
+	}
+	,setToWithTransform: function(x,y,width,height,transform) {
+		this.localX = x;
+		this.localY = y;
+		this.localWidth = width;
+		this.localHeight = height;
+		this.topLeft.setTo(x,y);
+		this.topRight.setTo(x + width,y);
+		this.bottomLeft.setTo(x,y + height);
+		this.bottomRight.setTo(x + width,y + height);
+		this._transform = transform;
+		this.applyTransform();
+	}
+	,setTo: function(x,y,width,height) {
+		this.localX = x;
+		this.localY = y;
+		this.localWidth = width;
+		this.localHeight = height;
+		this.topLeft.setTo(x,y);
+		this.topRight.setTo(x + width,y);
+		this.bottomLeft.setTo(x,y + height);
+		this.bottomRight.setTo(x + width,y + height);
+		this.applyTransform();
+	}
+	,get_transform: function() {
+		return this._transform;
+	}
+	,set_transform: function(value) {
+		this._transform = value;
+		this.applyTransform();
+		return value;
+	}
+	,applyTransform: function() {
+		if(this._transform == null) {
+			return;
+		}
+		this.resultTopLeft.setTo(swfdata_Rectagon.transformX(this.topLeft.x,this.topLeft.y,this._transform),swfdata_Rectagon.transformY(this.topLeft.x,this.topLeft.y,this._transform));
+		this.resultTopRight.setTo(swfdata_Rectagon.transformX(this.topRight.x,this.topRight.y,this._transform),swfdata_Rectagon.transformY(this.topRight.x,this.topRight.y,this._transform));
+		this.resultBottomLeft.setTo(swfdata_Rectagon.transformX(this.bottomLeft.x,this.bottomLeft.y,this._transform),swfdata_Rectagon.transformY(this.bottomLeft.x,this.bottomLeft.y,this._transform));
+		this.resultBottomRight.setTo(swfdata_Rectagon.transformX(this.bottomRight.x,this.bottomRight.y,this._transform),swfdata_Rectagon.transformY(this.bottomRight.x,this.bottomRight.y,this._transform));
+		this.x = this.min(this.resultTopLeft.x,this.resultTopRight.x,this.resultBottomLeft.x,this.resultBottomRight.x);
+		this.y = this.min(this.resultTopLeft.y,this.resultTopRight.y,this.resultBottomLeft.y,this.resultBottomRight.y);
+		this.width = this.max(this.resultTopLeft.x,this.resultTopRight.x,this.resultBottomLeft.x,this.resultBottomRight.x);
+		this.height = this.max(this.resultTopLeft.y,this.resultTopRight.y,this.resultBottomLeft.y,this.resultBottomRight.y);
+		this.width -= this.x;
+		this.height -= this.y;
+	}
+	,max: function(x,x1,x2,x3) {
+		var val = x;
+		if(x1 > x) {
+			val = x1;
+		}
+		if(x2 > val) {
+			val = x2;
+		}
+		if(x3 > val) {
+			val = x3;
+		}
+		return val;
+	}
+	,min: function(x,x1,x2,x3) {
+		var val = x;
+		if(x1 < x) {
+			val = x1;
+		}
+		if(x2 < val) {
+			val = x2;
+		}
+		if(x3 < val) {
+			val = x3;
+		}
+		return val;
+	}
+	,__class__: swfdata_Rectagon
+	,__properties__: {set_transform:"set_transform",get_transform:"get_transform"}
+};
+var swfdata_ShapeData = function(characterId,shapeBounds) {
+	if(characterId == null) {
+		characterId = -1;
+	}
+	this.usedCount = 0;
+	swfdata_DisplayObjectData.call(this,characterId,1);
+	this._shapeBounds = shapeBounds;
+};
+$hxClasses["swfdata.ShapeData"] = swfdata_ShapeData;
+swfdata_ShapeData.__name__ = ["swfdata","ShapeData"];
+swfdata_ShapeData.__super__ = swfdata_DisplayObjectData;
+swfdata_ShapeData.prototype = $extend(swfdata_DisplayObjectData.prototype,{
+	destroy: function() {
+		swfdata_DisplayObjectData.prototype.destroy.call(this);
+		this._shapeBounds = null;
+	}
+	,resetBound: function() {
+	}
+	,get_shapeBounds: function() {
+		return this._shapeBounds;
+	}
+	,set_shapeBounds: function(value) {
+		this._shapeBounds = value;
+		return value;
+	}
+	,setDataTo: function(objectCloned) {
+		swfdata_DisplayObjectData.prototype.setDataTo.call(this,objectCloned);
+		var objectAsShapeData;
+		try {
+			objectAsShapeData = js_Boot.__cast(objectCloned , swfdata_ShapeData);
+		} catch( e ) {
+			haxe_CallStack.lastException = e;
+			objectAsShapeData = null;
+		}
+		objectAsShapeData.set_shapeBounds(this._shapeBounds);
+		objectAsShapeData.tx = this.tx;
+		objectAsShapeData.ty = this.ty;
+	}
+	,clone: function() {
+		var objectCloned = new swfdata_ShapeData();
+		this.setDataTo(objectCloned);
+		return objectCloned;
+	}
+	,__class__: swfdata_ShapeData
+	,__properties__: $extend(swfdata_DisplayObjectData.prototype.__properties__,{set_shapeBounds:"set_shapeBounds",get_shapeBounds:"get_shapeBounds"})
+});
+var swfdata_ShapeLibrary = function() {
+	this.numShapes = 0;
+	this.shapes = new haxe_ds_IntMap();
+};
+$hxClasses["swfdata.ShapeLibrary"] = swfdata_ShapeLibrary;
+swfdata_ShapeLibrary.__name__ = ["swfdata","ShapeLibrary"];
+swfdata_ShapeLibrary.prototype = {
+	clear: function(callDestroy) {
+		if(callDestroy == null) {
+			callDestroy = true;
+		}
+		this.numShapes = 0;
+		if(callDestroy) {
+			var tmp = this.shapes.iterator();
+			while(tmp.hasNext()) tmp.next().clear();
+		}
+		this.shapes = new haxe_ds_IntMap();
+	}
+	,addShape: function(shapeData) {
+		this.numShapes++;
+		if(this.shapes.h.hasOwnProperty(shapeData.characterId)) {
+			return;
+		}
+		var shapeLibraryItem = new swfdata_ShapeLibraryItem();
+		shapeLibraryItem.shapeData = shapeData;
+		this.shapes.h[shapeData.characterId] = shapeLibraryItem;
+	}
+	,getShape: function(id) {
+		return this.shapes.h[id];
+	}
+	,__class__: swfdata_ShapeLibrary
+};
+var swfdata_ShapeLibraryItem = function() {
+	this.transform = new swfdata_atlas_TextureTransform(0,0);
+};
+$hxClasses["swfdata.ShapeLibraryItem"] = swfdata_ShapeLibraryItem;
+swfdata_ShapeLibraryItem.__name__ = ["swfdata","ShapeLibraryItem"];
+swfdata_ShapeLibraryItem.prototype = {
+	clear: function() {
+		this.shapeData = null;
+		this.transform = null;
+	}
+	,correctScale: function(a,a2) {
+		if(a == a2) {
+			return a2;
+		}
+		if(a < 0) {
+			a = -a;
+		}
+		if(a > a2) {
+			return a;
+		} else {
+			return a2;
+		}
+	}
+	,checkTransform: function(matrix,tx,ty) {
+		this.transform.scaleX = this.correctScale(matrix.a,this.transform.scaleX);
+		this.transform.scaleY = this.correctScale(matrix.d,this.transform.scaleY);
+		this.transform.tx = tx;
+		this.transform.ty = ty;
+	}
+	,__class__: swfdata_ShapeLibraryItem
+};
+var swfdata_SymbolsLibrary = function() {
+	this.linkagesList = [];
+	this.spritesList = [];
+	this.shapesList = [];
+	this.__linkagesLibrary = new haxe_ds_StringMap();
+	this.__library = new haxe_ds_IntMap();
+};
+$hxClasses["swfdata.SymbolsLibrary"] = swfdata_SymbolsLibrary;
+swfdata_SymbolsLibrary.__name__ = ["swfdata","SymbolsLibrary"];
+swfdata_SymbolsLibrary.prototype = {
+	clear: function(callDestroy) {
+		if(callDestroy == null) {
+			callDestroy = true;
+		}
+		if(callDestroy) {
+			var shapesCount = this.shapesList.length;
+			var _g1 = 0;
+			while(_g1 < shapesCount) this.shapesList[_g1++].destroy();
+			var spritesCount = this.spritesList.length;
+			var _g11 = 0;
+			while(_g11 < spritesCount) this.spritesList[_g11++].destroy();
+			var linagesCount = this.linkagesList.length;
+			var _g12 = 0;
+			while(_g12 < linagesCount) this.linkagesList[_g12++].destroy();
+			var tmp = this.__library.iterator();
+			while(tmp.hasNext()) tmp.next().destroy();
+			var _this = this.__linkagesLibrary;
+			var tmp1 = new haxe_ds__$StringMap_StringMapIterator(_this,_this.arrayKeys());
+			while(tmp1.hasNext()) tmp1.next().destroy();
+		}
+		this.__library = new haxe_ds_IntMap();
+		this.__linkagesLibrary = new haxe_ds_StringMap();
+		this.shapesList = [];
+		this.spritesList = [];
+		this.linkagesList = [];
+	}
+	,addDisplayObject: function(displayObject) {
+		if(js_Boot.__instanceof(displayObject,swfdata_ShapeData)) {
+			this.shapesList.push(js_Boot.__cast(displayObject , swfdata_ShapeData));
+		}
+		this.__library.h[displayObject.characterId] = displayObject;
+	}
+	,getDisplayObject: function(characterId) {
+		return this.__library.h[characterId];
+	}
+	,addDisplayObjectByLinkage: function(displayObject) {
+		this.spritesList.push(displayObject);
+		this.linkagesList.push(displayObject);
+		var _this = this.__linkagesLibrary;
+		var key = displayObject.libraryLinkage;
+		if(__map_reserved[key] != null) {
+			_this.setReserved(key,displayObject);
+		} else {
+			_this.h[key] = displayObject;
+		}
+	}
+	,getDisplayObjectByLinkage: function(libraryLinkage) {
+		return Reflect.field(this.__linkagesLibrary,libraryLinkage);
+	}
+	,addShapes: function(shapeLibrary) {
+		var tmp = shapeLibrary.shapes.iterator();
+		while(tmp.hasNext()) this.addDisplayObject(tmp.next().shapeData);
+	}
+	,__class__: swfdata_SymbolsLibrary
+};
+var swfdata_Timeline = function(framesCount) {
+	this._framesCount = 0;
+	this._currentFrame = 0;
+	this.labelsSize = new haxe_ds_StringMap();
+	this.lablesMap = new haxe_ds_StringMap();
+	this.labelsCount = 0;
+	this._isPlaying = true;
+	this._framesCount = framesCount;
+	this.frames = [];
+	this._currentFrameData = this.frames[this._currentFrame];
+};
+$hxClasses["swfdata.Timeline"] = swfdata_Timeline;
+swfdata_Timeline.__name__ = ["swfdata","Timeline"];
+swfdata_Timeline.__interfaces__ = [IUpdatable,swfdata_ITimelineContainer,swfdata_ITimeline];
+swfdata_Timeline.prototype = {
+	destroy: function() {
+		this.lablesMap = null;
+		this.labelsSize = null;
+		this.currentLable = null;
+		if(this.frames != null) {
+			var framesCount = this.frames.length;
+			var _g1 = 0;
+			while(_g1 < framesCount) this.frames[_g1++].destroy();
+			this.frames = null;
+		}
+	}
+	,getLabelSize: function(label) {
+		return Reflect.field(this.labelsSize,label);
+	}
+	,hasFrame: function(label) {
+		return Reflect.field(this.lablesMap,label) != null;
+	}
+	,setLabel: function(labelKey,startFrame,framesCount) {
+		if(Reflect.field(this.lablesMap,labelKey) != null) {
+			return;
+		}
+		this.frames[startFrame].frameLabel = labelKey;
+		this.labelsSize[labelKey] = framesCount;
+		this.lablesMap[labelKey] = startFrame;
+		this.labelsCount++;
+	}
+	,addFrame: function(frameData) {
+		if(frameData.frameLabel != null) {
+			this.currentLable = frameData.frameLabel;
+			var _this = this.labelsSize;
+			var key = this.currentLable;
+			if(__map_reserved[key] != null) {
+				_this.setReserved(key,0);
+			} else {
+				_this.h[key] = 0;
+			}
+			var v = frameData.frameIndex;
+			var _this1 = this.lablesMap;
+			var key1 = frameData.frameLabel;
+			if(__map_reserved[key1] != null) {
+				_this1.setReserved(key1,v);
+			} else {
+				_this1.h[key1] = v;
+			}
+			this.labelsCount++;
+		}
+		if(this.currentLable != null) {
+			var _this2 = this.labelsSize;
+			var key2 = this.currentLable;
+			var value = (__map_reserved[key2] != null?_this2.getReserved(key2):_this2.h[key2]) + 1;
+			var _this3 = this.labelsSize;
+			var key3 = this.currentLable;
+			if(__map_reserved[key3] != null) {
+				_this3.setReserved(key3,value);
+			} else {
+				_this3.h[key3] = value;
+			}
+		}
+		this.frames[frameData.frameIndex] = frameData;
+		if(this._currentFrameData == null) {
+			this._currentFrameData = frameData;
+		}
+	}
+	,gotoAndPlayAll: function(frameIndex) {
+		this.gotoAndPlay(frameIndex);
+		var _g1 = 0;
+		var _g = this._framesCount;
+		while(_g1 < _g) this.frames[_g1++].gotoAndPlayAll(frameIndex);
+	}
+	,gotoAndStopAll: function(frameIndex) {
+		this.gotoAndStop(frameIndex);
+		var _g1 = 0;
+		var _g = this._framesCount;
+		while(_g1 < _g) this.frames[_g1++].gotoAndStopAll(frameIndex);
+	}
+	,play: function() {
+		this._isPlaying = true;
+	}
+	,gotoAndPlay: function(frame) {
+		this.play();
+		this.setFrameByObject(frame);
+	}
+	,stop: function() {
+		this._isPlaying = false;
+	}
+	,gotoAndStop: function(frame) {
+		this.stop();
+		this.setFrameByObject(frame);
+	}
+	,nextFrame: function() {
+		this._currentFrame++;
+		if(this._currentFrame >= this._framesCount) {
+			this._currentFrame = 0;
+		}
+		this._currentFrameData = this.frames[this._currentFrame];
+	}
+	,prevFrame: function() {
+		this._currentFrame--;
+		if(this._currentFrame < 0) {
+			this._currentFrame = this._framesCount - 1;
+		}
+		this._currentFrameData = this.frames[this._currentFrame];
+	}
+	,setFrameByObject: function(frame) {
+		if(typeof(frame) == "string") {
+			var _this = this.lablesMap;
+			var key = frame;
+			this._currentFrame = __map_reserved[key] != null?_this.getReserved(key):_this.h[key];
+		} else {
+			this._currentFrame = frame;
+		}
+		if(this._currentFrame >= this._framesCount) {
+			this._currentFrame = this._framesCount - 1;
+		}
+		this._currentFrameData = this.frames[this._currentFrame];
+	}
+	,update: function() {
+		var displayObjectsList = this._currentFrameData.get_displayObjects();
+		var displayObjectsCount = displayObjectsList.length;
+		var _g1 = 0;
+		while(_g1 < displayObjectsCount) {
+			var currentDisplayObject = displayObjectsList[_g1++];
+			if(js_Boot.__instanceof(currentDisplayObject,IUpdatable)) {
+				var tmp;
+				try {
+					tmp = js_Boot.__cast(currentDisplayObject , IUpdatable);
+				} catch( e ) {
+					haxe_CallStack.lastException = e;
+					tmp = null;
+				}
+				tmp.update();
+			}
+		}
+		if(!this._isPlaying) {
+			return;
+		}
+		this.nextFrame();
+	}
+	,currentFrameData: function() {
+		return this._currentFrameData;
+	}
+	,advanceFrame: function(delta) {
+		this._currentFrame += delta;
+		if(this._currentFrame < 0) {
+			this._currentFrame = this._framesCount - 1;
+		}
+		if(this._currentFrame >= this._framesCount) {
+			this._currentFrame = 0;
+		}
+		this._currentFrameData = this.frames[this._currentFrame];
+	}
+	,get_framesCount: function() {
+		return this._framesCount;
+	}
+	,get_currentFrame: function() {
+		return this._currentFrame;
+	}
+	,get_isPlaying: function() {
+		return this._isPlaying;
+	}
+	,__class__: swfdata_Timeline
+	,__properties__: {get_isPlaying:"get_isPlaying",get_currentFrame:"get_currentFrame",get_framesCount:"get_framesCount"}
+};
+var swfdata_atlas_AtlasDrawer = function(targetAtlas,scale,padding) {
+	if(padding == null) {
+		padding = 4;
+	}
+	if(scale == null) {
+		scale = 1;
+	}
+	this.maxPadding = 0;
+	this.lastPosition = new openfl_geom_Point();
+	this.targetAtlas = targetAtlas;
+	this.padding = padding;
+	this.scale = scale;
+	this.atlasData = targetAtlas.atlasData;
+	this.clean();
+};
+$hxClasses["swfdata.atlas.AtlasDrawer"] = swfdata_atlas_AtlasDrawer;
+swfdata_atlas_AtlasDrawer.__name__ = ["swfdata","atlas","AtlasDrawer"];
+swfdata_atlas_AtlasDrawer.averageColour = function(source) {
+	var red = 0;
+	var green = 0;
+	var blue = 0;
+	var count = 0;
+	var pixel;
+	var _g1 = 0;
+	var _g = source.width;
+	while(_g1 < _g) {
+		var x = _g1++;
+		var _g3 = 0;
+		var _g2 = source.height;
+		while(_g3 < _g2) {
+			pixel = source.getPixel(x,_g3++);
+			if(pixel == 0) {
+				continue;
+			}
+			red += pixel >> 16 & 255;
+			green += pixel >> 8 & 255;
+			blue += pixel & 255;
+			++count;
+		}
+	}
+	red = red / count | 0;
+	green = green / count | 0;
+	blue = blue / count | 0;
+	return red << 16 | green << 8 | blue;
+};
+swfdata_atlas_AtlasDrawer.prototype = {
+	clean: function() {
+		this.lastPosition.setTo(this.padding,this.padding);
+	}
+	,addShape: function(shapeId,shape,defineRect,sceneTransfrm,drawAdditionalAA) {
+		var shapeBound = defineRect.clone();
+		swfdata_atlas_AtlasDrawer.DRAWING_MATRIX.identity();
+		var scaleX;
+		var scaleY;
+		if(this.scale != 1) {
+			scaleX = sceneTransfrm.scaleX = sceneTransfrm.scaleX * this.scale;
+			scaleY = sceneTransfrm.scaleY = sceneTransfrm.scaleY * this.scale;
+			sceneTransfrm.recalculate();
+		} else {
+			scaleX = sceneTransfrm.scaleX;
+			scaleY = sceneTransfrm.scaleY;
+		}
+		var subtexture = new swfdata_atlas_BitmapSubTexture(shapeId,shapeBound,sceneTransfrm);
+		if(this.lastPosition.x - defineRect.x + defineRect.width * scaleX + this.padding >= this.atlasData.width) {
+			this.lastPosition.setTo(this.padding,this.lastPosition.y + this.maxPadding + this.padding);
+			this.maxPadding = this.padding;
+		}
+		swfdata_atlas_AtlasDrawer.DRAWING_MATRIX.scale(scaleX,scaleY);
+		shapeBound.width *= scaleX;
+		shapeBound.height *= scaleY;
+		swfdata_atlas_AtlasDrawer.DRAWING_MATRIX.tx = -sceneTransfrm.tx * scaleX + 20;
+		swfdata_atlas_AtlasDrawer.DRAWING_MATRIX.ty = -sceneTransfrm.ty * scaleY + 10;
+		var boundChecker = swfdata_atlas_AtlasDrawerUtils.boundCheckers[FastMath.log(swfdata_atlas_AtlasDrawerUtils.getBestPowerOf2(Math.max(shapeBound.width + 40,shapeBound.height + 20) | 0),2) | 0];
+		boundChecker.draw(shape,swfdata_atlas_AtlasDrawer.DRAWING_MATRIX,null,null,null,false);
+		if(drawAdditionalAA) {
+			boundChecker.applyFilter(boundChecker,boundChecker.rect,new openfl_geom_Point(),new openfl_filters_GlowFilter(swfdata_atlas_AtlasDrawer.averageColour(boundChecker),0.8,2,2,2.5));
+		}
+		var bitmapBoundRect = boundChecker.getColorBoundsRect(-1,0,false);
+		shapeBound.width = bitmapBoundRect.width;
+		shapeBound.height = bitmapBoundRect.height;
+		shapeBound.x = this.lastPosition.x;
+		shapeBound.y = this.lastPosition.y;
+		this.atlasData.copyPixels(boundChecker,bitmapBoundRect,this.lastPosition);
+		boundChecker.fillRect(bitmapBoundRect,0);
+		bitmapBoundRect.x = bitmapBoundRect.x - swfdata_atlas_AtlasDrawer.DRAWING_MATRIX.tx;
+		bitmapBoundRect.y = bitmapBoundRect.y - swfdata_atlas_AtlasDrawer.DRAWING_MATRIX.ty;
+		this.maxPadding = Math.max(this.maxPadding,shapeBound.height);
+		this.lastPosition.x += shapeBound.width + this.padding * 2;
+		this.targetAtlas.putTexture(subtexture);
+		return bitmapBoundRect;
+	}
+	,__class__: swfdata_atlas_AtlasDrawer
+};
+var swfdata_atlas_AtlasDrawerUtils = function() {
+};
+$hxClasses["swfdata.atlas.AtlasDrawerUtils"] = swfdata_atlas_AtlasDrawerUtils;
+swfdata_atlas_AtlasDrawerUtils.__name__ = ["swfdata","atlas","AtlasDrawerUtils"];
+swfdata_atlas_AtlasDrawerUtils.getBestPowerOf2 = function(value) {
+	var p = 1;
+	while(p < value) p <<= 1;
+	if(p > 2048) {
+		p = 2048;
+	}
+	return p;
+};
+swfdata_atlas_AtlasDrawerUtils.prototype = {
+	__class__: swfdata_atlas_AtlasDrawerUtils
+};
+var swfdata_atlas_ITexture = function() { };
+$hxClasses["swfdata.atlas.ITexture"] = swfdata_atlas_ITexture;
+swfdata_atlas_ITexture.__name__ = ["swfdata","atlas","ITexture"];
+swfdata_atlas_ITexture.prototype = {
+	__class__: swfdata_atlas_ITexture
+	,__properties__: {get_bounds:"get_bounds",get_transform:"get_transform",get_id:"get_id"}
+};
+var swfdata_atlas_BitmapSubTexture = function(id,bounds,transform) {
+	this._bounds = bounds;
+	this._id = id;
+	this._transform = transform;
+};
+$hxClasses["swfdata.atlas.BitmapSubTexture"] = swfdata_atlas_BitmapSubTexture;
+swfdata_atlas_BitmapSubTexture.__name__ = ["swfdata","atlas","BitmapSubTexture"];
+swfdata_atlas_BitmapSubTexture.__interfaces__ = [swfdata_atlas_ITexture];
+swfdata_atlas_BitmapSubTexture.prototype = {
+	get_id: function() {
+		return this._id;
+	}
+	,get_transform: function() {
+		return this._transform;
+	}
+	,get_bounds: function() {
+		return this._bounds;
+	}
+	,__class__: swfdata_atlas_BitmapSubTexture
+	,__properties__: {get_bounds:"get_bounds",get_transform:"get_transform",get_id:"get_id"}
+};
+var swfdata_atlas_ITextureAtlas = function() { };
+$hxClasses["swfdata.atlas.ITextureAtlas"] = swfdata_atlas_ITextureAtlas;
+swfdata_atlas_ITextureAtlas.__name__ = ["swfdata","atlas","ITextureAtlas"];
+swfdata_atlas_ITextureAtlas.prototype = {
+	__class__: swfdata_atlas_ITextureAtlas
+	,__properties__: {set_padding:"set_padding",get_padding:"get_padding"}
+};
+var swfdata_atlas_BitmapTextureAtlas = function(width,height,padding) {
+	if(padding == null) {
+		padding = 0;
+	}
+	this._padding = 0;
+	this.subTextures = new haxe_ds_IntMap();
+	this.texturesCount = 0;
+	this.height = height;
+	this.width = width;
+	this._padding = padding;
+	this.atlasData = new openfl_display_BitmapData(width,height,true,0);
+};
+$hxClasses["swfdata.atlas.BitmapTextureAtlas"] = swfdata_atlas_BitmapTextureAtlas;
+swfdata_atlas_BitmapTextureAtlas.__name__ = ["swfdata","atlas","BitmapTextureAtlas"];
+swfdata_atlas_BitmapTextureAtlas.__interfaces__ = [swfdata_atlas_ITextureAtlas];
+swfdata_atlas_BitmapTextureAtlas.prototype = {
+	getTexture: function(textureId) {
+		return this.subTextures.h[textureId];
+	}
+	,putTexture: function(texture) {
+		this.texturesCount++;
+		var key = texture.get_id();
+		this.subTextures.h[key] = texture;
+	}
+	,createSubTexture: function(id,region,scaleX,scaleY) {
+		this.putTexture(new swfdata_atlas_BitmapSubTexture(id,region,new swfdata_atlas_TextureTransform(scaleX,scaleY)));
+	}
+	,refrash: function() {
+		this.subTextures = new haxe_ds_IntMap();
+		this.atlasData.fillRect(this.atlasData.rect,0);
+	}
+	,clear: function() {
+		this.subTextures = null;
+		this.atlasData.dispose();
+		this.atlasData = null;
+	}
+	,get_padding: function() {
+		return this._padding;
+	}
+	,set_padding: function(value) {
+		this._padding = value;
+		return value;
+	}
+	,__class__: swfdata_atlas_BitmapTextureAtlas
+	,__properties__: {set_padding:"set_padding",get_padding:"get_padding"}
+};
+var swfdata_atlas_GLSubTexture = function(id,bounds,transform,atlas) {
+	this.pivotY = 0;
+	this.pivotX = 0;
+	this.vscale = 1;
+	this.uscale = 1;
+	this.v = 0;
+	this.u = 0;
+	this._id = id;
+	this._bounds = bounds;
+	this._transform = transform;
+	this._atlas = atlas;
+	this.width = this._bounds.width;
+	this.height = this._bounds.height;
+	this.u = this._bounds.x / atlas.atlasData.width;
+	this.v = this._bounds.y / atlas.atlasData.height;
+	this.uscale = this.width / atlas.atlasData.width;
+	this.vscale = this.height / atlas.atlasData.height;
+};
+$hxClasses["swfdata.atlas.GLSubTexture"] = swfdata_atlas_GLSubTexture;
+swfdata_atlas_GLSubTexture.__name__ = ["swfdata","atlas","GLSubTexture"];
+swfdata_atlas_GLSubTexture.__interfaces__ = [swfdata_atlas_ITexture];
+swfdata_atlas_GLSubTexture.prototype = {
+	getAlphaAtUV: function(u,v) {
+		return 0;
+	}
+	,get_id: function() {
+		return this._id;
+	}
+	,get_transform: function() {
+		return this._transform;
+	}
+	,get_bounds: function() {
+		return this._bounds;
+	}
+	,__class__: swfdata_atlas_GLSubTexture
+	,__properties__: {get_bounds:"get_bounds",get_transform:"get_transform",get_id:"get_id"}
+};
+var swfdata_atlas_GLTextureAtlas = function(id,atlasData,format,padding) {
+	if(padding == null) {
+		padding = 0;
+	}
+	this.subTextures = new haxe_ds_IntMap();
+	this.texturesCount = 0;
+	this.set_padding(padding);
+	this.format = format;
+	this.atlasData = atlasData;
+	this.id = id;
+};
+$hxClasses["swfdata.atlas.GLTextureAtlas"] = swfdata_atlas_GLTextureAtlas;
+swfdata_atlas_GLTextureAtlas.__name__ = ["swfdata","atlas","GLTextureAtlas"];
+swfdata_atlas_GLTextureAtlas.__interfaces__ = [swfdata_atlas_ITextureAtlas];
+swfdata_atlas_GLTextureAtlas.prototype = {
+	uploadToGpu: function() {
+		this.gpuData = renderer_TextureManager.createTexture(this.id,this.atlasData,this.format);
+		this.gpuData.uploadFromBitmapData(this.atlasData,0);
+	}
+	,get_padding: function() {
+		return this.padding;
+	}
+	,set_padding: function(value) {
+		return this.padding = value;
+	}
+	,putTexture: function(texture) {
+		this.texturesCount++;
+		var key = texture.get_id();
+		this.subTextures.h[key] = texture;
+	}
+	,getTexture: function(textureId) {
+		return this.subTextures.h[textureId];
+	}
+	,createSubTexture: function(id,region,scaleX,scaleY) {
+		this.putTexture(new swfdata_atlas_GLSubTexture(id,region,new swfdata_atlas_TextureTransform(scaleX,scaleY),this));
+	}
+	,__class__: swfdata_atlas_GLTextureAtlas
+	,__properties__: {set_padding:"set_padding",get_padding:"get_padding"}
+};
+var swfdata_atlas_TextureTransform = function(scaleX,scaleY,tx,ty) {
+	if(ty == null) {
+		ty = 0;
+	}
+	if(tx == null) {
+		tx = 0;
+	}
+	this.isMultiplierCalculated = false;
+	this.ty = ty;
+	this.tx = tx;
+	this.scaleY = scaleY;
+	this.scaleX = scaleX;
+	this.recalculate();
+};
+$hxClasses["swfdata.atlas.TextureTransform"] = swfdata_atlas_TextureTransform;
+swfdata_atlas_TextureTransform.__name__ = ["swfdata","atlas","TextureTransform"];
+swfdata_atlas_TextureTransform.prototype = {
+	recalculate: function() {
+		if(this.scaleX == 0 || this.scaleY == 0) {
+			return;
+		}
+		this.isMultiplierCalculated = true;
+		this.positionMultiplierX = 1 / this.scaleX;
+		this.positionMultiplierY = 1 / this.scaleY;
+		if(this.positionMultiplierX == Infinity || this.positionMultiplierY == Infinity) {
+			this.isMultiplierCalculated = false;
+		}
+	}
+	,toString: function() {
+		return "[TextureTransform tx=" + this.tx + " ty=" + this.ty + " scaleX=" + this.scaleX + " scaleY=" + this.scaleY + " positionMultiplierX=" + this.positionMultiplierX + " positionMultiplierY=" + this.positionMultiplierY + " isMultiplierCalculated=" + Std.string(this.isMultiplierCalculated) + "]";
+	}
+	,__class__: swfdata_atlas_TextureTransform
+};
+var swfdata_datatags_RawClassSymbol = function(characterId,linkage) {
+	if(characterId == null) {
+		characterId = 0;
+	}
+	this.linkage = linkage;
+	this.characterId = characterId;
+};
+$hxClasses["swfdata.datatags.RawClassSymbol"] = swfdata_datatags_RawClassSymbol;
+swfdata_datatags_RawClassSymbol.__name__ = ["swfdata","datatags","RawClassSymbol"];
+swfdata_datatags_RawClassSymbol.prototype = {
+	clear: function() {
+		this.linkage = null;
+	}
+	,toString: function() {
+		return "[RawClassSymbol characterId=" + this.characterId + " linkage=" + this.linkage + "]";
+	}
+	,__class__: swfdata_datatags_RawClassSymbol
+};
+var swfdata_datatags_SwfPackerTag = function() {
+};
+$hxClasses["swfdata.datatags.SwfPackerTag"] = swfdata_datatags_SwfPackerTag;
+swfdata_datatags_SwfPackerTag.__name__ = ["swfdata","datatags","SwfPackerTag"];
+swfdata_datatags_SwfPackerTag.prototype = {
+	clear: function() {
+		throw new js__$Boot_HaxeError(new openfl_errors_Error("no default method implementation"));
+	}
+	,__class__: swfdata_datatags_SwfPackerTag
+};
+var swfdata_datatags_SwfPackerTagDefineSprite = function() {
+	swfdata_datatags_SwfPackerTag.call(this);
+	this.type = 39;
+};
+$hxClasses["swfdata.datatags.SwfPackerTagDefineSprite"] = swfdata_datatags_SwfPackerTagDefineSprite;
+swfdata_datatags_SwfPackerTagDefineSprite.__name__ = ["swfdata","datatags","SwfPackerTagDefineSprite"];
+swfdata_datatags_SwfPackerTagDefineSprite.__super__ = swfdata_datatags_SwfPackerTag;
+swfdata_datatags_SwfPackerTagDefineSprite.prototype = $extend(swfdata_datatags_SwfPackerTag.prototype,{
+	clear: function() {
+		var _g1 = 0;
+		var _g = this.frames.length;
+		while(_g1 < _g) this.frames[_g1++].clear();
+		var _g11 = 0;
+		var _g2 = this.tags.length;
+		while(_g11 < _g2) this.tags[_g11++].clear();
+		this.frames = null;
+		this.tags = null;
+	}
+	,__class__: swfdata_datatags_SwfPackerTagDefineSprite
+});
+var swfdata_datatags_SwfPackerTagEnd = function() {
+	swfdata_datatags_SwfPackerTag.call(this);
+	this.type = 0;
+};
+$hxClasses["swfdata.datatags.SwfPackerTagEnd"] = swfdata_datatags_SwfPackerTagEnd;
+swfdata_datatags_SwfPackerTagEnd.__name__ = ["swfdata","datatags","SwfPackerTagEnd"];
+swfdata_datatags_SwfPackerTagEnd.__super__ = swfdata_datatags_SwfPackerTag;
+swfdata_datatags_SwfPackerTagEnd.prototype = $extend(swfdata_datatags_SwfPackerTag.prototype,{
+	clear: function() {
+	}
+	,__class__: swfdata_datatags_SwfPackerTagEnd
+});
+var swfdata_datatags_SwfPackerTagPlaceObject = function() {
+	this.placeMode = swfdata_datatags_SwfPackerTagPlaceObject.PLACE_MODE_UNKNOWN;
+	this.alphaOffset = 0;
+	this.alpha3 = 0;
+	this.alpha2 = 0;
+	this.alpha1 = 0;
+	this.alpha0 = 0;
+	this.blueColorOffset = 0;
+	this.blueColor3 = 0;
+	this.blueColor2 = 0;
+	this.blueColor1 = 0;
+	this.blueColor0 = 0;
+	this.greenColorOffset = 0;
+	this.greenColor3 = 0;
+	this.greenColor2 = 0;
+	this.greenColor1 = 0;
+	this.greenColor0 = 0;
+	this.redColorOffset = 0;
+	this.redColor3 = 0;
+	this.redColor2 = 0;
+	this.redColor1 = 0;
+	this.redColor0 = 0;
+	this.ty = 0;
+	this.tx = 0;
+	this.d = 1;
+	this.c = 0;
+	this.b = 0;
+	this.a = 1;
+	swfdata_datatags_SwfPackerTag.call(this);
+	this.type = 4;
+};
+$hxClasses["swfdata.datatags.SwfPackerTagPlaceObject"] = swfdata_datatags_SwfPackerTagPlaceObject;
+swfdata_datatags_SwfPackerTagPlaceObject.__name__ = ["swfdata","datatags","SwfPackerTagPlaceObject"];
+swfdata_datatags_SwfPackerTagPlaceObject.__super__ = swfdata_datatags_SwfPackerTag;
+swfdata_datatags_SwfPackerTagPlaceObject.prototype = $extend(swfdata_datatags_SwfPackerTag.prototype,{
+	toColorMatrixString: function() {
+		return "[Tag#ColorMatrix" + "\n" + this.redColor0 + "\t" + this.redColor1 + "\t" + this.redColor2 + "\t" + this.redColor3 + "\t" + this.redColorOffset + "\n" + this.greenColor0 + "\t" + this.greenColor1 + "\t" + this.greenColor2 + "\t" + this.greenColor3 + "\t" + this.greenColorOffset + "\n" + this.blueColor0 + "\t" + this.blueColor1 + "\t" + this.blueColor2 + "\t" + this.blueColor3 + "\t" + this.blueColorOffset + "\n" + this.alpha0 + "\t" + this.alpha1 + "\t" + this.alpha2 + "\t" + this.alpha3 + "\t" + this.alphaOffset + "\n]";
+	}
+	,isEquals: function(eqTo) {
+		if(this.depth == eqTo.depth && this.characterId == eqTo.characterId && this.placeMode == eqTo.placeMode && this.hasMatrix == eqTo.hasMatrix && this.clipDepth == eqTo.clipDepth) {
+			return eqTo.instanceName == this.instanceName;
+		} else {
+			return false;
+		}
+	}
+	,clear: function() {
+		this.instanceName = null;
+	}
+	,toString: function() {
+		return "[SwfPackerTagPlaceObject depth=" + this.depth + " characterId=" + this.characterId + " placeMode=" + this.placeMode + " hasMatrix=" + Std.string(this.hasMatrix) + " clipDepth=" + this.clipDepth + " instanceName=" + this.instanceName + "]";
+	}
+	,fillData: function(_placeMode,_depth,_hasClipDepth,_hasName,_hasMatrix,_hasCharacter,_instanceName,_clipDepth,_characterId) {
+		this.placeMode = _placeMode;
+		this.depth = _depth;
+		this.hasClipDepth = _hasClipDepth;
+		this.hasName = _hasName;
+		this.hasMatrix = _hasMatrix;
+		this.hasCharacter = _hasCharacter;
+		this.instanceName = _instanceName;
+		this.clipDepth = _clipDepth;
+		this.characterId = _characterId;
+	}
+	,setMatrix: function(a,b,c,d,tx,ty) {
+		this.a = a;
+		this.b = b;
+		this.c = c;
+		this.d = d;
+		this.tx = tx;
+		this.ty = ty;
+	}
+	,getColorTransformMatrix: function() {
+		if(this.colorMatrix == null) {
+			this.colorMatrix = new swfdata_ColorMatrix([this.redColor0,this.redColor1,this.redColor2,this.redColor3,this.redColorOffset,this.greenColor0,this.greenColor1,this.greenColor2,this.greenColor3,this.greenColorOffset,this.blueColor0,this.blueColor1,this.blueColor2,this.blueColor3,this.blueColorOffset,this.alpha0,this.alpha1,this.alpha2,this.alpha3,this.alphaOffset]);
+		}
+		return this.colorMatrix;
+	}
+	,__class__: swfdata_datatags_SwfPackerTagPlaceObject
+});
+var swfdata_datatags_SwfPackerTagRemoveObject = function(characterId,depth) {
+	if(depth == null) {
+		depth = 0;
+	}
+	if(characterId == null) {
+		characterId = 0;
+	}
+	swfdata_datatags_SwfPackerTag.call(this);
+	this.depth = depth;
+	this.characterId = characterId;
+	this.type = 5;
+};
+$hxClasses["swfdata.datatags.SwfPackerTagRemoveObject"] = swfdata_datatags_SwfPackerTagRemoveObject;
+swfdata_datatags_SwfPackerTagRemoveObject.__name__ = ["swfdata","datatags","SwfPackerTagRemoveObject"];
+swfdata_datatags_SwfPackerTagRemoveObject.__super__ = swfdata_datatags_SwfPackerTag;
+swfdata_datatags_SwfPackerTagRemoveObject.prototype = $extend(swfdata_datatags_SwfPackerTag.prototype,{
+	clear: function() {
+	}
+	,isEquals: function(tagRemoveObject) {
+		if(tagRemoveObject.characterId == this.characterId) {
+			return tagRemoveObject.depth == this.depth;
+		} else {
+			return false;
+		}
+	}
+	,toString: function() {
+		return "[SwfPackerTagRemoveObject characterId=" + this.characterId + " depth=" + this.depth + "]";
+	}
+	,__class__: swfdata_datatags_SwfPackerTagRemoveObject
+});
+var swfdata_datatags_SwfPackerTagShowFrame = function() {
+	swfdata_datatags_SwfPackerTag.call(this);
+	this.type = 1;
+};
+$hxClasses["swfdata.datatags.SwfPackerTagShowFrame"] = swfdata_datatags_SwfPackerTagShowFrame;
+swfdata_datatags_SwfPackerTagShowFrame.__name__ = ["swfdata","datatags","SwfPackerTagShowFrame"];
+swfdata_datatags_SwfPackerTagShowFrame.__super__ = swfdata_datatags_SwfPackerTag;
+swfdata_datatags_SwfPackerTagShowFrame.prototype = $extend(swfdata_datatags_SwfPackerTag.prototype,{
+	clear: function() {
+	}
+	,__class__: swfdata_datatags_SwfPackerTagShowFrame
+});
+var swfdata_datatags_SwfPackerTagSymbolClass = function(length) {
+	if(length == null) {
+		length = 0;
+	}
+	swfdata_datatags_SwfPackerTag.call(this);
+	this.type = 76;
+	this.length = length;
+	if(length != 0) {
+		this.initializeContent();
+	}
+};
+$hxClasses["swfdata.datatags.SwfPackerTagSymbolClass"] = swfdata_datatags_SwfPackerTagSymbolClass;
+swfdata_datatags_SwfPackerTagSymbolClass.__name__ = ["swfdata","datatags","SwfPackerTagSymbolClass"];
+swfdata_datatags_SwfPackerTagSymbolClass.__super__ = swfdata_datatags_SwfPackerTag;
+swfdata_datatags_SwfPackerTagSymbolClass.prototype = $extend(swfdata_datatags_SwfPackerTag.prototype,{
+	initializeContent: function(fixedSize) {
+		if(fixedSize == null) {
+			fixedSize = true;
+		}
+		this.characterIdList = [];
+		this.linkageList = [];
+	}
+	,clear: function() {
+		this.characterIdList = null;
+		this.linkageList = null;
+	}
+	,__class__: swfdata_datatags_SwfPackerTagSymbolClass
+});
+var swfdataexporter_SwfPackerTagExporter = function(type) {
+	if(type == null) {
+		type = 0;
+	}
+	this.type = type;
+};
+$hxClasses["swfdataexporter.SwfPackerTagExporter"] = swfdataexporter_SwfPackerTagExporter;
+swfdataexporter_SwfPackerTagExporter.__name__ = ["swfdataexporter","SwfPackerTagExporter"];
+swfdataexporter_SwfPackerTagExporter.prototype = {
+	exportTag: function(tag,output) {
+		output.b[output.position++] = this.type & 255;
+	}
+	,importTag: function(tag,input) {
+	}
+	,__class__: swfdataexporter_SwfPackerTagExporter
+};
+var swfdataexporter_DefineSpriteExporter = function(swfTagExporter) {
+	swfdataexporter_SwfPackerTagExporter.call(this,1);
+	this.swfTagExporter = swfTagExporter;
+};
+$hxClasses["swfdataexporter.DefineSpriteExporter"] = swfdataexporter_DefineSpriteExporter;
+swfdataexporter_DefineSpriteExporter.__name__ = ["swfdataexporter","DefineSpriteExporter"];
+swfdataexporter_DefineSpriteExporter.__super__ = swfdataexporter_SwfPackerTagExporter;
+swfdataexporter_DefineSpriteExporter.prototype = $extend(swfdataexporter_SwfPackerTagExporter.prototype,{
+	exportTag: function(tag,output) {
+		swfdataexporter_SwfPackerTagExporter.prototype.exportTag.call(this,tag,output);
+		var tagAsSpriteDefine;
+		try {
+			tagAsSpriteDefine = js_Boot.__cast(tag , swfdata_datatags_SwfPackerTagDefineSprite);
+		} catch( e ) {
+			haxe_CallStack.lastException = e;
+			tagAsSpriteDefine = null;
+		}
+		var tagsCount = tagAsSpriteDefine.tags.length;
+		var frameCount = tagAsSpriteDefine.frameCount;
+		output.writeShort(tagAsSpriteDefine.characterId);
+		output.writeShort(frameCount);
+		output.writeShort(tagsCount);
+		var _g1 = 0;
+		while(_g1 < frameCount) {
+			var currentFrameData = tagAsSpriteDefine.frames[_g1++];
+			output.writeShort(currentFrameData.get_numChildren());
+			if(currentFrameData.frameLabel != null) {
+				output.b[output.position++] = 1;
+				output.writeUTF(currentFrameData.frameLabel);
+			} else {
+				output.b[output.position++] = 0;
+			}
+		}
+		this.swfTagExporter.exportTags(tagAsSpriteDefine.tags,output);
+	}
+	,importTag: function(tag,input) {
+		swfdataexporter_SwfPackerTagExporter.prototype.importTag.call(this,tag,input);
+		var tagAsSpriteDefine;
+		try {
+			tagAsSpriteDefine = js_Boot.__cast(tag , swfdata_datatags_SwfPackerTagDefineSprite);
+		} catch( e ) {
+			haxe_CallStack.lastException = e;
+			tagAsSpriteDefine = null;
+		}
+		var characterId = input.readShort();
+		var frameCount = input.readShort();
+		var tagsCount = input.readShort();
+		tagAsSpriteDefine.characterId = characterId;
+		tagAsSpriteDefine.frameCount = frameCount;
+		if(frameCount > 0) {
+			tagAsSpriteDefine.frames = [];
+		}
+		var _g1 = 0;
+		while(_g1 < frameCount) {
+			var i = _g1++;
+			var currentFrameData = new swfdata_FrameData(i,null,input.readShort());
+			if(input.readUnsignedByte() == 1) {
+				currentFrameData.frameLabel = input.readUTF();
+			}
+			tagAsSpriteDefine.frames[i] = currentFrameData;
+		}
+		if(tagsCount > 0) {
+			tagAsSpriteDefine.tags = [];
+			var _g11 = 0;
+			while(_g11 < tagsCount) tagAsSpriteDefine.tags[_g11++] = this.swfTagExporter.importSingleTag(input);
+		}
+	}
+	,__class__: swfdataexporter_DefineSpriteExporter
+});
+var swfdataexporter_ExporerTypes = function() {
+};
+$hxClasses["swfdataexporter.ExporerTypes"] = swfdataexporter_ExporerTypes;
+swfdataexporter_ExporerTypes.__name__ = ["swfdataexporter","ExporerTypes"];
+swfdataexporter_ExporerTypes.prototype = {
+	__class__: swfdataexporter_ExporerTypes
+};
+var utils_BitMask = function(mask) {
+	if(mask == null) {
+		mask = 0;
+	}
+	this.mask = mask;
+};
+$hxClasses["utils.BitMask"] = utils_BitMask;
+utils_BitMask.__name__ = ["utils","BitMask"];
+utils_BitMask.prototype = {
+	invertBit: function(bitIndex) {
+		this.mask ^= 1 << bitIndex;
+	}
+	,clearBit: function(bitIndex) {
+		this.mask &= ~(1 << bitIndex);
+	}
+	,setBit: function(bitIndex) {
+		this.mask |= 1 << bitIndex;
+	}
+	,isBitSet: function(bitIndex) {
+		return (this.mask & 1 << bitIndex) != 0;
+	}
+	,__class__: utils_BitMask
+};
+var swfdataexporter_PlaceObjectExporter = function() {
+	this.totalTime2 = 0;
+	this.totalTime = 0;
+	swfdataexporter_SwfPackerTagExporter.call(this,2);
+};
+$hxClasses["swfdataexporter.PlaceObjectExporter"] = swfdataexporter_PlaceObjectExporter;
+swfdataexporter_PlaceObjectExporter.__name__ = ["swfdataexporter","PlaceObjectExporter"];
+swfdataexporter_PlaceObjectExporter.__super__ = swfdataexporter_SwfPackerTagExporter;
+swfdataexporter_PlaceObjectExporter.prototype = $extend(swfdataexporter_SwfPackerTagExporter.prototype,{
+	readMATRIX: function(input,tagAsPlaceObject) {
+		var scaleX = 1;
+		var scaleY = 1;
+		if(input.readUnsignedByte() == 1) {
+			scaleX = input.readInt() / 65536;
+			scaleY = input.readInt() / 65536;
+		}
+		var rotateSkew0 = 0;
+		var rotateSkew1 = 0;
+		if(input.readUnsignedByte() == 1) {
+			rotateSkew0 = input.readInt() / 65536;
+			rotateSkew1 = input.readInt() / 65536;
+		}
+		tagAsPlaceObject.setMatrix(scaleX,rotateSkew0,rotateSkew1,scaleY,input.readInt() / 65536,input.readInt() / 65536);
+	}
+	,writeMATRIX: function(output,value) {
+		var scaleX = value.a;
+		var scaleY = value.d;
+		var rotateSkew0 = value.b;
+		var rotateSkew1 = value.c;
+		var translateX = value.tx * 65536 | 0;
+		var translateY = value.ty * 65536 | 0;
+		var hasScale = scaleX != 1 || scaleY != 1;
+		var hasRotate = rotateSkew0 != 0 || rotateSkew1 != 0;
+		output.b[output.position++] = (hasScale?1:0) & 255;
+		if(hasScale) {
+			output.writeInt(scaleX * 65536 | 0);
+			output.writeInt(scaleY * 65536 | 0);
+		}
+		output.b[output.position++] = (hasRotate?1:0) & 255;
+		if(hasRotate) {
+			output.writeInt(rotateSkew0 * 65536 | 0);
+			output.writeInt(rotateSkew1 * 65536 | 0);
+		}
+		output.writeInt(translateX);
+		output.writeInt(translateY);
+	}
+	,readColorMatrix: function(tag,input) {
+		tag.redColor0 = input.readInt() / 65536;
+		tag.redColor1 = input.readInt() / 65536;
+		tag.redColor2 = input.readInt() / 65536;
+		tag.redColor3 = input.readInt() / 65536;
+		tag.redColorOffset = input.readInt() / 65536;
+		tag.greenColor0 = input.readInt() / 65536;
+		tag.greenColor1 = input.readInt() / 65536;
+		tag.greenColor2 = input.readInt() / 65536;
+		tag.greenColor3 = input.readInt() / 65536;
+		tag.greenColorOffset = input.readInt() / 65536;
+		tag.blueColor0 = input.readInt() / 65536;
+		tag.blueColor1 = input.readInt() / 65536;
+		tag.blueColor2 = input.readInt() / 65536;
+		tag.blueColor3 = input.readInt() / 65536;
+		tag.blueColorOffset = input.readInt() / 65536;
+		tag.alpha0 = input.readInt() / 65536;
+		tag.alpha1 = input.readInt() / 65536;
+		tag.alpha2 = input.readInt() / 65536;
+		tag.alpha3 = input.readInt() / 65536;
+		tag.alphaOffset = input.readInt() / 65536;
+	}
+	,writeColorMatrix: function(tag,output) {
+		var tmp = tag.redColorOffset != 0 || tag.greenColorOffset != 0 || tag.blueColorOffset != 0;
+		var tmp1 = tag.redColor0 != 0 || tag.redColor1 != 0 || tag.redColor2 != 0;
+		var tmp2 = tag.greenColor0 != 0 || tag.greenColor1 != 0 || tag.greenColor2 != 0;
+		var tmp3 = tag.blueColor0 != 0 || tag.blueColor1 != 0 || tag.blueColor2 != 0;
+		swfdataexporter_PlaceObjectExporter.bitMask.mask = 0;
+		output.writeInt(tag.redColor0 * 65536 | 0);
+		output.writeInt(tag.redColor1 * 65536 | 0);
+		output.writeInt(tag.redColor2 * 65536 | 0);
+		output.writeInt(tag.redColor3 * 65536 | 0);
+		output.writeInt(tag.redColorOffset * 65536 | 0);
+		output.writeInt(tag.greenColor0 * 65536 | 0);
+		output.writeInt(tag.greenColor1 * 65536 | 0);
+		output.writeInt(tag.greenColor2 * 65536 | 0);
+		output.writeInt(tag.greenColor3 * 65536 | 0);
+		output.writeInt(tag.greenColorOffset * 65536 | 0);
+		output.writeInt(tag.blueColor0 * 65536 | 0);
+		output.writeInt(tag.blueColor1 * 65536 | 0);
+		output.writeInt(tag.blueColor2 * 65536 | 0);
+		output.writeInt(tag.blueColor3 * 65536 | 0);
+		output.writeInt(tag.blueColorOffset * 65536 | 0);
+		output.writeInt(tag.alpha0 * 65536 | 0);
+		output.writeInt(tag.alpha1 * 65536 | 0);
+		output.writeInt(tag.alpha2 * 65536 | 0);
+		output.writeInt(tag.alpha3 * 65536 | 0);
+		output.writeInt(tag.alphaOffset * 65536 | 0);
+	}
+	,exportTag: function(tag,output) {
+		swfdataexporter_SwfPackerTagExporter.prototype.exportTag.call(this,tag,output);
+		var tagAsPlaceObject;
+		try {
+			tagAsPlaceObject = js_Boot.__cast(tag , swfdata_datatags_SwfPackerTagPlaceObject);
+		} catch( e ) {
+			haxe_CallStack.lastException = e;
+			tagAsPlaceObject = null;
+		}
+		swfdataexporter_PlaceObjectExporter.bitMask.mask = 0;
+		if(tagAsPlaceObject.hasClipDepth) {
+			swfdataexporter_PlaceObjectExporter.bitMask.setBit(0);
+		}
+		if(tagAsPlaceObject.hasName) {
+			swfdataexporter_PlaceObjectExporter.bitMask.setBit(1);
+		}
+		if(tagAsPlaceObject.hasMatrix) {
+			swfdataexporter_PlaceObjectExporter.bitMask.setBit(2);
+		}
+		if(tagAsPlaceObject.hasCharacter) {
+			swfdataexporter_PlaceObjectExporter.bitMask.setBit(3);
+		}
+		if(tagAsPlaceObject.hasColorTransform) {
+			swfdataexporter_PlaceObjectExporter.bitMask.setBit(4);
+		}
+		output.b[output.position++] = swfdataexporter_PlaceObjectExporter.bitMask.mask & 255;
+		output.b[output.position++] = tagAsPlaceObject.placeMode & 255;
+		output.writeShort(tagAsPlaceObject.depth);
+		if(tagAsPlaceObject.depth > 65535) {
+			throw new js__$Boot_HaxeError(new openfl_errors_Error("depth range error " + tagAsPlaceObject.depth));
+		}
+		if(tagAsPlaceObject.hasClipDepth) {
+			output.b[output.position++] = tagAsPlaceObject.clipDepth & 255;
+		}
+		if(tagAsPlaceObject.hasName) {
+			output.writeUTF(tagAsPlaceObject.instanceName);
+		}
+		if(tagAsPlaceObject.hasMatrix) {
+			this.writeMATRIX(output,tagAsPlaceObject);
+		}
+		if(tagAsPlaceObject.hasCharacter) {
+			output.writeShort(tagAsPlaceObject.characterId);
+		}
+		if(tagAsPlaceObject.hasColorTransform) {
+			this.writeColorMatrix(tagAsPlaceObject,output);
+		}
+	}
+	,importTag: function(tag,input) {
+		var tagAsPlaceObject;
+		try {
+			tagAsPlaceObject = js_Boot.__cast(tag , swfdata_datatags_SwfPackerTagPlaceObject);
+		} catch( e ) {
+			haxe_CallStack.lastException = e;
+			tagAsPlaceObject = null;
+		}
+		swfdataexporter_PlaceObjectExporter.bitMask.mask = input.readUnsignedByte();
+		var placeMode = input.readUnsignedByte();
+		var depth = input.readShort();
+		var hasClipDepth = swfdataexporter_PlaceObjectExporter.bitMask.isBitSet(0);
+		var hasName = swfdataexporter_PlaceObjectExporter.bitMask.isBitSet(1);
+		var hasMatrix = swfdataexporter_PlaceObjectExporter.bitMask.isBitSet(2);
+		var hasCharacter = swfdataexporter_PlaceObjectExporter.bitMask.isBitSet(3);
+		var hasColorTransform = swfdataexporter_PlaceObjectExporter.bitMask.isBitSet(4);
+		var instanceName = null;
+		var clipDepth = 0;
+		var characterId = 0;
+		if(hasClipDepth) {
+			clipDepth = input.readUnsignedByte();
+		}
+		if(hasName) {
+			instanceName = input.readUTF();
+		}
+		if(hasMatrix) {
+			this.readMATRIX(input,tagAsPlaceObject);
+		}
+		if(hasCharacter) {
+			characterId = input.readShort();
+		}
+		tagAsPlaceObject.fillData(placeMode,depth,hasClipDepth,hasName,hasMatrix,hasCharacter,instanceName,clipDepth,characterId);
+		if(hasColorTransform) {
+			tagAsPlaceObject.hasColorTransform = true;
+			this.readColorMatrix(tagAsPlaceObject,input);
+		}
+	}
+	,__class__: swfdataexporter_PlaceObjectExporter
+});
+var swfdataexporter_RemoveObjectExporter = function() {
+	swfdataexporter_SwfPackerTagExporter.call(this,3);
+};
+$hxClasses["swfdataexporter.RemoveObjectExporter"] = swfdataexporter_RemoveObjectExporter;
+swfdataexporter_RemoveObjectExporter.__name__ = ["swfdataexporter","RemoveObjectExporter"];
+swfdataexporter_RemoveObjectExporter.__super__ = swfdataexporter_SwfPackerTagExporter;
+swfdataexporter_RemoveObjectExporter.prototype = $extend(swfdataexporter_SwfPackerTagExporter.prototype,{
+	exportTag: function(tag,output) {
+		swfdataexporter_SwfPackerTagExporter.prototype.exportTag.call(this,tag,output);
+		var tagAsRemoveObject;
+		try {
+			tagAsRemoveObject = js_Boot.__cast(tag , swfdata_datatags_SwfPackerTagRemoveObject);
+		} catch( e ) {
+			haxe_CallStack.lastException = e;
+			tagAsRemoveObject = null;
+		}
+		if(tagAsRemoveObject.depth > 32767 || tagAsRemoveObject.depth < 0) {
+			throw new js__$Boot_HaxeError(new openfl_errors_Error("out of range"));
+		}
+		output.writeShort(tagAsRemoveObject.depth);
+		output.writeShort(tagAsRemoveObject.characterId);
+	}
+	,importTag: function(tag,input) {
+		swfdataexporter_SwfPackerTagExporter.prototype.importTag.call(this,tag,input);
+		var tagAsRemoveObject;
+		try {
+			tagAsRemoveObject = js_Boot.__cast(tag , swfdata_datatags_SwfPackerTagRemoveObject);
+		} catch( e ) {
+			haxe_CallStack.lastException = e;
+			tagAsRemoveObject = null;
+		}
+		tagAsRemoveObject.depth = input.readShort();
+		tagAsRemoveObject.characterId = input.readShort();
+	}
+	,__class__: swfdataexporter_RemoveObjectExporter
+});
+var swfdataexporter_SwfAtlasExporter = function() {
+	this.bitmapBytes = new openfl_utils_ByteArrayData(0);
+};
+$hxClasses["swfdataexporter.SwfAtlasExporter"] = swfdataexporter_SwfAtlasExporter;
+swfdataexporter_SwfAtlasExporter.__name__ = ["swfdataexporter","SwfAtlasExporter"];
+swfdataexporter_SwfAtlasExporter.roundPixels20 = function(pixels) {
+	return Math.round(pixels * 100) / 100;
+};
+swfdataexporter_SwfAtlasExporter.prototype = {
+	readRectangle: function(input) {
+		var rect = new openfl_geom_Rectangle();
+		rect.x = swfdataexporter_SwfAtlasExporter.roundPixels20(input.readInt() / 20);
+		rect.width = swfdataexporter_SwfAtlasExporter.roundPixels20(input.readInt() / 20);
+		rect.y = swfdataexporter_SwfAtlasExporter.roundPixels20(input.readInt() / 20);
+		rect.height = swfdataexporter_SwfAtlasExporter.roundPixels20(input.readInt() / 20);
+		return rect;
+	}
+	,writeRectangle: function(rectangle,output) {
+		var xmin = rectangle.x * 20 | 0;
+		var xmax = rectangle.width * 20 | 0;
+		var ymin = rectangle.y * 20 | 0;
+		var ymax = rectangle.height * 20 | 0;
+		fastbytearray_ByteArrayUtils.calculateMaxBits4(true,xmin,xmax,ymin,ymax);
+		output.writeInt(xmin);
+		output.writeInt(xmax);
+		output.writeInt(ymin);
+		output.writeInt(ymax);
+	}
+	,readTextureTransform: function(input) {
+		var scaleX = 1;
+		var scaleY = 1;
+		if(input.readUnsignedByte() == 1) {
+			scaleX = input.readInt() / 65536;
+			scaleY = input.readInt() / 65536;
+		}
+		return new swfdata_atlas_TextureTransform(scaleX,scaleY,input.readInt() / 2000,input.readInt() / 2000);
+	}
+	,writeTextureTransform: function(transform,output) {
+		var translateX = transform.tx * 2000 | 0;
+		var translateY = transform.ty * 2000 | 0;
+		var scaleX = transform.scaleX;
+		var scaleY = transform.scaleY;
+		var hasScale = scaleX != 1 || scaleY != 1;
+		output.writeUnsignedInt(hasScale?1:0);
+		if(hasScale) {
+			output.writeInt(scaleX * 65536 | 0);
+			output.writeInt(scaleY * 65536 | 0);
+		}
+		output.writeInt(translateX);
+		output.writeInt(translateY);
+	}
+	,exportAtlas: function(atlas,shapesList,output) {
+		var bitmap = atlas.atlasData;
+		var bitmapBytes = bitmap.getPixels(bitmap.rect);
+		if(bitmap.width < 2 || bitmap.height < 2) {
+			Internal_$trace.trace("Error: somethink wrong with atlas data");
+		}
+		output.b[output.position++] = atlas.get_padding() & 255;
+		output.writeInt(openfl_utils__$ByteArray_ByteArray_$Impl_$.get_length(bitmapBytes));
+		output.writeShort(bitmap.width);
+		output.writeShort(bitmap.height);
+		output.writeBytes(bitmapBytes,0,openfl_utils__$ByteArray_ByteArray_$Impl_$.get_length(bitmapBytes));
+		output.writeShort(atlas.texturesCount);
+		var tmp = atlas.subTextures.iterator();
+		while(tmp.hasNext()) {
+			var texture = tmp.next();
+			output.writeShort(texture.get_id());
+			this.writeTextureTransform(texture.get_transform(),output);
+			this.writeRectangle(texture.get_bounds(),output);
+			this.writeRectangle(shapesList.getShape(texture.get_id()).shapeData.get_shapeBounds(),output);
+		}
+	}
+	,impotGLAtlas: function(name,input,shapesList) {
+		var textureAtlas;
+		var padding = input.readUnsignedByte();
+		var bitmapSize = input.readInt();
+		var width = input.readShort();
+		var height = input.readShort();
+		openfl_utils__$ByteArray_ByteArray_$Impl_$.set_length(this.bitmapBytes,0);
+		haxe_Log.trace("importing atlas",{ fileName : "SwfAtlasExporter.hx", lineNumber : 193, className : "swfdataexporter.SwfAtlasExporter", methodName : "impotGLAtlas", customParams : [Std.string(_$UInt_UInt_$Impl_$.toFloat(input.length - input.position)),padding,width,height,bitmapSize]});
+		input.readBytes(this.bitmapBytes,0,bitmapSize);
+		if(width < 2 || height < 2) {
+			haxe_Log.trace("Error: somethink wrong with atlas data",{ fileName : "SwfAtlasExporter.hx", lineNumber : 198, className : "swfdataexporter.SwfAtlasExporter", methodName : "impotGLAtlas"});
+		}
+		var atlasData = new openfl_display_BitmapData(width,height,true,0);
+		atlasData.setPixels(atlasData.rect,this.bitmapBytes);
+		textureAtlas = new swfdata_atlas_GLTextureAtlas(name,atlasData,openfl_display3D__$Context3DTextureFormat_Context3DTextureFormat_$Impl_$.toString(1),padding);
+		var texturesCount = input.readShort();
+		new openfl_geom_Rectangle();
+		var _g1 = 0;
+		while(_g1 < texturesCount) {
+			++_g1;
+			var id = input.readShort();
+			var textureTransform = this.readTextureTransform(input);
+			var textureRegion = this.readRectangle(input);
+			shapesList.addShape(new swfdata_ShapeData(id,this.readRectangle(input)));
+			textureAtlas.createSubTexture(id,textureRegion,textureTransform.scaleX,textureTransform.scaleY);
+		}
+		textureAtlas.uploadToGpu();
+		return textureAtlas;
+	}
+	,importBitmapAtlas: function(name,input,shapesList) {
+		var textureAtlas;
+		var padding = input.readUnsignedByte();
+		var bitmapSize = input.readInt();
+		var width = input.readShort();
+		var height = input.readShort();
+		openfl_utils__$ByteArray_ByteArray_$Impl_$.set_length(this.bitmapBytes,0);
+		haxe_Log.trace("importing atlas",{ fileName : "SwfAtlasExporter.hx", lineNumber : 255, className : "swfdataexporter.SwfAtlasExporter", methodName : "importBitmapAtlas", customParams : [Std.string(_$UInt_UInt_$Impl_$.toFloat(input.length - input.position)),padding,width,height,bitmapSize]});
+		input.readBytes(this.bitmapBytes,0,bitmapSize);
+		if(width < 2 || height < 2) {
+			haxe_Log.trace("Error: somethink wrong with atlas data",{ fileName : "SwfAtlasExporter.hx", lineNumber : 262, className : "swfdataexporter.SwfAtlasExporter", methodName : "importBitmapAtlas"});
+		}
+		textureAtlas = new swfdata_atlas_BitmapTextureAtlas(width,height,padding);
+		textureAtlas.atlasData.setPixels(textureAtlas.atlasData.rect,this.bitmapBytes);
+		var texturesCount = input.readShort();
+		new openfl_geom_Rectangle();
+		var _g1 = 0;
+		while(_g1 < texturesCount) {
+			++_g1;
+			var id = input.readShort();
+			var textureTransform = this.readTextureTransform(input);
+			var textureRegion = this.readRectangle(input);
+			shapesList.addShape(new swfdata_ShapeData(id,this.readRectangle(input)));
+			textureAtlas.putTexture(new swfdata_atlas_BitmapSubTexture(id,textureRegion,textureTransform));
+		}
+		return textureAtlas;
+	}
+	,__class__: swfdataexporter_SwfAtlasExporter
+};
+var swfdataexporter_SwfExporter = function() {
+	this.dataExporter = new swfdataexporter_SwfTagExporter();
+	this.atlasExporter = new swfdataexporter_SwfAtlasExporter();
+};
+$hxClasses["swfdataexporter.SwfExporter"] = swfdataexporter_SwfExporter;
+swfdataexporter_SwfExporter.__name__ = ["swfdataexporter","SwfExporter"];
+swfdataexporter_SwfExporter.prototype = {
+	clear: function() {
+	}
+	,importSwfGL: function(input,shapesList,tagsList) {
+		input.inflate();
+		var atlas = this.atlasExporter.impotGLAtlas("none",input,shapesList);
+		input.position = input.position;
+		this.dataExporter.importTags(tagsList,input);
+		return atlas;
+	}
+	,importSwf: function(input,shapesList,tagsList) {
+		input.inflate();
+		var atlas = this.atlasExporter.importBitmapAtlas("none",input,shapesList);
+		input.position = input.position;
+		this.dataExporter.importTags(tagsList,input);
+		return atlas;
+	}
+	,__class__: swfdataexporter_SwfExporter
+};
+var swfdataexporter_SwfTagExporter = function() {
+	this.tagConstructorsObject = { };
+	this.importers = { };
+	this.exporters = { };
+	this.initialize();
+};
+$hxClasses["swfdataexporter.SwfTagExporter"] = swfdataexporter_SwfTagExporter;
+swfdataexporter_SwfTagExporter.__name__ = ["swfdataexporter","SwfTagExporter"];
+swfdataexporter_SwfTagExporter.prototype = {
+	exportTags: function(tags,output) {
+		var tagsCount = tags.length;
+		var _g1 = 0;
+		while(_g1 < tagsCount) {
+			var i = _g1++;
+			var exporter = this.exporters[tags[i].type];
+			if(exporter != null) {
+				exporter.exportTag(tags[i],output);
+			} else {
+				throw new js__$Boot_HaxeError(new openfl_errors_Error("no exporter for tag " + Std.string(tags[i])));
+			}
+		}
+	}
+	,importTags: function(tags,input) {
+		var index = 0;
+		while((input.position | 0) != openfl_utils__$ByteArray_ByteArray_$Impl_$.get_length(input)) {
+			var tag = this.importSingleTag(input);
+			if(tag == null) {
+				break;
+			}
+			tags[index++] = tag;
+		}
+	}
+	,importSingleTag: function(input) {
+		var tagType = input.readUnsignedByte();
+		var importer = this.importers[tagType];
+		if(importer != null) {
+			var tag = Type.createInstance(this.tagConstructorsObject[tagType],[]);
+			importer.importTag(tag,input);
+			return tag;
+		} else {
+			throw new js__$Boot_HaxeError(new openfl_errors_Error("no importer for tag " + tagType));
+		}
+	}
+	,initialize: function() {
+		this.importers[5] = this.exporters[0] = new swfdataexporter_SwfPackerTagExporter(5);
+		this.importers[4] = this.exporters[1] = new swfdataexporter_SwfPackerTagExporter(4);
+		this.importers[1] = this.exporters[39] = new swfdataexporter_DefineSpriteExporter(this);
+		this.importers[2] = this.exporters[4] = new swfdataexporter_PlaceObjectExporter();
+		this.importers[3] = this.exporters[5] = new swfdataexporter_RemoveObjectExporter();
+		this.importers[6] = this.exporters[76] = new swfdataexporter_SymbolClassExporter();
+		this.tagConstructorsObject[5] = swfdata_datatags_SwfPackerTagEnd;
+		this.tagConstructorsObject[4] = swfdata_datatags_SwfPackerTagShowFrame;
+		this.tagConstructorsObject[1] = swfdata_datatags_SwfPackerTagDefineSprite;
+		this.tagConstructorsObject[2] = swfdata_datatags_SwfPackerTagPlaceObject;
+		this.tagConstructorsObject[3] = swfdata_datatags_SwfPackerTagRemoveObject;
+		this.tagConstructorsObject[6] = swfdata_datatags_SwfPackerTagSymbolClass;
+	}
+	,__class__: swfdataexporter_SwfTagExporter
+};
+var swfdataexporter_SymbolClassExporter = function() {
+	swfdataexporter_SwfPackerTagExporter.call(this,6);
+};
+$hxClasses["swfdataexporter.SymbolClassExporter"] = swfdataexporter_SymbolClassExporter;
+swfdataexporter_SymbolClassExporter.__name__ = ["swfdataexporter","SymbolClassExporter"];
+swfdataexporter_SymbolClassExporter.__super__ = swfdataexporter_SwfPackerTagExporter;
+swfdataexporter_SymbolClassExporter.prototype = $extend(swfdataexporter_SwfPackerTagExporter.prototype,{
+	exportTag: function(tag,output) {
+		swfdataexporter_SwfPackerTagExporter.prototype.exportTag.call(this,tag,output);
+		var tagAsSymbolClass;
+		try {
+			tagAsSymbolClass = js_Boot.__cast(tag , swfdata_datatags_SwfPackerTagSymbolClass);
+		} catch( e ) {
+			haxe_CallStack.lastException = e;
+			tagAsSymbolClass = null;
+		}
+		var symbolsCount = tagAsSymbolClass.length;
+		output.writeShort(symbolsCount);
+		var _g1 = 0;
+		while(_g1 < symbolsCount) {
+			var i = _g1++;
+			var currentLinkage = tagAsSymbolClass.linkageList[i];
+			output.writeShort(tagAsSymbolClass.characterIdList[i]);
+			output.writeUTF(currentLinkage);
+		}
+	}
+	,importTag: function(tag,input) {
+		swfdataexporter_SwfPackerTagExporter.prototype.importTag.call(this,tag,input);
+		var tagAsSymbolClass;
+		try {
+			tagAsSymbolClass = js_Boot.__cast(tag , swfdata_datatags_SwfPackerTagSymbolClass);
+		} catch( e ) {
+			haxe_CallStack.lastException = e;
+			tagAsSymbolClass = null;
+		}
+		var symbolsCount = input.readShort();
+		tagAsSymbolClass.length = symbolsCount;
+		tagAsSymbolClass.initializeContent();
+		var linkagesList = tagAsSymbolClass.linkageList;
+		var characterList = tagAsSymbolClass.characterIdList;
+		var _g1 = 0;
+		while(_g1 < symbolsCount) {
+			var i = _g1++;
+			characterList[i] = input.readShort();
+			linkagesList[i] = input.readUTF();
+		}
+	}
+	,__class__: swfdataexporter_SymbolClassExporter
+});
+var swfdrawer_BitmapDrawer = function(mousePoint) {
+	this.currentBoundForDraw = new openfl_geom_Rectangle();
+	this.clipRect = new openfl_geom_Rectangle();
+	this.alphaPoint = new openfl_geom_Point();
+	this.drawMatrix = new openfl_geom_Matrix();
+	this.mousePoint = mousePoint;
+	this.drawingRectagon = new swfdata_Rectagon(0,0,0,0,this.drawMatrix);
+};
+$hxClasses["swfdrawer.BitmapDrawer"] = swfdrawer_BitmapDrawer;
+swfdrawer_BitmapDrawer.__name__ = ["swfdrawer","BitmapDrawer"];
+swfdrawer_BitmapDrawer.__interfaces__ = [swfdrawer_IDrawer];
+swfdrawer_BitmapDrawer.transformPoint = function(matrix,x,y,noDelta,result) {
+	if(noDelta == null) {
+		noDelta = false;
+	}
+	var dx = noDelta?0:matrix.tx;
+	var dy = noDelta?0:matrix.ty;
+	result.x = matrix.a * x + matrix.c * y + dx;
+	result.y = matrix.d * y + matrix.b * x + dy;
+	return result;
+};
+swfdrawer_BitmapDrawer.prototype = {
+	clearMouseHitStatus: function() {
+		this.hitTestResult = false;
+	}
+	,draw: function(drawable,drawingData) {
+		this.drawingData = drawingData;
+		drawingData.setFromDisplayObject(drawable);
+		this.textureId = drawable.characterId;
+		this.texturePadding2 = this.textureAtlas.get_padding() * 2;
+	}
+	,applyDrawStyle: function() {
+		this.currentSubTexture = this.textureAtlas.getTexture(this.textureId);
+		var transform = this.currentSubTexture._transform;
+		var mulX = transform.positionMultiplierX;
+		var mulY = transform.positionMultiplierY;
+		this.drawMatrix.a *= mulX;
+		this.drawMatrix.d *= mulY;
+		this.drawMatrix.b *= mulX;
+		this.drawMatrix.c *= mulY;
+	}
+	,cleanDrawStyle: function() {
+		this.textureId = -1;
+		this.currentSubTexture = null;
+	}
+	,drawRectangle: function(drawingBounds,transform) {
+		this.drawMatrix.identity();
+		this.drawMatrix.concat(transform);
+		this.applyDrawStyle();
+		var texture = this.currentSubTexture;
+		this.drawingRectagon.setTo(drawingBounds.x,drawingBounds.y,drawingBounds.width,drawingBounds.height);
+		this.drawMatrix.tx -= texture.get_bounds().x;
+		this.drawMatrix.ty -= texture.get_bounds().y;
+		this.clipRect.setTo(this.drawingRectagon.resultTopLeft.x,this.drawingRectagon.resultTopLeft.y,this.drawingRectagon.width,this.drawingRectagon.height);
+		this.target.draw(this.textureAtlas.atlasData,this.drawMatrix,null,null,this.clipRect,this.smooth);
+		var transformedDrawingX = drawingBounds.x * this.currentSubTexture.get_transform().scaleX;
+		var transformedDrawingY = drawingBounds.y * this.currentSubTexture.get_transform().scaleY;
+		var transformedDrawingWidth = drawingBounds.width * 2 * this.currentSubTexture.get_transform().scaleX / 2;
+		var transformedDrawingHeight = drawingBounds.height * 2 * this.currentSubTexture.get_transform().scaleY / 2;
+		if(this.checkBounds) {
+			this.drawingRectagon.setTo(transformedDrawingX,transformedDrawingY,transformedDrawingWidth,transformedDrawingHeight);
+		}
+		if(this.checkBounds) {
+			this.currentBoundForDraw.setTo(this.drawingRectagon.x,this.drawingRectagon.y,this.drawingRectagon.width,this.drawingRectagon.height);
+			GeomMath.rectangleUnion(this.drawingData.bound,this.currentBoundForDraw);
+		}
+	}
+	,__class__: swfdrawer_BitmapDrawer
+};
+var swfdrawer_DisplayListDrawer = function(atlas,mousePoint) {
+	this.drawingData = new swfdrawer_data_DrawingData();
+	this.drawersMap = new haxe_ds_IntMap();
+	this.mousePoint = mousePoint;
+	this._atlas = atlas;
+	this.initialize();
+};
+$hxClasses["swfdrawer.DisplayListDrawer"] = swfdrawer_DisplayListDrawer;
+swfdrawer_DisplayListDrawer.__name__ = ["swfdrawer","DisplayListDrawer"];
+swfdrawer_DisplayListDrawer.__interfaces__ = [swfdrawer_IDrawer];
+swfdrawer_DisplayListDrawer.prototype = {
+	set_atlas: function(atlas) {
+		this._atlas = atlas;
+		this.shapeDrawer.set_atlas(atlas);
+		return atlas;
+	}
+	,set_checkBounds: function(value) {
+		this.shapeDrawer.checkBounds = value;
+		return value;
+	}
+	,set_checkMouseHit: function(value) {
+		this.shapeDrawer.checkMouseHit = value;
+		return value;
+	}
+	,set_debugDraw: function(value) {
+		this.shapeDrawer.isDebugDraw = value;
+		return value;
+	}
+	,get_isHitMouse: function() {
+		return this.shapeDrawer.hitTestResult;
+	}
+	,initialize: function() {
+		this.shapeDrawer = new swfdrawer_ShapeDrawer(this._atlas,this.mousePoint);
+		var spriteDrawer = new swfdrawer_SpriteDrawer(this);
+		var movieClipDrawer = new swfdrawer_MovieClipDrawer(this);
+		this.drawersMap.h[1] = this.shapeDrawer;
+		this.drawersMap.h[2] = spriteDrawer;
+		this.drawersMap.h[3] = movieClipDrawer;
+	}
+	,clear: function() {
+		this.shapeDrawer.clearMouseHitStatus();
+		this.drawingData.clear();
+	}
+	,drawDisplayObject: function(displayObject,transform,bound,colorData) {
+		this.clear();
+		this.drawingData.transform = transform;
+		this.drawingData.bound = bound;
+		if(colorData != null) {
+			this.drawingData.colorData.mulColorData(colorData);
+		} else if(displayObject.colorData != null) {
+			this.drawingData.colorData.mulColorData(displayObject.colorData);
+		}
+		this.draw(displayObject,this.drawingData);
+	}
+	,draw: function(displayObject,drawingData) {
+		var drawer = this.drawersMap.h[displayObject.displayObjectType];
+		if(drawer != null) {
+			drawer.draw(displayObject,drawingData);
+		} else {
+			throw new js__$Boot_HaxeError(new openfl_errors_Error("drawer for " + Std.string(displayObject) + " is not defined"));
+		}
+	}
+	,setHightlightColor: function(value,alpha) {
+	}
+	,set_hightlight: function(value) {
+		return value;
+	}
+	,set_grassWind: function(value) {
+		return value;
+	}
+	,get_grassWind: function() {
+		return false;
+	}
+	,set_debugCanvas: function(value) {
+		this.shapeDrawer.canvas = value;
+		return value;
+	}
+	,set_smooth: function(value) {
+		this.shapeDrawer.smooth = value;
+		return value;
+	}
+	,get_target: function() {
+		return this.shapeDrawer.target;
+	}
+	,set_target: function(value) {
+		this.shapeDrawer.target = value;
+		return value;
+	}
+	,__class__: swfdrawer_DisplayListDrawer
+	,__properties__: {set_target:"set_target",get_target:"get_target",set_smooth:"set_smooth",set_debugCanvas:"set_debugCanvas",set_grassWind:"set_grassWind",get_grassWind:"get_grassWind",set_hightlight:"set_hightlight",get_isHitMouse:"get_isHitMouse",set_debugDraw:"set_debugDraw",set_checkMouseHit:"set_checkMouseHit",set_checkBounds:"set_checkBounds",set_atlas:"set_atlas"}
+};
+var swfdrawer_GraphicsDrawer = function(mousePoint) {
+	this.alphaPoint = new openfl_geom_Point();
+	this.drawMatrix = new openfl_geom_Matrix();
+	this.mousePoint = mousePoint;
+	this.drawingRectagon = new swfdata_Rectagon(0,0,0,0,this.drawMatrix);
+};
+$hxClasses["swfdrawer.GraphicsDrawer"] = swfdrawer_GraphicsDrawer;
+swfdrawer_GraphicsDrawer.__name__ = ["swfdrawer","GraphicsDrawer"];
+swfdrawer_GraphicsDrawer.__interfaces__ = [swfdrawer_IDrawer];
+swfdrawer_GraphicsDrawer.transformPoint = function(matrix,x,y,noDelta,result) {
+	if(noDelta == null) {
+		noDelta = false;
+	}
+	var dx = noDelta?0:matrix.tx;
+	var dy = noDelta?0:matrix.ty;
+	result.x = matrix.a * x + matrix.c * y + dx;
+	result.y = matrix.d * y + matrix.b * x + dy;
+	return result;
+};
+swfdrawer_GraphicsDrawer.prototype = {
+	clearMouseHitStatus: function() {
+		this.hitTestResult = false;
+	}
+	,draw: function(drawable,drawingData) {
+		this.drawingData = drawingData;
+		drawingData.setFromDisplayObject(drawable);
+		this.textureId = drawable.characterId;
+		this.texturePadding2 = this.textureAtlas.get_padding() * 2;
+	}
+	,applyDrawStyle: function() {
+		this.currentSubTexture = this.textureAtlas.getTexture(this.textureId);
+		var transform = this.currentSubTexture._transform;
+		var mulX = transform.positionMultiplierX;
+		var mulY = transform.positionMultiplierY;
+		this.drawMatrix.a *= mulX;
+		this.drawMatrix.d *= mulY;
+		this.drawMatrix.b *= mulX;
+		this.drawMatrix.c *= mulY;
+	}
+	,cleanDrawStyle: function() {
+		this.textureId = -1;
+		this.currentSubTexture = null;
+	}
+	,drawRectangle: function(drawingBounds,transform) {
+		this.drawMatrix.identity();
+		this.drawMatrix.concat(transform);
+		this.applyDrawStyle();
+		this.drawingRectagon.setTo(drawingBounds.x,drawingBounds.y,drawingBounds.width,drawingBounds.height);
+		var texture = this.currentSubTexture;
+		swfdrawer_GraphicsDrawer.transformPoint(this.drawMatrix,texture.get_bounds().x,texture.get_bounds().y,true,this.alphaPoint);
+		this.drawMatrix.tx = this.drawingRectagon.resultTopLeft.x - this.alphaPoint.x;
+		this.drawMatrix.ty = this.drawingRectagon.resultTopLeft.y - this.alphaPoint.y;
+		this.target.beginBitmapFill(this.textureAtlas.atlasData,this.drawMatrix,false,this.smooth);
+		this.target.moveTo(this.drawingRectagon.resultTopLeft.x,this.drawingRectagon.resultTopLeft.y);
+		this.target.lineTo(this.drawingRectagon.resultTopRight.x,this.drawingRectagon.resultTopRight.y);
+		this.target.lineTo(this.drawingRectagon.resultBottomRight.x,this.drawingRectagon.resultBottomRight.y);
+		this.target.lineTo(this.drawingRectagon.resultBottomLeft.x,this.drawingRectagon.resultBottomLeft.y);
+		this.target.lineTo(this.drawingRectagon.resultTopLeft.x,this.drawingRectagon.resultTopLeft.y);
+		this.target.endFill();
+	}
+	,__class__: swfdrawer_GraphicsDrawer
+};
+var swfdrawer_MovieClipDrawer = function(displayListDrawer) {
+	this.matricesPool = swfdrawer_data_DrawerMatrixPool.get_instance();
+	this.displayListDrawer = displayListDrawer;
+};
+$hxClasses["swfdrawer.MovieClipDrawer"] = swfdrawer_MovieClipDrawer;
+swfdrawer_MovieClipDrawer.__name__ = ["swfdrawer","MovieClipDrawer"];
+swfdrawer_MovieClipDrawer.__interfaces__ = [swfdrawer_IDrawer];
+swfdrawer_MovieClipDrawer.prototype = {
+	draw: function(drawable,drawingData) {
+		var movieClipDrawable;
+		try {
+			movieClipDrawable = js_Boot.__cast(drawable , swfdata_MovieClipData);
+		} catch( e ) {
+			haxe_CallStack.lastException = e;
+			movieClipDrawable = null;
+		}
+		var frameData = movieClipDrawable.timeline.currentFrameData();
+		var drawableTransformClone = this.matricesPool.getMatrix();
+		var drawableTrasnform = drawable.transform;
+		drawableTransformClone.setTo(drawableTrasnform.a,drawableTrasnform.b,drawableTrasnform.c,drawableTrasnform.d,drawableTrasnform.tx,drawableTrasnform.ty);
+		drawableTransformClone.concat(drawingData.transform);
+		var objectsLenght = frameData.get_displayObjects().length;
+		drawingData.setFromDisplayObject(drawable);
+		var currentMaskState = drawingData.isMask;
+		var currentMaskedState = drawingData.isMasked;
+		var _g1 = 0;
+		while(_g1 < objectsLenght) {
+			var i = _g1++;
+			var childDisplayObject = frameData.get_displayObjects()[i];
+			drawingData.transform = drawableTransformClone;
+			this.displayListDrawer.draw(childDisplayObject,drawingData);
+			drawingData.isMask = currentMaskState;
+			drawingData.isMasked = currentMaskedState;
+		}
+		this.matricesPool.disposeMatrix(drawableTransformClone);
+	}
+	,__class__: swfdrawer_MovieClipDrawer
+};
+var swfdrawer_ShapeDrawer = function(atlas,mousePoint) {
+	this.draginMatrix = new openfl_geom_Matrix();
+	swfdrawer_BitmapDrawer.call(this,mousePoint);
+	this.textureAtlas = atlas;
+};
+$hxClasses["swfdrawer.ShapeDrawer"] = swfdrawer_ShapeDrawer;
+swfdrawer_ShapeDrawer.__name__ = ["swfdrawer","ShapeDrawer"];
+swfdrawer_ShapeDrawer.__super__ = swfdrawer_BitmapDrawer;
+swfdrawer_ShapeDrawer.prototype = $extend(swfdrawer_BitmapDrawer.prototype,{
+	set_atlas: function(value) {
+		this.textureAtlas = value;
+		return value;
+	}
+	,draw: function(drawable,drawingData) {
+		swfdrawer_BitmapDrawer.prototype.draw.call(this,drawable,drawingData);
+		this.draginMatrix.identity();
+		if(drawable.transform != null) {
+			this.draginMatrix.concat(drawable.transform);
+		}
+		this.draginMatrix.concat(drawingData.transform);
+		var drawableAsShape;
+		try {
+			drawableAsShape = js_Boot.__cast(drawable , swfdata_ShapeData);
+		} catch( e ) {
+			haxe_CallStack.lastException = e;
+			drawableAsShape = null;
+		}
+		this.drawRectangle(drawableAsShape._shapeBounds,this.draginMatrix);
+		this.cleanDrawStyle();
+	}
+	,__class__: swfdrawer_ShapeDrawer
+	,__properties__: {set_atlas:"set_atlas"}
+});
+var swfdrawer_SpriteDrawer = function(displayListDrawer) {
+	this.matricesPool = swfdrawer_data_DrawerMatrixPool.get_instance();
+	this.displayListDrawer = displayListDrawer;
+};
+$hxClasses["swfdrawer.SpriteDrawer"] = swfdrawer_SpriteDrawer;
+swfdrawer_SpriteDrawer.__name__ = ["swfdrawer","SpriteDrawer"];
+swfdrawer_SpriteDrawer.__interfaces__ = [swfdrawer_IDrawer];
+swfdrawer_SpriteDrawer.prototype = {
+	draw: function(drawable,drawingData) {
+		var spriteDrawable;
+		try {
+			spriteDrawable = js_Boot.__cast(drawable , swfdata_SpriteData);
+		} catch( e ) {
+			haxe_CallStack.lastException = e;
+			spriteDrawable = null;
+		}
+		var frameData = spriteDrawable;
+		var drawableTransformClone = this.matricesPool.getMatrix();
+		var drawableTrasnform = drawable.transform;
+		drawableTransformClone.setTo(drawableTrasnform.a,drawableTrasnform.b,drawableTrasnform.c,drawableTrasnform.d,drawableTrasnform.tx,drawableTrasnform.ty);
+		drawableTransformClone.concat(drawingData.transform);
+		var objectsLenght = frameData.get_displayObjects().length;
+		drawingData.setFromDisplayObject(drawable);
+		var currentMaskState = drawingData.isMask;
+		var currentMaskedState = drawingData.isMasked;
+		var _g1 = 0;
+		while(_g1 < objectsLenght) {
+			var i = _g1++;
+			var childDisplayObject = frameData.get_displayObjects()[i];
+			drawingData.transform = drawableTransformClone;
+			this.displayListDrawer.draw(childDisplayObject,drawingData);
+			drawingData.isMask = currentMaskState;
+			drawingData.isMasked = currentMaskedState;
+		}
+		this.matricesPool.disposeMatrix(drawableTransformClone);
+	}
+	,__class__: swfdrawer_SpriteDrawer
+};
+var swfdrawer_data_DrawerMatrixPool = function() {
+	this.matricesPool = [];
+	this.count = 0;
+};
+$hxClasses["swfdrawer.data.DrawerMatrixPool"] = swfdrawer_data_DrawerMatrixPool;
+swfdrawer_data_DrawerMatrixPool.__name__ = ["swfdrawer","data","DrawerMatrixPool"];
+swfdrawer_data_DrawerMatrixPool.__properties__ = {get_instance:"get_instance"}
+swfdrawer_data_DrawerMatrixPool._instance = null;
+swfdrawer_data_DrawerMatrixPool.get_instance = function() {
+	if(swfdrawer_data_DrawerMatrixPool._instance == null) {
+		swfdrawer_data_DrawerMatrixPool._instance = new swfdrawer_data_DrawerMatrixPool();
+	}
+	return swfdrawer_data_DrawerMatrixPool._instance;
+};
+swfdrawer_data_DrawerMatrixPool.prototype = {
+	getMatrix: function() {
+		if(this.count > 0) {
+			this.count--;
+			return this.matricesPool.shift();
+		} else {
+			return new openfl_geom_Matrix();
+		}
+	}
+	,disposeMatrix: function(matrix) {
+		this.matricesPool[this.count++] = matrix;
+	}
+	,__class__: swfdrawer_data_DrawerMatrixPool
+};
+var swfdrawer_data_DrawingData = function() {
+	this.colorData = new swfdata_ColorData();
+	this.colorTransform = new swfdata_ColorMatrix(null);
+	this.isApplyColorTrasnform = false;
+	this.transform = null;
+	this.isMasked = false;
+	this.isMask = false;
+	this.maskId = -1;
+	this.bound = null;
+	this.isClear = true;
+};
+$hxClasses["swfdrawer.data.DrawingData"] = swfdrawer_data_DrawingData;
+swfdrawer_data_DrawingData.__name__ = ["swfdrawer","data","DrawingData"];
+swfdrawer_data_DrawingData.prototype = {
+	addColorTransform: function(colorTransformToApply) {
+		this.isApplyColorTrasnform = true;
+		this.colorTransform.premultiply(colorTransformToApply.matrix);
+	}
+	,clear: function() {
+		this.colorData.clear();
+		this.isApplyColorTrasnform = false;
+		this.maskId = -1;
+		this.isMask = false;
+		this.isMasked = false;
+		this.transform = null;
+		this.bound = null;
+	}
+	,mulColorData: function(colorData) {
+		this.colorData.mulColorData(colorData);
+	}
+	,setFromDisplayObject: function(drawable) {
+		this.isMask = this.isMask || drawable.isMask;
+		this.isMasked = this.isMasked || drawable.mask != null;
+	}
+	,__class__: swfdrawer_data_DrawingData
+};
+var swfparser_DisplayObjectContext = function() {
+};
+$hxClasses["swfparser.DisplayObjectContext"] = swfparser_DisplayObjectContext;
+swfparser_DisplayObjectContext.__name__ = ["swfparser","DisplayObjectContext"];
+swfparser_DisplayObjectContext.prototype = {
+	setCurrentDisplayObject: function(displayObject) {
+		this.currentDisplayObjectAsMovieClip = null;
+		this.currentContainer = null;
+		this.currentDisplayList = null;
+		this.currentDisplayObject = displayObject;
+		if(this.currentDisplayObject == null) {
+			return;
+		}
+		if(this.currentDisplayObject.displayObjectType == 2) {
+			this.currentContainer = this.currentDisplayObject.displayContainer;
+			this.currentDisplayList = this.currentContainer._displayObjects;
+		} else {
+			var tmp;
+			try {
+				tmp = js_Boot.__cast(this.currentDisplayObject , swfdata_MovieClipData);
+			} catch( e ) {
+				haxe_CallStack.lastException = e;
+				tmp = null;
+			}
+			this.currentDisplayObjectAsMovieClip = tmp;
+			this.currentContainer = this.currentDisplayObjectAsMovieClip._currentFrameData;
+			this.currentDisplayList = this.currentContainer._displayObjects;
+		}
+	}
+	,updateFrame: function() {
+		this.currentContainer = this.currentDisplayObjectAsMovieClip._currentFrameData;
+		this.currentDisplayList = this.currentContainer._displayObjects;
+	}
+	,nextFrame: function() {
+		if(this.currentDisplayObjectAsMovieClip == null) {
+			return;
+		}
+		this.currentDisplayObjectAsMovieClip.nextFrame();
+		this.currentContainer = this.currentDisplayObjectAsMovieClip._currentFrameData;
+		this.currentDisplayList = this.currentContainer._displayObjects;
+	}
+	,clear: function() {
+		if(this.currentDisplayObject != null) {
+			this.currentDisplayObject.destroy();
+		}
+		this.currentDisplayObjectAsMovieClip = null;
+		this.currentDisplayObject = null;
+		this.currentContainer = null;
+		this.currentDisplayList = null;
+	}
+	,__class__: swfparser_DisplayObjectContext
+};
+var swfparser_ISWFDataParser = function() { };
+$hxClasses["swfparser.ISWFDataParser"] = swfparser_ISWFDataParser;
+swfparser_ISWFDataParser.__name__ = ["swfparser","ISWFDataParser"];
+swfparser_ISWFDataParser.prototype = {
+	__class__: swfparser_ISWFDataParser
+	,__properties__: {set_context:"set_context",get_context:"get_context"}
+};
+var swfparser_SwfParserContext = function() {
+	this.onlyTagReport = false;
+	this.displayObjectContext = new swfparser_DisplayObjectContext();
+	this.placedObjectsById = new haxe_ds_IntMap();
+	this.placeObjectsMap = new haxe_ds_IntMap();
+};
+$hxClasses["swfparser.SwfParserContext"] = swfparser_SwfParserContext;
+swfparser_SwfParserContext.__name__ = ["swfparser","SwfParserContext"];
+swfparser_SwfParserContext.prototype = {
+	clear: function() {
+		if(this.displayObjectContext != null) {
+			this.displayObjectContext.clear();
+		}
+		var tmp = this.placeObjectsMap.iterator();
+		while(tmp.hasNext()) tmp.next().destroy();
+		this.placeObjectsMap = new haxe_ds_IntMap();
+		this.placedObjectsById = new haxe_ds_IntMap();
+	}
+	,__class__: swfparser_SwfParserContext
+};
+var swfparser_SwfParserLight = function(isUseEndTag) {
+	if(isUseEndTag == null) {
+		isUseEndTag = false;
+	}
+	this.isUseEndTag = isUseEndTag;
+	this.initialize();
+};
+$hxClasses["swfparser.SwfParserLight"] = swfparser_SwfParserLight;
+swfparser_SwfParserLight.__name__ = ["swfparser","SwfParserLight"];
+swfparser_SwfParserLight.__interfaces__ = [swfparser_ISWFDataParser];
+swfparser_SwfParserLight.prototype = {
+	initialize: function() {
+		this.set_context(new swfparser_SwfParserContext());
+		this.clear();
+		this.makeTagProcessorsMap();
+	}
+	,clear: function(callDestroy) {
+		if(callDestroy == null) {
+			callDestroy = true;
+		}
+		if(this.get_context().library == null) {
+			this.get_context().library = new swfdata_SymbolsLibrary();
+		} else {
+			this.get_context().library.clear(callDestroy);
+		}
+		if(this.get_context().shapeLibrary == null) {
+			this.get_context().shapeLibrary = new swfdata_ShapeLibrary();
+		} else {
+			this.get_context().shapeLibrary.clear(callDestroy);
+		}
+	}
+	,makeTagProcessorsMap: function() {
+		this.tagsProcessors = { };
+		this.tagsProcessors[39] = new swfparser_tags_TagProcessorDefineSprite(this.get_context(),this);
+		if(this.isUseEndTag) {
+			this.tagsProcessors[0] = new swfparser_tags_TagProcessorEnd(this.get_context());
+		}
+		var tagProcessorRemoveObject = new swfparser_tags_TagProcessorRemoveObject(this.get_context());
+		this.tagsProcessors[5] = tagProcessorRemoveObject;
+		var tagProcessorPlaceObject = new swfparser_tags_TagProcessorPlaceObject(this.get_context());
+		this.tagsProcessors[4] = tagProcessorPlaceObject;
+		this.tagsProcessors[1] = new swfparser_tags_TagProcessorShowFrame(this.get_context());
+		this.tagsProcessors[76] = new swfparser_tags_TagProcessorSymbolClassLight(this.get_context());
+	}
+	,processDisplayObject: function(tags) {
+		var _g1 = 0;
+		var _g = tags.length;
+		while(_g1 < _g) {
+			var currentTag = tags[_g1++];
+			var tagProcessor = this.tagsProcessors[currentTag.type];
+			if(tagProcessor != null) {
+				tagProcessor.processTag(currentTag);
+			} else {
+				haxe_Log.trace("no processor for",{ fileName : "SwfParserLight.hx", lineNumber : 80, className : "swfparser.SwfParserLight", methodName : "processDisplayObject", customParams : [currentTag]});
+			}
+		}
+	}
+	,get_context: function() {
+		return this._context;
+	}
+	,set_context: function(value) {
+		this._context = value;
+		return value;
+	}
+	,__class__: swfparser_SwfParserLight
+	,__properties__: {set_context:"set_context",get_context:"get_context"}
+};
+var swfparser_tags_TagProcessorBase = function(context) {
+	this.context = context;
+	this.displayObjectContext = context.displayObjectContext;
+};
+$hxClasses["swfparser.tags.TagProcessorBase"] = swfparser_tags_TagProcessorBase;
+swfparser_tags_TagProcessorBase.__name__ = ["swfparser","tags","TagProcessorBase"];
+swfparser_tags_TagProcessorBase.prototype = {
+	processTag: function(tag) {
+		this.currentTag = tag;
+	}
+	,__class__: swfparser_tags_TagProcessorBase
+};
+var swfparser_tags_TagProcessorDefineSprite = function(context,swfDataParser) {
+	swfparser_tags_TagProcessorBase.call(this,context);
+	this.swfDataParser = swfDataParser;
+};
+$hxClasses["swfparser.tags.TagProcessorDefineSprite"] = swfparser_tags_TagProcessorDefineSprite;
+swfparser_tags_TagProcessorDefineSprite.__name__ = ["swfparser","tags","TagProcessorDefineSprite"];
+swfparser_tags_TagProcessorDefineSprite.__super__ = swfparser_tags_TagProcessorBase;
+swfparser_tags_TagProcessorDefineSprite.prototype = $extend(swfparser_tags_TagProcessorBase.prototype,{
+	processTag: function(tag) {
+		swfparser_tags_TagProcessorBase.prototype.processTag.call(this,tag);
+		swfparser_tags_TagProcessorDefineSprite.spritesDefined++;
+		var tagDefineSprite;
+		try {
+			tagDefineSprite = js_Boot.__cast(tag , swfdata_datatags_SwfPackerTagDefineSprite);
+		} catch( e ) {
+			haxe_CallStack.lastException = e;
+			tagDefineSprite = null;
+		}
+		var characterId = tagDefineSprite.characterId;
+		var frameCount = tagDefineSprite.frameCount;
+		this.context.placeObjectsMap = new haxe_ds_IntMap();
+		this.context.placedObjectsById = new haxe_ds_IntMap();
+		var currentDisplayObject;
+		if(frameCount > 1) {
+			var currentDisplayObjectAsMovieClip = new swfdata_MovieClipData(characterId,frameCount);
+			currentDisplayObject = currentDisplayObjectAsMovieClip;
+			var _g1 = 0;
+			while(_g1 < frameCount) currentDisplayObjectAsMovieClip.addFrame(tagDefineSprite.frames[_g1++]);
+		} else {
+			currentDisplayObject = new swfdata_SpriteData(characterId,2,true,tagDefineSprite.frames[0].get_numChildren());
+		}
+		this.context.library.addDisplayObject(currentDisplayObject);
+		var _this = this.displayObjectContext;
+		_this.currentDisplayObjectAsMovieClip = null;
+		_this.currentContainer = null;
+		_this.currentDisplayList = null;
+		_this.currentDisplayObject = currentDisplayObject;
+		if(_this.currentDisplayObject != null) {
+			if(_this.currentDisplayObject.displayObjectType == 2) {
+				_this.currentContainer = _this.currentDisplayObject.displayContainer;
+				_this.currentDisplayList = _this.currentContainer._displayObjects;
+			} else {
+				var tmp;
+				try {
+					tmp = js_Boot.__cast(_this.currentDisplayObject , swfdata_MovieClipData);
+				} catch( e1 ) {
+					haxe_CallStack.lastException = e1;
+					tmp = null;
+				}
+				_this.currentDisplayObjectAsMovieClip = tmp;
+				_this.currentContainer = _this.currentDisplayObjectAsMovieClip._currentFrameData;
+				_this.currentDisplayList = _this.currentContainer._displayObjects;
+			}
+		}
+		if(tagDefineSprite.tags != null) {
+			this.swfDataParser.processDisplayObject(tagDefineSprite.tags);
+		}
+		if(currentDisplayObject.transform == null) {
+			currentDisplayObject.setTransformMatrix(new openfl_geom_Matrix());
+		}
+		var _this1 = this.displayObjectContext;
+		_this1.currentDisplayObjectAsMovieClip = null;
+		_this1.currentContainer = null;
+		_this1.currentDisplayList = null;
+		_this1.currentDisplayObject = null;
+		if(_this1.currentDisplayObject != null) {
+			if(_this1.currentDisplayObject.displayObjectType == 2) {
+				_this1.currentContainer = _this1.currentDisplayObject.displayContainer;
+				_this1.currentDisplayList = _this1.currentContainer._displayObjects;
+			} else {
+				var tmp1;
+				try {
+					tmp1 = js_Boot.__cast(_this1.currentDisplayObject , swfdata_MovieClipData);
+				} catch( e2 ) {
+					haxe_CallStack.lastException = e2;
+					tmp1 = null;
+				}
+				_this1.currentDisplayObjectAsMovieClip = tmp1;
+				_this1.currentContainer = _this1.currentDisplayObjectAsMovieClip._currentFrameData;
+				_this1.currentDisplayList = _this1.currentContainer._displayObjects;
+			}
+		}
+	}
+	,__class__: swfparser_tags_TagProcessorDefineSprite
+});
+var swfparser_tags_TagProcessorEnd = function(context) {
+	swfparser_tags_TagProcessorBase.call(this,context);
+};
+$hxClasses["swfparser.tags.TagProcessorEnd"] = swfparser_tags_TagProcessorEnd;
+swfparser_tags_TagProcessorEnd.__name__ = ["swfparser","tags","TagProcessorEnd"];
+swfparser_tags_TagProcessorEnd.__super__ = swfparser_tags_TagProcessorBase;
+swfparser_tags_TagProcessorEnd.prototype = $extend(swfparser_tags_TagProcessorBase.prototype,{
+	processTag: function(tag) {
+		swfparser_tags_TagProcessorBase.prototype.processTag.call(this,tag);
+		if(this.displayObjectContext.currentDisplayObject == null) {
+			return;
+		}
+		if(this.displayObjectContext.currentDisplayObject.transform == null) {
+			this.displayObjectContext.currentDisplayObject.setTransformMatrix(new openfl_geom_Matrix());
+		}
+		var _this = this.displayObjectContext;
+		_this.currentDisplayObjectAsMovieClip = null;
+		_this.currentContainer = null;
+		_this.currentDisplayList = null;
+		_this.currentDisplayObject = null;
+		if(_this.currentDisplayObject != null) {
+			if(_this.currentDisplayObject.displayObjectType == 2) {
+				_this.currentContainer = _this.currentDisplayObject.displayContainer;
+				_this.currentDisplayList = _this.currentContainer._displayObjects;
+			} else {
+				var tmp;
+				try {
+					tmp = js_Boot.__cast(_this.currentDisplayObject , swfdata_MovieClipData);
+				} catch( e ) {
+					haxe_CallStack.lastException = e;
+					tmp = null;
+				}
+				_this.currentDisplayObjectAsMovieClip = tmp;
+				_this.currentContainer = _this.currentDisplayObjectAsMovieClip._currentFrameData;
+				_this.currentDisplayList = _this.currentContainer._displayObjects;
+			}
+		}
+	}
+	,__class__: swfparser_tags_TagProcessorEnd
+});
+var swfparser_tags_TagProcessorPlaceObject = function(context) {
+	swfparser_tags_TagProcessorBase.call(this,context);
+};
+$hxClasses["swfparser.tags.TagProcessorPlaceObject"] = swfparser_tags_TagProcessorPlaceObject;
+swfparser_tags_TagProcessorPlaceObject.__name__ = ["swfparser","tags","TagProcessorPlaceObject"];
+swfparser_tags_TagProcessorPlaceObject.__super__ = swfparser_tags_TagProcessorBase;
+swfparser_tags_TagProcessorPlaceObject.prototype = $extend(swfparser_tags_TagProcessorBase.prototype,{
+	getObject: function(id,tag,preveousTransform) {
+		var isNeedClone = tag.hasMatrix || tag.hasColorTransform;
+		var placedDO;
+		var depth = tag.depth;
+		var placedStorage = this.context.placedObjectsById.h[id];
+		if(placedStorage == null) {
+			placedStorage = new haxe_ds_IntMap();
+			this.context.placedObjectsById.h[id] = placedStorage;
+		}
+		if(isNeedClone) {
+			placedDO = this.context.library.getDisplayObject(id).clone();
+		} else {
+			placedDO = placedStorage.h[depth];
+			if(placedDO == null) {
+				placedDO = this.context.library.getDisplayObject(id).clone();
+			}
+			if(placedDO.transform != preveousTransform) {
+				placedDO = placedDO.clone();
+			}
+		}
+		placedStorage.h[depth] = placedDO;
+		if(placedDO == null) {
+			haxe_Log.trace("Дисплей объект не определен в библиотеке символов " + id,{ fileName : "TagProcessorPlaceObject.hx", lineNumber : 92, className : "swfparser.tags.TagProcessorPlaceObject", methodName : "getObject"});
+		}
+		return placedDO;
+	}
+	,getObjectFromLibrary: function(id,hasMatrix) {
+		var placedDO = null;
+		var prototype = this.context.library.getDisplayObject(id);
+		if(hasMatrix) {
+			if(prototype != null) {
+				placedDO = prototype.clone();
+			} else {
+				haxe_Log.trace("Дисплей объект не определен в библиотеке символов " + id,{ fileName : "TagProcessorPlaceObject.hx", lineNumber : 114, className : "swfparser.tags.TagProcessorPlaceObject", methodName : "getObjectFromLibrary"});
+			}
+		} else {
+			placedDO = prototype;
+		}
+		return placedDO;
+	}
+	,fillFromTag: function(currentDisplayObject,tag) {
+		currentDisplayObject.depth = tag.depth;
+		var isHaveTransform = currentDisplayObject.transform != null;
+		if(tag.hasMatrix) {
+			if(isHaveTransform) {
+				haxe_Log.trace("##### HAVE MATRIX ALREADY",{ fileName : "TagProcessorPlaceObject.hx", lineNumber : 138, className : "swfparser.tags.TagProcessorPlaceObject", methodName : "fillFromTag"});
+			}
+			currentDisplayObject.setTransformMatrix(new openfl_geom_Matrix(tag.a,tag.b,tag.c,tag.d,tag.tx,tag.ty));
+		} else {
+			currentDisplayObject.setTransformMatrix(this.context.placeObjectsMap.h[tag.depth].transform);
+		}
+		if(tag.hasColorTransform) {
+			currentDisplayObject.colorTransform = tag.getColorTransformMatrix();
+		}
+		if(tag.hasName) {
+			currentDisplayObject.name = tag.instanceName;
+		}
+		currentDisplayObject.hasMoved = tag.hasMove;
+	}
+	,processTag: function(tag) {
+		swfparser_tags_TagProcessorBase.prototype.processTag.call(this,tag);
+		var tagPlaceObject;
+		try {
+			tagPlaceObject = js_Boot.__cast(tag , swfdata_datatags_SwfPackerTagPlaceObject);
+		} catch( e ) {
+			haxe_CallStack.lastException = e;
+			tagPlaceObject = null;
+		}
+		var currentDisplayObject;
+		try {
+			currentDisplayObject = js_Boot.__cast(this.displayObjectContext.currentDisplayObject , swfdata_SpriteData);
+		} catch( e1 ) {
+			haxe_CallStack.lastException = e1;
+			currentDisplayObject = null;
+		}
+		if(currentDisplayObject == null) {
+			return;
+		}
+		var placedDO = null;
+		try {
+			js_Boot.__cast(currentDisplayObject , swfdata_MovieClipData);
+		} catch( e2 ) {
+			haxe_CallStack.lastException = e2;
+		}
+		var hasMatrix = tagPlaceObject.hasMatrix;
+		var preveousFrameDO;
+		if(tagPlaceObject.placeMode == 0) {
+			placedDO = this.getObjectFromLibrary(tagPlaceObject.characterId,hasMatrix);
+			if(placedDO == null) {
+				return;
+			}
+			this.fillFromTag(placedDO,tagPlaceObject);
+			if(this.context.placeObjectsMap.h[placedDO.depth] != placedDO) {
+				this.context.placeObjectsMap.h[placedDO.depth] = placedDO;
+			}
+		} else if(tagPlaceObject.placeMode == 1) {
+			preveousFrameDO = this.context.placeObjectsMap.h[tagPlaceObject.depth];
+			if(preveousFrameDO == null) {
+				haxe_Log.trace("placing error",{ fileName : "TagProcessorPlaceObject.hx", lineNumber : 203, className : "swfparser.tags.TagProcessorPlaceObject", methodName : "processTag"});
+				return;
+			}
+			placedDO = this.getObject(tagPlaceObject.characterId,tagPlaceObject,preveousFrameDO.transform);
+			this.fillFromTag(placedDO,tagPlaceObject);
+			if(!hasMatrix) {
+				placedDO.setTransformMatrix(preveousFrameDO.transform);
+			}
+			if(this.context.placeObjectsMap.h[placedDO.depth] != placedDO) {
+				this.context.placeObjectsMap.h[placedDO.depth] = placedDO;
+			}
+		} else if(tagPlaceObject.placeMode == 2) {
+			preveousFrameDO = this.context.placeObjectsMap.h[tagPlaceObject.depth];
+			if(preveousFrameDO == null) {
+				haxe_Log.trace("placing error",{ fileName : "TagProcessorPlaceObject.hx", lineNumber : 226, className : "swfparser.tags.TagProcessorPlaceObject", methodName : "processTag"});
+				return;
+			}
+			if(hasMatrix) {
+				placedDO = preveousFrameDO.clone();
+				this.fillFromTag(placedDO,tagPlaceObject);
+			} else {
+				placedDO = preveousFrameDO;
+			}
+			if(this.context.placeObjectsMap.h[placedDO.depth] != placedDO) {
+				this.context.placeObjectsMap.h[placedDO.depth] = placedDO;
+			}
+		} else {
+			throw new js__$Boot_HaxeError(new openfl_errors_Error("unkwnown place mode"));
+		}
+		if(placedDO != null) {
+			if(placedDO.transform == null) {
+				placedDO.setTransformMatrix(new openfl_geom_Matrix());
+			}
+			placedDO.hasPlaced = true;
+		}
+		if(tagPlaceObject.hasClipDepth) {
+			placedDO.isMask = true;
+			placedDO.clipDepth = tagPlaceObject.clipDepth;
+		}
+	}
+	,__class__: swfparser_tags_TagProcessorPlaceObject
+});
+var swfparser_tags_TagProcessorRemoveObject = function(context) {
+	swfparser_tags_TagProcessorBase.call(this,context);
+};
+$hxClasses["swfparser.tags.TagProcessorRemoveObject"] = swfparser_tags_TagProcessorRemoveObject;
+swfparser_tags_TagProcessorRemoveObject.__name__ = ["swfparser","tags","TagProcessorRemoveObject"];
+swfparser_tags_TagProcessorRemoveObject.__super__ = swfparser_tags_TagProcessorBase;
+swfparser_tags_TagProcessorRemoveObject.prototype = $extend(swfparser_tags_TagProcessorBase.prototype,{
+	processTag: function(tag) {
+		swfparser_tags_TagProcessorBase.prototype.processTag.call(this,tag);
+		try {
+			js_Boot.__cast(tag , swfdata_datatags_SwfPackerTagRemoveObject);
+		} catch( e ) {
+			haxe_CallStack.lastException = e;
+		}
+	}
+	,__class__: swfparser_tags_TagProcessorRemoveObject
+});
+var swfparser_tags_TagProcessorShowFrame = function(context) {
+	swfparser_tags_TagProcessorBase.call(this,context);
+};
+$hxClasses["swfparser.tags.TagProcessorShowFrame"] = swfparser_tags_TagProcessorShowFrame;
+swfparser_tags_TagProcessorShowFrame.__name__ = ["swfparser","tags","TagProcessorShowFrame"];
+swfparser_tags_TagProcessorShowFrame.sortOnDepth = function(a,b) {
+	if(a.depth > b.depth) {
+		return 1;
+	} else {
+		return -1;
+	}
+};
+swfparser_tags_TagProcessorShowFrame.__super__ = swfparser_tags_TagProcessorBase;
+swfparser_tags_TagProcessorShowFrame.prototype = $extend(swfparser_tags_TagProcessorBase.prototype,{
+	processTag: function(tag) {
+		var currentDisplayObject = this.displayObjectContext.currentDisplayObject;
+		if(currentDisplayObject == null) {
+			return;
+		}
+		try {
+			js_Boot.__cast(tag , swfdata_datatags_SwfPackerTagShowFrame);
+		} catch( e ) {
+			haxe_CallStack.lastException = e;
+		}
+		var container = this.displayObjectContext.currentContainer;
+		var currentDisplayList = this.displayObjectContext.currentDisplayList;
+		var index = container.displayObjectsPlacedCount;
+		var tmp = this.context.placeObjectsMap.iterator();
+		while(tmp.hasNext()) {
+			var objectToPlace = tmp.next();
+			currentDisplayList[index++] = objectToPlace;
+		}
+		container.displayObjectsPlacedCount = index;
+		if(index > 1) {
+			currentDisplayList.sort(swfparser_tags_TagProcessorShowFrame.sortOnDepth);
+		}
+		currentDisplayObject.updateMasks();
+		var _this = this.displayObjectContext;
+		if(_this.currentDisplayObjectAsMovieClip != null) {
+			_this.currentDisplayObjectAsMovieClip.nextFrame();
+			_this.currentContainer = _this.currentDisplayObjectAsMovieClip._currentFrameData;
+			_this.currentDisplayList = _this.currentContainer._displayObjects;
+		}
+	}
+	,__class__: swfparser_tags_TagProcessorShowFrame
+});
+var swfparser_tags_TagProcessorSymbolClassLight = function(context) {
+	swfparser_tags_TagProcessorBase.call(this,context);
+};
+$hxClasses["swfparser.tags.TagProcessorSymbolClassLight"] = swfparser_tags_TagProcessorSymbolClassLight;
+swfparser_tags_TagProcessorSymbolClassLight.__name__ = ["swfparser","tags","TagProcessorSymbolClassLight"];
+swfparser_tags_TagProcessorSymbolClassLight.__super__ = swfparser_tags_TagProcessorBase;
+swfparser_tags_TagProcessorSymbolClassLight.prototype = $extend(swfparser_tags_TagProcessorBase.prototype,{
+	processTag: function(tag) {
+		swfparser_tags_TagProcessorBase.prototype.processTag.call(this,tag);
+		var tagSymbolClass;
+		try {
+			tagSymbolClass = js_Boot.__cast(tag , swfdata_datatags_SwfPackerTagSymbolClass);
+		} catch( e ) {
+			haxe_CallStack.lastException = e;
+			tagSymbolClass = null;
+		}
+		var symbolsLength = tagSymbolClass.length;
+		var _g1 = 0;
+		while(_g1 < symbolsLength) {
+			var i = _g1++;
+			var currentLinkage = tagSymbolClass.linkageList[i];
+			var currentCharacter = tagSymbolClass.characterIdList[i];
+			var displayObject = this.context.library.getDisplayObject(currentCharacter);
+			if(displayObject == null) {
+				haxe_Log.trace("Error: no symbol for linkage(symbol=" + currentCharacter + ", linkage=" + currentLinkage + ")",{ fileName : "TagProcessorSymbolClassLight.hx", lineNumber : 44, className : "swfparser.tags.TagProcessorSymbolClassLight", methodName : "processTag"});
+				continue;
+			}
+			displayObject.libraryLinkage = currentLinkage;
+			this.context.library.addDisplayObjectByLinkage(js_Boot.__cast(displayObject , swfdata_SpriteData));
+		}
+	}
+	,__class__: swfparser_tags_TagProcessorSymbolClassLight
+});
 var $_, $fid = 0;
 function $bind(o,m) { if( m == null ) return null; if( m.__id__ == null ) m.__id__ = $fid++; var f; if( o.hx__closures__ == null ) o.hx__closures__ = {}; else f = o.hx__closures__[m.__id__]; if( f == null ) { f = function(){ return f.method.apply(f.scope, arguments); }; f.scope = o; f.method = m; o.hx__closures__[m.__id__] = f; } return f; }
 $hxClasses.Math = Math;
@@ -40551,14 +44563,19 @@ if(window.createjs != null) {
 openfl_display_DisplayObject.__instanceCount = 0;
 openfl_display_DisplayObject.__worldRenderDirty = 0;
 openfl_display_DisplayObject.__worldTransformDirty = 0;
+fastbytearray_ByteArrayUtils.LOG_2 = Math.log(2);
+fastbytearray_Constants.FIXED_PRECISSION_VALUE = 65536;
+fastbytearray_Constants.FIXED_PRECISSION_VALUE_MULTIPLIER = 1.52587890625e-005;
+format_tools__$InflateImpl_Window.SIZE = 32768;
+format_tools__$InflateImpl_Window.BUFSIZE = 65536;
+format_tools_InflateImpl.LEN_EXTRA_BITS_TBL = [0,0,0,0,0,0,0,0,1,1,1,1,2,2,2,2,3,3,3,3,4,4,4,4,5,5,5,5,0,-1,-1];
+format_tools_InflateImpl.LEN_BASE_VAL_TBL = [3,4,5,6,7,8,9,10,11,13,15,17,19,23,27,31,35,43,51,59,67,83,99,115,131,163,195,227,258];
+format_tools_InflateImpl.DIST_EXTRA_BITS_TBL = [0,0,0,0,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,12,12,13,13,-1,-1];
+format_tools_InflateImpl.DIST_BASE_VAL_TBL = [1,2,3,4,5,7,9,13,17,25,33,49,65,97,129,193,257,385,513,769,1025,1537,2049,3073,4097,6145,8193,12289,16385,24577];
+format_tools_InflateImpl.CODE_LENGTHS_POS = [16,17,18,0,8,7,9,6,10,5,11,4,12,3,13,2,14,1,15];
+format_tools_InflateImpl.FIXED_HUFFMAN = null;
 haxe_ds_ObjectMap.count = 0;
 haxe_io_FPHelper.i64tmp = new haxe__$Int64__$_$_$Int64(0,0);
-haxe_zip_InflateImpl.LEN_EXTRA_BITS_TBL = [0,0,0,0,0,0,0,0,1,1,1,1,2,2,2,2,3,3,3,3,4,4,4,4,5,5,5,5,0,-1,-1];
-haxe_zip_InflateImpl.LEN_BASE_VAL_TBL = [3,4,5,6,7,8,9,10,11,13,15,17,19,23,27,31,35,43,51,59,67,83,99,115,131,163,195,227,258];
-haxe_zip_InflateImpl.DIST_EXTRA_BITS_TBL = [0,0,0,0,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,12,12,13,13,-1,-1];
-haxe_zip_InflateImpl.DIST_BASE_VAL_TBL = [1,2,3,4,5,7,9,13,17,25,33,49,65,97,129,193,257,385,513,769,1025,1537,2049,3073,4097,6145,8193,12289,16385,24577];
-haxe_zip_InflateImpl.CODE_LENGTHS_POS = [16,17,18,0,8,7,9,6,10,5,11,4,12,3,13,2,14,1,15];
-haxe_zip_InflateImpl.FIXED_HUFFMAN = null;
 js_Boot.__toStr = { }.toString;
 js_html_compat_Float32Array.BYTES_PER_ELEMENT = 4;
 js_html_compat_Uint8Array.BYTES_PER_ELEMENT = 1;
@@ -41807,5 +45824,42 @@ openfl_utils__$CompressionAlgorithm_CompressionAlgorithm_$Impl_$.LZMA = 1;
 openfl_utils__$CompressionAlgorithm_CompressionAlgorithm_$Impl_$.ZLIB = 2;
 openfl_utils__$Endian_Endian_$Impl_$.BIG_ENDIAN = 0;
 openfl_utils__$Endian_Endian_$Impl_$.LITTLE_ENDIAN = 1;
+renderer_BaseAgalShader.AGALAssembler = new openfl_utils_AGALMiniAssembler(true);
+renderer_ProjectionMatrix.NEAR = 0;
+renderer_ProjectionMatrix.FAR = 4000;
+swfdata_DisplayObjectTypes.DISPALY_OBJECT_TYPE = 0;
+swfdata_DisplayObjectTypes.SHAPE_TYPE = 1;
+swfdata_DisplayObjectTypes.SPRITE_TYPE = 2;
+swfdata_DisplayObjectTypes.MOVIE_CLIP_TYPE = 3;
+swfdata_atlas_AtlasDrawer.NULL_POINT = new openfl_geom_Point();
+swfdata_atlas_AtlasDrawer.DRAWING_MATRIX = new openfl_geom_Matrix();
+swfdata_atlas_AtlasDrawerUtils.COLOR_BOUND_CHECK_11 = new openfl_display_BitmapData(2048,2048,true,0);
+swfdata_atlas_AtlasDrawerUtils.COLOR_BOUND_CHECK_10 = new openfl_display_BitmapData(1024,1024,true,0);
+swfdata_atlas_AtlasDrawerUtils.COLOR_BOUND_CHECK_9 = new openfl_display_BitmapData(512,512,true,0);
+swfdata_atlas_AtlasDrawerUtils.COLOR_BOUND_CHECK_8 = new openfl_display_BitmapData(256,256,true,0);
+swfdata_atlas_AtlasDrawerUtils.COLOR_BOUND_CHECK_7 = new openfl_display_BitmapData(128,128,true,0);
+swfdata_atlas_AtlasDrawerUtils.COLOR_BOUND_CHECK_6 = new openfl_display_BitmapData(64,64,true,0);
+swfdata_atlas_AtlasDrawerUtils.COLOR_BOUND_CHECK_5 = new openfl_display_BitmapData(32,32,true,0);
+swfdata_atlas_AtlasDrawerUtils.COLOR_BOUND_CHECK_4 = new openfl_display_BitmapData(16,16,true,0);
+swfdata_atlas_AtlasDrawerUtils.COLOR_BOUND_CHECK_3 = new openfl_display_BitmapData(8,8,true,0);
+swfdata_atlas_AtlasDrawerUtils.COLOR_BOUND_CHECK_2 = new openfl_display_BitmapData(4,4,true,0);
+swfdata_atlas_AtlasDrawerUtils.COLOR_BOUND_CHECK_1 = new openfl_display_BitmapData(2,2,true,0);
+swfdata_atlas_AtlasDrawerUtils.COLOR_BOUND_CHECK_0 = new openfl_display_BitmapData(1,1,true,0);
+swfdata_atlas_AtlasDrawerUtils.boundCheckers = [swfdata_atlas_AtlasDrawerUtils.COLOR_BOUND_CHECK_0,swfdata_atlas_AtlasDrawerUtils.COLOR_BOUND_CHECK_1,swfdata_atlas_AtlasDrawerUtils.COLOR_BOUND_CHECK_2,swfdata_atlas_AtlasDrawerUtils.COLOR_BOUND_CHECK_3,swfdata_atlas_AtlasDrawerUtils.COLOR_BOUND_CHECK_4,swfdata_atlas_AtlasDrawerUtils.COLOR_BOUND_CHECK_5,swfdata_atlas_AtlasDrawerUtils.COLOR_BOUND_CHECK_6,swfdata_atlas_AtlasDrawerUtils.COLOR_BOUND_CHECK_7,swfdata_atlas_AtlasDrawerUtils.COLOR_BOUND_CHECK_8,swfdata_atlas_AtlasDrawerUtils.COLOR_BOUND_CHECK_9,swfdata_atlas_AtlasDrawerUtils.COLOR_BOUND_CHECK_10,swfdata_atlas_AtlasDrawerUtils.COLOR_BOUND_CHECK_11];
+swfdata_atlas_AtlasDrawerUtils.MAX_SIZE = 2048;
+swfdata_datatags_SwfPackerTagPlaceObject.PLACE_MODE_UNKNOWN = -1;
+swfdata_datatags_SwfPackerTagPlaceObject.PLACE_MODE_PLACE = 0;
+swfdata_datatags_SwfPackerTagPlaceObject.PLACE_MODE_REPLACE = 1;
+swfdata_datatags_SwfPackerTagPlaceObject.PLACE_MODE_MOVE = 2;
+swfdataexporter_ExporerTypes.BASE_TYPE = 0;
+swfdataexporter_ExporerTypes.DEFINE_SPRITE = 1;
+swfdataexporter_ExporerTypes.PLACE_OBJECT = 2;
+swfdataexporter_ExporerTypes.REMOVE_OBJECT = 3;
+swfdataexporter_ExporerTypes.SHOW_FRAME = 4;
+swfdataexporter_ExporerTypes.END = 5;
+swfdataexporter_ExporerTypes.SYMBOL_CLASS = 6;
+swfdataexporter_PlaceObjectExporter.bitMask = new utils_BitMask();
+swfparser_tags_TagProcessorDefineSprite.spritesDefined = 0;
+swfparser_tags_TagProcessorDefineSprite.defaultMatrix = new openfl_geom_Matrix();
 ApplicationMain.main();
 })(typeof exports != "undefined" ? exports : typeof window != "undefined" ? window : typeof self != "undefined" ? self : this, typeof window != "undefined" ? window : typeof global != "undefined" ? global : typeof self != "undefined" ? self : this);
