@@ -1,0 +1,31 @@
+<html>
+
+<body>
+  <canvas id="glcanvas" width="0" height="0"></canvas>
+  <script>
+    var canvas;
+    canvas = document.getElementById("glcanvas");
+    var gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
+
+    document.write(gl.getParameter(gl.RENDERER) + "<br>");
+    document.write(gl.getParameter(gl.VENDOR) + "<br>");
+    document.write(getUnmaskedInfo(gl).vendor + "<br>");
+    document.write(getUnmaskedInfo(gl).renderer + "<br>");
+
+
+    function getUnmaskedInfo(gl) {
+      var unMaskedInfo = {
+        renderer: '',
+        vendor: ''
+      };
+
+      var dbgRenderInfo = gl.getExtension("WEBGL_debug_renderer_info");
+      if (dbgRenderInfo != null) {
+        unMaskedInfo.renderer = gl.getParameter(dbgRenderInfo.UNMASKED_RENDERER_WEBGL);
+        unMaskedInfo.vendor = gl.getParameter(dbgRenderInfo.UNMASKED_VENDOR_WEBGL);
+      }
+
+      return unMaskedInfo;
+    }
+  </script>
+</body>
