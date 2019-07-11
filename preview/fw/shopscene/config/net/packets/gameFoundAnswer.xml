@@ -1,0 +1,7 @@
+<beans>
+	<bean id="gameFoundPacket" class="core.net.packets.BytePacket">
+		<property name="type" value="7"/>
+		<property name="headerOperator" ref="HeaderOperator"/>
+		<property name="streamOperator" ref="gameFoundOperator"/>
+	</bean>
+</beans>

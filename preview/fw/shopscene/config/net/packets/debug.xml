@@ -1,0 +1,17 @@
+<beans>
+	 <bean id="debugOperator" class="core.external.io.StreamOperator">
+		<lookup-method ref="vector3DOperator" name="addDeserializer"/> <!-- status -->
+		<lookup-method ref="vector3DOperator" name="addDeserializer"/> <!-- status -->
+		<lookup-method ref="IntOperator" name="addDeserializer"/> <!-- status -->
+		
+		<lookup-method ref="vector3DOperator" name="addSerializer"/> <!-- id -->
+		<lookup-method ref="vector3DOperator" name="addSerializer"/> <!-- id -->
+		<lookup-method ref="IntOperator" name="addSerializer"/> <!-- id -->
+    </bean>
+	
+	<bean id="debugPacket" class="core.net.packets.BytePacket">
+		<property name="type" value="19"/>
+		<property name="headerOperator" ref="HeaderOperator"/>
+		<property name="streamOperator" ref="debugOperator"/>
+	</bean>
+</beans>

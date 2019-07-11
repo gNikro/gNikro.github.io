@@ -1,0 +1,12 @@
+<beans>
+	 <bean id="userShipInfoOperator" class="core.external.io.StreamOperator">
+		<lookup-method ref="shipInfoOperator" name="addDeserializer"/>
+		<lookup-method ref="shipInfoOperator" name="addSerializer"/>
+    </bean>
+	
+	<bean id="shipInfoPacket" class="core.net.packets.BytePacket">
+		<property name="type" value="6"/>
+		<property name="headerOperator" ref="HeaderOperator"/>
+		<property name="streamOperator" ref="userShipInfoOperator"/>
+	</bean>
+</beans>

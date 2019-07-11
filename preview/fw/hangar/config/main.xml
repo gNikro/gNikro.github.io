@@ -1,0 +1,27 @@
+<beans>
+	<import resource="vfssettings.xml"/>
+	<import resource="scenes/scenes.xml"/>
+	
+	<import resource="net/netMain.xml"/>
+	
+	<eventScope name="global"/>
+	
+	
+	<bean id="playerDataModel" class="core.datavalue.model.ObjectProxy">
+		<property name="isSetSameValue" value="false"/>
+		<property name="autoUpdate" value="true"/>
+	</bean>
+	
+	<bean id="applicationStateModel" class="core.datavalue.model.ObjectProxy">
+		<property name="isSetSameValue" value="false"/>
+		<property name="autoUpdate" value="true"/>
+	</bean>
+	
+	<bean id="gameFindController" class="GameFindController">
+		<property name="applicationStateModel" ref="applicationStateModel"/>
+		<property name="shipInfoPacket" ref="shipInfoPacket"/>
+		<property name="connectionManager" ref="ConnectionManager"/>
+	</bean>
+	
+	<bean id="worldTime" class="WorldTimeController"/>
+</beans>

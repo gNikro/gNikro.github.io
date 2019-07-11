@@ -1,0 +1,16 @@
+<beans>
+	 <bean id="spawnShipOperator" class="core.external.io.StreamOperator">
+		<lookup-method ref="IntOperator" name="addSerializer"/> <!-- id -->
+		<lookup-method ref="vector3DOperator" name="addSerializer"/> <!-- at position -->
+		<lookup-method ref="vector3DOperator" name="addSerializer"/> <!-- at rotation -->
+		<lookup-method ref="PointOperator" name="addSerializer"/> <!-- at rotation rate -->
+		<lookup-method ref="PointOperator" name="addSerializer"/> <!-- at rotation rate max -->
+		<lookup-method ref="vector3DOperator" name="addSerializer"/> <!-- rotation normal -->
+    </bean>
+	
+	<bean id="shipSpawnPacket" class="core.net.packets.BytePacket">
+		<property name="type" value="11"/>
+		<property name="headerOperator" ref="HeaderOperator"/>
+		<property name="streamOperator" ref="spawnShipOperator"/>
+	</bean>
+</beans>

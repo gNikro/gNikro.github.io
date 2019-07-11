@@ -1,0 +1,33 @@
+<beans>
+	 <bean id="shipStatusOperator" class="core.external.io.StreamOperator">
+		<lookup-method ref="IntOperator" name="addDeserializer"/> <!-- status -->
+		
+		<lookup-method ref="vector3DOperator" name="addDeserializer"/> <!-- current position -->
+		<lookup-method ref="DoubleOperator" name="addDeserializer"/> <!-- current speed -->
+		
+		<lookup-method ref="vector3DOperator" name="addDeserializer"/> <!-- current rotation -->
+		<lookup-method ref="vector3DOperator" name="addDeserializer"/> <!-- rotation normal -->
+		<lookup-method ref="PointOperator" name="addDeserializer"/> <!-- current rotation rate max -->
+		<lookup-method ref="PointOperator" name="addDeserializer"/> <!-- current rotation rate -->
+		
+		
+		
+		<lookup-method ref="IntOperator" name="addSerializer"/> <!-- id -->
+		
+		<lookup-method ref="IntOperator" name="addSerializer"/> <!-- status -->
+		
+		<lookup-method ref="vector3DOperator" name="addSerializer"/> <!-- current position -->
+		<lookup-method ref="DoubleOperator" name="addSerializer"/> <!-- current speed -->
+		
+		<lookup-method ref="vector3DOperator" name="addSerializer"/> <!-- current rotation -->
+		<lookup-method ref="vector3DOperator" name="addSerializer"/> <!-- rotation normal -->
+		<lookup-method ref="PointOperator" name="addSerializer"/> <!-- current rotation rate max -->
+		<lookup-method ref="PointOperator" name="addSerializer"/> <!-- current rotation rate -->
+    </bean>
+	
+	<bean id="shipStatusPacket" class="core.net.packets.BytePacket">
+		<property name="type" value="12"/>
+		<property name="headerOperator" ref="HeaderOperator"/>
+		<property name="streamOperator" ref="shipStatusOperator"/>
+	</bean>
+</beans>

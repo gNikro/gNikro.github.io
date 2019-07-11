@@ -1,0 +1,9 @@
+<beans>
+	<bean id="HeaderOperator" class="core.external.io.StreamOperator">	
+		<lookup-method ref="IntOperator" name="addSerializer"/>
+		<lookup-method ref="IntOperator" name="addSerializer"/>
+		
+		<lookup-method ref="IntOperator" name="addDeserializer"/>
+		<lookup-method ref="IntOperator" name="addDeserializer"/>
+	</bean>
+</beans>
