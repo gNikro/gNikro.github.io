@@ -1,0 +1,7 @@
+<beans>
+	<bean id="LoginPacket" class="core.net.packets.BytePacket">
+		<property name="type" value="3"/>
+		<property name="headerOperator" ref="HeaderOperator"/>
+		<property name="streamOperator" ref="LoginOperator"/>
+	</bean>
+</beans>

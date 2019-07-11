@@ -1,0 +1,34 @@
+<beans>
+	
+	<eventScope name="vfs"/>
+	
+	<bean id="directoryRoot" class="core.fileSystem.Directory"/>
+	
+	<bean id="vfs" class="core.fileSystem.external.LocalFileSystem" init-method="test">
+		<property name="directoriesList" ref="directoryRoot"/>
+	</bean> 
+	
+	<bean id="resourceManaer" class="ResourceManager" inject="true" init-method="initialize">
+		<scope value="vfs"/>
+	</bean>
+	
+	<bean id="directoryScaner" class="core.fileSystem.external.VirtualDirectoryScaner" init-method="scan">
+		<property name="directoryRoot" ref="directoryRoot"/>
+		<property name="path" value="fs.fs"/>
+	</bean>
+	
+	<!--
+	<bean id="directoryScaner" class="core.fileSystem.external.DirectoryScaner" init-method="scan">
+		<property name="directoryRoot" ref="directoryRoot"/>
+		<property name="nativePath" value="res/"/>
+	</bean>
+	-->
+	
+	<bean id="fileDecoder" class="core.codec.FileDecoderFactory"/>
+	
+	<bean id="fileLoadingService" class="core.services.FileLoadingService" init-method="initialize">
+		<property name="fileDecoderFactory" ref="fileDecoder"/>
+		<property name="fileLoadingManager" value="core.external.io.FileLoader"/>
+	</bean>
+	
+</beans>

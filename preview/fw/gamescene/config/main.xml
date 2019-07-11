@@ -1,0 +1,24 @@
+<beans>
+	<import resource="vfssettings.xml"/>
+	<import resource="scenes/scenes.xml"/>
+	<eventScope name="global"/>
+	
+	<bean id="weaponEffectFactory" class="core.game.weapon.WeaponEffectBuilder">
+		<property name="vfs" ref="vfs"/>
+		<property name="playersDataStore" ref="playersDataStore"/>
+	</bean>
+	
+	<bean id="applicationConfiguration" class="core.config.ApplicationConfiguration"/>
+	
+	<bean id="playerDataModel" class="core.datavalue.model.ObjectProxy">
+		<property name="isSetSameValue" value="false"/>
+		<property name="autoUpdate" value="true"/>
+	</bean>
+	
+	<bean id="playersDataStore" class="core.game.data.PlayersDataStore">
+		
+	</bean>
+	
+	
+	<bean id="worldTime" class="WorldTimeController"/>
+</beans>

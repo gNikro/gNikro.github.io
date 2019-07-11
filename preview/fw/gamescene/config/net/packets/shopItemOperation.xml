@@ -1,0 +1,14 @@
+<beans>
+	 <bean id="shopItemOperationOperator" class="core.external.io.StreamOperator">
+		
+		<lookup-method ref="IntOperator" name="addDeserializer"/> <!-- at item id -->
+		<lookup-method ref="IntOperator" name="addDeserializer"/> <!-- at operation id -->
+
+    </bean>
+	
+	<bean id="shopItemOperation" class="core.net.packets.BytePacket">
+		<property name="type" value="23"/>
+		<property name="headerOperator" ref="HeaderOperator"/>
+		<property name="streamOperator" ref="shopItemOperationOperator"/>
+	</bean>
+</beans>

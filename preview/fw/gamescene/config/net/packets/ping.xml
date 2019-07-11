@@ -1,0 +1,6 @@
+<beans>
+	<bean id="pingPacket" class="core.net.packets.BytePacket">
+		<property name="type" value="0"/>
+		<property name="headerOperator" ref="HeaderOperator"/>
+	</bean>
+</beans>

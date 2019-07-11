@@ -1,0 +1,16 @@
+<beans>
+	 <bean id="gameJoinOperator" class="core.external.io.StreamOperator">
+		<lookup-method ref="IntOperator" name="addSerializer"/> <!-- id -->
+		<lookup-method ref="UTFStringOperator" name="addSerializer"/> <!-- nick -->
+		<lookup-method ref="shipInfoOperator" name="addSerializer"/> <!-- ship info -->
+		<lookup-method ref="IntOperator" name="addSerializer"/> <!-- currentHP -->
+		<lookup-method ref="IntOperator" name="addSerializer"/> <!-- maxHP -->
+		<lookup-method ref="IntOperator" name="addSerializer"/> <!-- teamID -->
+    </bean>
+	
+	<bean id="gameJoinPacket" class="core.net.packets.BytePacket">
+		<property name="type" value="10"/>
+		<property name="headerOperator" ref="HeaderOperator"/>
+		<property name="streamOperator" ref="gameJoinOperator"/>
+	</bean>
+</beans>

@@ -1,0 +1,13 @@
+<beans>
+	<bean id="joinBattleOperator" class="core.external.io.StreamOperator">
+		<!-- userid -->
+		<lookup-method ref="IntOperator" name="addSerializer"/>
+		<!-- nickname -->
+		<lookup-method ref="UTFStringOperator" name="addSerializer"/>
+		<!-- message group -->
+		<lookup-method ref="IntOperator" name="addSerializer"/>
+		<!-- ship type -->
+		<!-- sockets length -->
+		<!-- sockets info -->
+	</bean>
+</beans>

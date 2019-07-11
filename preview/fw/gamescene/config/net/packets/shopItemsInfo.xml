@@ -1,0 +1,48 @@
+<beans>
+	
+	<bean id="shopItemInfoOperator" class="core.external.io.StreamOperator">
+		<!-- item id -->
+		<lookup-method ref="IntOperator" name="addSerializer"/>
+		<!-- name id -->
+		<lookup-method ref="UTFStringOperator" name="addSerializer"/>
+		<!-- type -->
+		<lookup-method ref="IntOperator" name="addSerializer"/>
+		<!-- price -->
+		<lookup-method ref="IntOperator" name="addSerializer"/>
+		<!-- coolDown -->
+		<lookup-method ref="IntOperator" name="addSerializer"/>
+		<!-- effectValue -->
+		<lookup-method ref="IntOperator" name="addSerializer"/>
+		<!-- effectDissipation -->
+		<lookup-method ref="IntOperator" name="addSerializer"/>
+	</bean>
+
+	<bean id="shopItemsArrayOperator" class="core.external.io.ArrayOperator">
+		<!-- item id -->
+		<lookup-method ref="IntOperator" name="addSerializer"/>
+		<!-- name id -->
+		<lookup-method ref="UTFStringOperator" name="addSerializer"/>
+		<!-- viewIcon -->
+		<lookup-method ref="UTFStringOperator" name="addSerializer"/>
+		<!-- viewModel -->
+		<lookup-method ref="UTFStringOperator" name="addSerializer"/>
+		<!-- type -->
+		<lookup-method ref="IntOperator" name="addSerializer"/>
+		<!-- tier -->
+		<lookup-method ref="IntOperator" name="addSerializer"/>
+		<!-- price -->
+		<lookup-method ref="IntOperator" name="addSerializer"/>
+		<!-- coolDown -->
+		<lookup-method ref="IntOperator" name="addSerializer"/>
+		<!-- effectValue -->
+		<lookup-method ref="IntOperator" name="addSerializer"/>
+		<!-- effectDissipation -->
+		<lookup-method ref="IntOperator" name="addSerializer"/>
+	</bean>
+	
+	<bean id="shopItemsInfo" class="core.net.packets.BytePacket">
+		<property name="type" value="21"/>
+		<property name="headerOperator" ref="HeaderOperator"/>
+		<property name="streamOperator" ref="shopItemsArrayOperator"/>
+	</bean>
+</beans>

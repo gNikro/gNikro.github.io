@@ -1,0 +1,12 @@
+<beans>
+	 <bean id="applyDamageOperator" class="core.external.io.StreamOperator">
+		<lookup-method ref="IntOperator" name="addSerializer"/> <!-- id -->
+		<lookup-method ref="IntOperator" name="addSerializer"/> <!-- amount loss -->
+    </bean>
+	
+	<bean id="applyDamagePacket" class="core.net.packets.BytePacket">
+		<property name="type" value="13"/>
+		<property name="headerOperator" ref="HeaderOperator"/>
+		<property name="streamOperator" ref="applyDamageOperator"/>
+	</bean>
+</beans>

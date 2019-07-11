@@ -1,0 +1,12 @@
+<beans>
+	 <bean id="removeShipOperator" class="core.external.io.StreamOperator">
+		<lookup-method ref="IntOperator" name="addSerializer"/> <!-- id -->
+		<lookup-method ref="IntOperator" name="addSerializer"/> <!-- reason -->
+    </bean>
+	
+	<bean id="removeShipPacket" class="core.net.packets.BytePacket">
+		<property name="type" value="14"/>
+		<property name="headerOperator" ref="HeaderOperator"/>
+		<property name="streamOperator" ref="removeShipOperator"/>
+	</bean>
+</beans>

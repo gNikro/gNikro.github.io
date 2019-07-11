@@ -1,0 +1,16 @@
+<beans>
+	<import resource="chatMessage.xml"/>
+	<import resource="header.xml"/>
+	<import resource="join.xml"/>
+	<import resource="login.xml"/>
+	<import resource="loginAnswer.xml"/>
+	<import resource="gameFoundOperator.xml"/>
+	
+	<bean class="net.ShipInfoOperator" id="shipInfoOperator"/>
+	<bean class="core.external.io.IntOperator" id="IntOperator"/>
+	<bean class="core.external.io.DoubleOperator" id="DoubleOperator"/>
+	<bean class="core.external.io.PointOperator" id="PointOperator"/>
+	<bean class="core.external.io.UTFStringOperator" id="UTFStringOperator"/>
+	<bean class="core.external.io.Vector3DOperator" id="vector3DOperator"/>
+	<bean class="core.external.io.ArrayOperator" id="arrayOperator"/>
+</beans>
