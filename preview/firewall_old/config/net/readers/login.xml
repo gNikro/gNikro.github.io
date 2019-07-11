@@ -1,0 +1,8 @@
+<beans>
+	<bean id="LoginOperator" class="core.external.io.StreamOperator">
+		<!-- login -->
+		<lookup-method ref="UTFStringOperator" name="addDeserializer"/>
+		<!-- password -->
+		<lookup-method ref="UTFStringOperator" name="addDeserializer"/>
+	</bean>
+</beans>

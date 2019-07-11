@@ -1,0 +1,23 @@
+<beans>
+	<import resource="chatJoin.xml"/>
+	<import resource="chatMessage.xml"/>
+	<import resource="login.xml"/>
+	<import resource="loginAnswer.xml"/>
+	<import resource="ping.xml"/>
+	<import resource="shipInfo.xml"/>
+	<import resource="gameFoundAnswer.xml"/>
+	<import resource="gameJoin.xml"/>
+	<import resource="spawnShip.xml"/>
+	<import resource="shipStatusUpdate.xml"/>
+	<import resource="applyDamage.xml"/>
+	<import resource="removeShip.xml"/>
+	<import resource="loginBaseEditPacket.xml"/>
+	<import resource="useSkill.xml"/>
+	<import resource="shipStatusPackets.xml"/>
+	<import resource="debug.xml"/>
+	<import resource="userInfo.xml"/>
+	<import resource="shopItemsInfo.xml"/>
+	<import resource="shopItemOperation.xml"/>
+	<import resource="setTarget.xml"/>
+	<import resource="death.xml"/>
+</beans>

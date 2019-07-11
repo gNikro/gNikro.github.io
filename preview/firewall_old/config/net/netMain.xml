@@ -1,0 +1,169 @@
+<beans>
+	<import resource="readers/readers.xml"/>
+	<import resource="packets/allPackets.xml"/>
+	
+	<bean id="playersDataStore" class="core.game.data.PlayersDataStore"/>
+	
+	<!-- events/ events routing -->
+	<bean id="SocketDataRouter" class="net.events.SocketDataEventRouter">
+		<lookup-method name="addEventListener" ref="LoginEventListener"/>
+		<lookup-method name="addEventListener" ref="ChatMesasgeEventListener"/>
+		<lookup-method name="addEventListener" ref="ChatJoinEventListener"/>
+		<lookup-method name="addEventListener" ref="gameFoundEventListener"/>
+		<lookup-method name="addEventListener" ref="gameJoinEventListener"/>
+		<lookup-method name="addEventListener" ref="shipSpawnEventListener"/>
+		<lookup-method name="addEventListener" ref="shipStatusUpdateEventListener"/>
+		<lookup-method name="addEventListener" ref="applyDamageEventListener"/>
+		<lookup-method name="addEventListener" ref="removeShipEventListener"/>
+		<lookup-method name="addEventListener" ref="loginBaseEditPacketEventListener"/>
+		<lookup-method name="addEventListener" ref="useSkillEventListener"/>
+		<lookup-method name="addEventListener" ref="shipMoveStatusEventListener"/>
+		<lookup-method name="addEventListener" ref="shipRotationStatusUpdateEventListener"/>
+		<lookup-method name="addEventListener" ref="correctionEventListener"/>
+		<lookup-method name="addEventListener" ref="userInfoEventListener"/>
+		<lookup-method name="addEventListener" ref="shopItemsEventListener"/>
+		<lookup-method name="addEventListener" ref="deathEventListener"/>
+	</bean>
+		
+	<bean id="LoginEventListener" class="net.events.LoginAnswerEventListener">
+		<property name="type" value="2"/>
+		<property name="playerDataStore" ref="playerDataStore"/>
+	</bean>
+	
+	<bean id="ChatMesasgeEventListener" class="net.events.ChatMessageEventListener">
+		<property name="type" value="1"/>
+		<!-- <property name="lobbyController" ref="LobbyWindow"/> -->
+	</bean>
+
+	<bean id="ChatJoinEventListener" class="net.events.ChatJoinEventListener">
+		<property name="type" value="4"/>
+		<!-- <property name="lobbyController" ref="LobbyWindow"/> -->
+	</bean>
+	
+	
+	<bean id="gameFoundEventListener" class="net.events.GameFoundEventListener">
+		<property name="sceneController" ref="scenesController"/>
+		<property name="type" value="7"/>
+	</bean>
+	
+	<bean id="gameJoinEventListener" class="net.events.GameJoinEventListener">
+		<property name="type" value="10"/>
+		<property name="playersDataStore" ref="playersDataStore"/>
+	</bean>
+	
+	<bean id="shipSpawnEventListener" class="net.events.ShipSpawnEventListener">
+		<property name="type" value="11"/>
+		<property name="playersDataStore" ref="playersDataStore"/>
+	</bean>
+	
+	<bean id="shipStatusUpdateEventListener" class="net.events.ShipStatusUpdateEventListener">
+		<property name="type" value="12"/>
+		<property name="playersDataStore" ref="playersDataStore"/>
+	</bean>
+	
+	<bean id="applyDamageEventListener" class="net.events.ApplyDamageEventListener">
+		<property name="type" value="13"/>
+		<property name="playersDataStore" ref="playersDataStore"/>
+	</bean>
+	
+	<bean id="removeShipEventListener" class="net.events.RemoveShipEventListener">
+		<property name="type" value="14"/>
+		<property name="playersDataStore" ref="playersDataStore"/>
+	</bean>
+	
+	<bean id="loginBaseEditPacketEventListener" class="net.events.LoginBaseEditPacketEventListener">
+		<property name="type" value="15"/>
+		<property name="playerDataModel" ref="playerDataModel"/>
+	</bean>
+	
+	<bean id="useSkillEventListener" class="net.events.UseSkillEventListener">
+		<property name="type" value="16"/>
+		<property name="playersDataStore" ref="playersDataStore"/>
+		<property name="weaponEffectFactory" ref="weaponEffectFactory"/>
+	</bean>
+	
+	<bean id="shipMoveStatusEventListener" class="net.events.ShipMoveStatusUpdateEventListener">
+		<property name="type" value="17"/>
+		<property name="playersDataStore" ref="playersDataStore"/>
+	</bean>
+	
+	<bean id="shipRotationStatusUpdateEventListener" class="net.events.ShipRotationStatusUpdateEventListener">
+		<property name="type" value="18"/>
+		<property name="playersDataStore" ref="playersDataStore"/>
+		<property name="worldTime" ref="worldTime"/>
+	</bean>
+	
+	<bean id="correctionEventListener" class="net.events.CorrectionEventListener">
+		<property name="type" value="19"/>
+		<property name="playersDataStore" ref="playersDataStore"/>
+		<property name="worldTime" ref="worldTime"/>
+	</bean>
+	
+	<bean id="shopItemsEventListener" class="net.events.ShopItemsEventListener">
+		<property name="type" value="21"/>
+		<property name="shopItemsList" ref="shopItemsList"/>
+		<property name="playersDataStore" ref="playersDataStore"/>
+	</bean>
+	
+	<bean id="userInfoEventListener" class="net.events.UserInfoEventListener">
+		<property name="type" value="22"/>
+		<property name="playersDataStore" ref="playersDataStore"/>
+	</bean>
+	
+	<bean id="deathEventListener" class="net.events.DeathEventListener">
+		<property name="type" value="25"/>
+		<property name="playersDataStore" ref="playersDataStore"/>
+		<property name="stage" ref="stage"/>
+	</bean>
+	
+	
+	
+	<!-- events/ events routing -->
+
+	<!-- services -->
+	<bean id="ChatService" class="services.ChatService">
+		<property name="connectionManager" ref="ConnectionManager"/>
+		<property name="chatMessage" ref="ChatMessage"/>
+		<property name="gameModel" ref="GameModel"/>
+	</bean>
+	
+	<bean id="LoginService" class="services.LoginService">
+		<property name="connectionManager" ref="ConnectionManager"/>
+		<property name="loginPacket" ref="LoginPacket"/>
+	</bean>
+	<!-- end of services -->
+	
+	<bean id="dataReader" class="core.net.DataReader">
+		<property name="eventRouter" ref="SocketDataRouter"/>
+		<lookup-method name="addPacket" ref="LoginAnswer"/>
+		<lookup-method name="addPacket" ref="ChatMessage"/>
+		<lookup-method name="addPacket" ref="ChatJoin"/>
+		<lookup-method name="addPacket" ref="gameFoundPacket"/>
+		<lookup-method name="addPacket" ref="gameJoinPacket"/>
+		<lookup-method name="addPacket" ref="shipSpawnPacket"/>
+		<lookup-method name="addPacket" ref="shipStatusPacket"/>
+		<lookup-method name="addPacket" ref="applyDamagePacket"/>
+		<lookup-method name="addPacket" ref="removeShipPacket"/>
+		<lookup-method name="addPacket" ref="loginBaseEditPacket"/>
+		<lookup-method name="addPacket" ref="useSkillPacket"/>
+		<lookup-method name="addPacket" ref="shipMoveStatusPacket"/>
+		<lookup-method name="addPacket" ref="shipRotationStatusPacket"/>
+		<lookup-method name="addPacket" ref="debugPacket"/>
+		<lookup-method name="addPacket" ref="userInfoPacket"/>
+		<lookup-method name="addPacket" ref="shopItemsInfo"/>
+		<lookup-method name="addPacket" ref="deathPacket"/>
+	</bean>
+		
+	<bean id="ConnectionManager" class="core.net.ConnectionManager" init-method="connect">
+		<!----><property name="server" value="(String)104.131.161.78"/><!---->` 
+		<!---><property name="server" value="(String)192.168.2.111"/><!---->
+		<property name="port" value="8885"/>
+		<property name="dataReader" ref="dataReader"/>
+		<property name="sceneController" ref="sceneController"/>
+	</bean>
+	
+	<bean id="PingSender" class="net.PingSender">
+		<property name="pingPacket" ref="pingPacket"/>
+	</bean>
+	
+</beans>

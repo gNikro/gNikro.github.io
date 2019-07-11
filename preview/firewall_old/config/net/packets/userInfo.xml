@@ -1,0 +1,26 @@
+<beans>
+	 <bean id="userInfoOperator" class="core.external.io.StreamOperator">
+		<!-- player id -->
+		<lookup-method ref="IntOperator" name="addSerializer"/>
+		<!-- nickname -->
+		<lookup-method ref="UTFStringOperator" name="addSerializer"/>
+		<!-- money game -->
+		<lookup-method ref="IntOperator" name="addSerializer"/>
+		<!-- money real -->
+		<lookup-method ref="IntOperator" name="addSerializer"/>
+		<!-- exp to level -->
+		<lookup-method ref="IntOperator" name="addSerializer"/>
+		<!-- level -->
+		<lookup-method ref="IntOperator" name="addSerializer"/>
+		<!-- rights flag -->
+		<lookup-method ref="IntOperator" name="addSerializer"/>
+		<!-- inventory -->
+		<lookup-method ref="UTFStringOperator" name="addSerializer"/>
+    </bean>
+	
+	<bean id="userInfoPacket" class="core.net.packets.BytePacket">
+		<property name="type" value="22"/>
+		<property name="headerOperator" ref="HeaderOperator"/>
+		<property name="streamOperator" ref="userInfoOperator"/>
+	</bean>
+</beans>

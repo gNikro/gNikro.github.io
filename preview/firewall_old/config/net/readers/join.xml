@@ -1,0 +1,10 @@
+<beans>
+	<bean id="JoinOperator" class="core.external.io.StreamOperator">
+		<!-- userid -->
+		<lookup-method ref="IntOperator" name="addSerializer"/>
+		<!-- nickname -->
+		<lookup-method ref="UTFStringOperator" name="addSerializer"/>
+		<!-- message group -->
+		<lookup-method ref="IntOperator" name="addSerializer"/>
+	</bean>
+</beans>

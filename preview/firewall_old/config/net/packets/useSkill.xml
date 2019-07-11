@@ -1,0 +1,17 @@
+<beans>
+	 <bean id="useSkillOperator" class="core.external.io.StreamOperator">
+		<lookup-method ref="IntOperator" name="addSerializer"/> <!-- skill id -->
+		<lookup-method ref="IntOperator" name="addSerializer"/> <!-- user id -->
+		<lookup-method ref="IntOperator" name="addSerializer"/> <!-- target id -->
+		
+		<lookup-method ref="IntOperator" name="addDeserializer"/> <!-- skill id -->
+		<lookup-method ref="IntOperator" name="addDeserializer"/> <!-- user id -->
+		<lookup-method ref="IntOperator" name="addDeserializer"/> <!-- target id -->
+    </bean>
+	
+	<bean id="useSkillPacket" class="core.net.packets.BytePacket">
+		<property name="type" value="16"/>
+		<property name="headerOperator" ref="HeaderOperator"/>
+		<property name="streamOperator" ref="useSkillOperator"/>
+	</bean>
+</beans>

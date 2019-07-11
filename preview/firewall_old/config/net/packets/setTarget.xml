@@ -1,0 +1,11 @@
+<beans>
+	 <bean id="setTargetOperator" class="core.external.io.StreamOperator">
+		<lookup-method ref="IntOperator" name="addSerializer"/> <!-- target id -->
+    </bean>
+	
+	<bean id="setTargetPacket" class="core.net.packets.BytePacket">
+		<property name="type" value="24"/>
+		<property name="headerOperator" ref="HeaderOperator"/>
+		<property name="streamOperator" ref="setTargetOperator"/>
+	</bean>
+</beans>

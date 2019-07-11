@@ -1,0 +1,8 @@
+<beans>
+	<bean id="LoginAnswerOperator" class="core.external.io.StreamOperator">
+		<!-- id -->
+		<lookup-method ref="IntOperator" name="addSerializer"/>
+		<!-- status -->
+		<lookup-method ref="IntOperator" name="addSerializer"/>
+	</bean>
+</beans>

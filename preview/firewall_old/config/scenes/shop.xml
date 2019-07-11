@@ -1,0 +1,6 @@
+<beans>
+	<bean id="shop" class="gameui.shopScene.ShopScene"/>
+	<bean id="shopItemsList" class="core.game.data.shop.ShopItemsList"/>
+	
+	
+</beans>

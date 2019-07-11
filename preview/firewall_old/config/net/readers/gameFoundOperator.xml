@@ -1,0 +1,5 @@
+<beans>
+    <bean id="gameFoundOperator" class="core.external.io.StreamOperator">
+		<lookup-method ref="IntOperator" name="addSerializer"/>
+    </bean>
+</beans>

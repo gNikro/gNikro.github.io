@@ -1,0 +1,13 @@
+<beans>
+	 <bean id="loginBaseEditOperator" class="core.external.io.StreamOperator">
+		<lookup-method ref="UTFStringOperator" name="addSerializer"/> <!-- id -->
+		<lookup-method ref="UTFStringOperator" name="addDeserializer"/> <!-- id -->
+		
+    </bean>
+	
+	<bean id="loginBaseEditPacket" class="core.net.packets.BytePacket">
+		<property name="type" value="15"/>
+		<property name="headerOperator" ref="HeaderOperator"/>
+		<property name="streamOperator" ref="loginBaseEditOperator"/>
+	</bean>
+</beans>

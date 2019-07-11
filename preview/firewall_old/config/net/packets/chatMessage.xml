@@ -1,0 +1,7 @@
+<beans>
+	<bean id="ChatMessage" class="core.net.packets.BytePacket">
+		<property name="type" value="1"/>
+		<property name="headerOperator" ref="HeaderOperator"/>
+		<property name="streamOperator" ref="ChatMessageOperator"/>
+	</bean>
+</beans>

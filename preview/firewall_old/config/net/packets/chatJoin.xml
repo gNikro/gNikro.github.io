@@ -1,0 +1,7 @@
+<beans>
+	<bean id="ChatJoin" class="core.net.packets.BytePacket">
+		<property name="type" value="4"/>
+		<property name="headerOperator" ref="HeaderOperator"/>
+		<property name="streamOperator" ref="JoinOperator"/>
+	</bean>
+</beans>

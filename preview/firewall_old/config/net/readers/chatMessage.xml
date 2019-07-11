@@ -1,0 +1,17 @@
+<beans>
+	<bean id="ChatMessageOperator" class="core.external.io.StreamOperator">
+		<!-- userid -->
+		<lookup-method ref="IntOperator" name="addSerializer"/>
+		<!-- mesasge group -->
+		<lookup-method ref="IntOperator" name="addSerializer"/>
+		<!-- message -->
+		<lookup-method ref="UTFStringOperator" name="addSerializer"/>
+		
+		<!-- userid -->
+		<lookup-method ref="IntOperator" name="addDeserializer"/>
+		<!-- mesasge group -->
+		<lookup-method ref="IntOperator" name="addDeserializer"/>
+		<!-- message -->
+		<lookup-method ref="UTFStringOperator" name="addDeserializer"/>
+	</bean>
+</beans>
